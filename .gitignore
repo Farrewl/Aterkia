@@ -40,14 +40,6 @@ out/
 .turbo
 *.tmp
 
-# Large media files (use Git LFS or external hosting)
-frontend/public/videos/*.mp4
-frontend/public/videos/*.webm
-frontend/public/videos/*.mov
-*.mp4
-*.webm
-*.mov
-
 # OS files
 Thumbs.db
 Desktop.ini
