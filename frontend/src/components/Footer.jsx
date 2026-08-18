@@ -17,9 +17,7 @@ export default function Footer() {
             {/* Brand — large */}
             <div className="md:col-span-5 space-y-5">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-olympic-500 flex items-center justify-center shadow-lg shadow-olympic-500/30">
-                  <Anchor className="w-6 h-6 text-white" strokeWidth={2.5} />
-                </div>
+                <img src="/assets/profile.png" alt="Aterkia Logo" className="w-12 h-12 object-contain rounded-lg" />
                 <div>
                   <span className="font-display font-extrabold text-2xl tracking-tight block leading-none">ATERKIA</span>
                   <span className="text-[10px] font-semibold text-olympic-300 uppercase tracking-[0.2em]">RoboBoat Team</span>
@@ -51,8 +49,8 @@ export default function Footer() {
                   { to: '/', label: 'Home' },
                   { to: '/about', label: 'About' },
                   { to: '/history', label: 'History' },
-                  { to: '/robots', label: 'Robot' },
-                  { to: '/team', label: 'Tim' },
+                  { to: '/robots', label: 'Robots' },
+                  { to: '/team', label: 'Team' },
                 ].map((link) => (
                   <li key={link.to}>
                     <Link to={link.to} className="text-olympic-400 hover:text-white text-sm transition-colors duration-200 hover:translate-x-1 inline-block">
@@ -74,7 +72,7 @@ export default function Footer() {
                   {siteConfig.partnershipEmail}
                 </a>
                 <p className="text-olympic-500 text-xs leading-relaxed">
-                  Lab Robotika & Sistem Maritim, Universitas Diponegoro
+                  Student Center, Universitas Diponegoro
                 </p>
               </div>
             </div>
@@ -83,9 +81,7 @@ export default function Footer() {
           {/* Bottom bar */}
           <div className="pt-8 border-t border-olympic-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-olympic-500 text-xs">
             <span className="flex items-center gap-1.5">
-              © {new Date().getFullYear()} Aterkia Robotics — Made with
-              <Heart className="w-3 h-3 text-red-400 fill-red-400 inline" />
-              by Undip Students
+              © {new Date().getFullYear()} Aterkia Roboboat
             </span>
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="p-2.5 rounded-xl bg-olympic-800 border border-olympic-700 text-olympic-400 hover:text-white hover:bg-olympic-600 transition-all duration-200 hover:scale-105" aria-label="Kembali ke atas">

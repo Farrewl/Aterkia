@@ -11,6 +11,7 @@ import HistoryPage from './pages/HistoryPage';
 import RobotsPage from './pages/RobotsPage';
 import TeamPage from './pages/TeamPage';
 import ContactPage from './pages/ContactPage';
+import LoginPage from './pages/LoginPage';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
             <Route path="/robots" element={<RobotsPage />} />
             <Route path="/team" element={<TeamPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={<HomePage />} />
           </Routes>
         </main>

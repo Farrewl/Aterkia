@@ -43,6 +43,18 @@ export default {
         'bounce-soft': 'bounceSoft 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both',
         'gradient-x': 'gradientX 8s ease infinite',
         'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+        'wave-1': 'wave1 4s ease-in-out infinite',
+        'wave-2': 'wave2 5s ease-in-out infinite',
+        'wave-3': 'wave3 6s ease-in-out infinite',
+        'bob': 'bob 3s ease-in-out infinite',
+        'bob-delayed': 'bob 3s ease-in-out 1.5s infinite',
+        'sway': 'sway 4s ease-in-out infinite',
+        'sway-delayed': 'sway 5s ease-in-out 1s infinite',
+        'swim': 'swim 8s linear infinite',
+        'swim-delayed': 'swim 10s linear 2s infinite',
+        'bubble-rise': 'bubbleRise 4s ease-in infinite',
+        'sail': 'sail 7s ease-in-out infinite',
+        'cruise': 'cruise 9s ease-in-out infinite',
       },
       keyframes: {
         marquee: {
@@ -90,6 +102,46 @@ export default {
         pulseGlow: {
           '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
           '50%': { opacity: '0.8', transform: 'scale(1.05)' },
+        },
+        wave1: {
+          '0%, 100%': { transform: 'translateX(0px)' },
+          '50%': { transform: 'translateX(-20px)' },
+        },
+        wave2: {
+          '0%, 100%': { transform: 'translateX(0px)' },
+          '50%': { transform: 'translateX(15px)' },
+        },
+        wave3: {
+          '0%, 100%': { transform: 'translateX(0px)' },
+          '50%': { transform: 'translateX(-10px)' },
+        },
+        bob: {
+          '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+          '50%': { transform: 'translateY(-4px) rotate(1deg)' },
+        },
+        sway: {
+          '0%, 100%': { transform: 'rotate(-3deg)' },
+          '50%': { transform: 'rotate(3deg)' },
+        },
+        swim: {
+          '0%': { transform: 'translateX(0px)' },
+          '50%': { transform: 'translateX(15px)' },
+          '100%': { transform: 'translateX(0px)' },
+        },
+        bubbleRise: {
+          '0%': { transform: 'translateY(0px)', opacity: '0.6' },
+          '100%': { transform: 'translateY(-40px)', opacity: '0' },
+        },
+        sail: {
+          '0%, 100%': { transform: 'translateY(0px) translateX(0px) rotate(0deg)' },
+          '25%': { transform: 'translateY(-3px) translateX(8px) rotate(1deg)' },
+          '50%': { transform: 'translateY(-5px) translateX(0px) rotate(-0.5deg)' },
+          '75%': { transform: 'translateY(-2px) translateX(-8px) rotate(0.5deg)' },
+        },
+        cruise: {
+          '0%, 100%': { transform: 'translateY(0px) translateX(0px)' },
+          '30%': { transform: 'translateY(-2px) translateX(6px)' },
+          '60%': { transform: 'translateY(2px) translateX(-6px)' },
         },
       },
       backgroundSize: {

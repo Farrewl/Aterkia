@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, ChevronRight, Anchor } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { NavLink, Link, useLocation } from 'react-router-dom';
+import { Menu, X, ChevronRight } from 'lucide-react';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navRef = useRef(null);
+  const [indicator, setIndicator] = useState({ left: 0, width: 0, visible: false });
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,46 +22,95 @@ export default function Navbar() {
     { to: '/', label: 'Home' },
     { to: '/about', label: 'About' },
     { to: '/history', label: 'History' },
-    { to: '/robots', label: 'Robot' },
-    { to: '/team', label: 'Tim' }
+    { to: '/robots', label: 'Robots' },
+    { to: '/team', label: 'Team' }
   ];
 
+  const updateIndicator = () => {
+    if (!navRef.current) return;
+    const activeLink = navRef.current.querySelector('.nav-active');
+    if (activeLink) {
+      const navRect = navRef.current.getBoundingClientRect();
+      const linkRect = activeLink.getBoundingClientRect();
+      setIndicator({
+        left: linkRect.left - navRect.left,
+        width: linkRect.width,
+        visible: true,
+      });
+    } else {
+      setIndicator(prev => ({ ...prev, visible: false }));
+    }
+  };
+
+  useEffect(() => {
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [location.pathname]);
+
+  const showBackground = isScrolled || isHovered;
+
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${
-      isScrolled
-        ? 'py-2.5 bg-white/90 backdrop-blur-xl border-b border-olympic-100 shadow-lg shadow-olympic-500/5'
-        : 'py-3.5 bg-white/70 backdrop-blur-md border-b border-transparent'
-    }`}>
+    <header
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        showBackground
+          ? isScrolled
+            ? 'py-2.5 bg-white/[0.08] backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.12)]'
+            : 'py-3 bg-white/[0.15] backdrop-blur-xl border-b border-white/[0.1]'
+          : 'py-4 bg-transparent border-b border-transparent'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group shrink-0" aria-label="Aterkia Home">
             <div className="relative">
-              <img src="/assets/profile.png" alt="Aterkia Logo" className="h-10 w-10 object-contain rounded-lg" />
-              <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white" style={{ background: '#FF6B35' }} />
+              <img src="/assets/profile.png" alt="Aterkia Logo" className="h-12 w-13 object-contain rounded-lg" />
+              <div/>
             </div>
             <div className="hidden sm:block">
-              <span className="font-display font-extrabold text-lg tracking-tight text-olympic-900 block leading-none">
+              <span className={`font-display font-extrabold text-lg tracking-tight block leading-none transition-colors duration-300 ${
+                showBackground ? 'text-olympic-900' : 'text-white drop-shadow-md'
+              }`}>
                 ATERKIA
               </span>
-              <span className="text-[9px] font-semibold text-olympic-400 uppercase tracking-[0.2em]">
+              <span className={`text-[9px] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 ${
+                showBackground ? 'text-olympic-400' : 'text-white/70 drop-shadow-sm'
+              }`}>
                 RoboBoat Team
               </span>
             </div>
           </Link>
 
-          {/* Menu Tengah */}
-          <nav className="hidden md:flex items-center gap-0.5 bg-slate-50 border border-slate-100 px-2 py-1.5 rounded-2xl shadow-sm">
+          {/* Menu Tengah — sliding indicator */}
+          <nav ref={navRef} className={`hidden md:flex items-center gap-0.5 px-2 py-1.5 rounded-2xl shadow-sm relative transition-all duration-500 ${
+            showBackground
+              ? 'bg-slate-50 border border-slate-100'
+              : 'bg-white/10 border border-white/15 backdrop-blur-sm'
+          }`}>
+            {/* Sliding indicator pill */}
+            <div
+              className="absolute top-1 bottom-1 rounded-xl bg-olympic-500 shadow-md shadow-olympic-500/25 transition-all duration-300 ease-out"
+              style={{
+                left: `${indicator.left}px`,
+                width: `${indicator.width}px`,
+                opacity: indicator.visible ? 1 : 0,
+              }}
+            />
             {navLinks.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  `px-4 py-1.5 text-[13px] font-semibold rounded-xl transition-all duration-200 ${
+                  `relative z-10 px-4 py-1.5 text-[13px] font-semibold rounded-xl transition-colors duration-200 ${
                     isActive
-                      ? 'bg-olympic-500 text-white shadow-md shadow-olympic-500/25'
-                      : 'text-slate-500 hover:text-olympic-600 hover:bg-olympic-50'
+                      ? 'nav-active text-white'
+                      : showBackground
+                        ? 'text-slate-500 hover:text-olympic-600'
+                        : 'text-white/80 hover:text-white'
                   }`
                 }
               >
@@ -66,15 +119,31 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Kanan: Contact Us */}
-          <div className="hidden md:flex items-center">
+          {/* Kanan: Login + Contact Us */}
+          <div className="hidden md:flex items-center gap-2.5">
+            <NavLink
+              to="/login"
+              className={({ isActive }) =>
+                `px-5 py-2.5 rounded-2xl text-[13px] font-bold transition-all duration-300 border-2 ${
+                  isActive
+                    ? 'border-olympic-900 text-olympic-900 bg-olympic-50'
+                    : showBackground
+                      ? 'border-olympic-500 text-olympic-500 hover:bg-olympic-50 hover:border-olympic-600 hover:text-olympic-600'
+                      : 'border-white/50 text-white hover:bg-white/10 hover:border-white/70'
+                }`
+              }
+            >
+              Login
+            </NavLink>
             <NavLink
               to="/contact"
               className={({ isActive }) =>
                 `px-5 py-2.5 rounded-2xl text-[13px] font-bold transition-all duration-300 flex items-center gap-1.5 ${
                   isActive
                     ? 'bg-olympic-900 text-white shadow-lg'
-                    : 'bg-olympic-500 hover:bg-olympic-600 text-white shadow-md shadow-olympic-500/25 hover:shadow-lg hover:shadow-olympic-500/30 hover:scale-[1.02]'
+                    : showBackground
+                      ? 'bg-olympic-500 hover:bg-olympic-600 text-white shadow-md shadow-olympic-500/25 hover:shadow-lg hover:shadow-olympic-500/30 hover:scale-[1.02]'
+                      : 'bg-white/15 hover:bg-white/25 text-white border border-white/20 backdrop-blur-sm'
                 }`
               }
             >
@@ -87,7 +156,11 @@ export default function Navbar() {
           <div className="flex md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2.5 rounded-xl bg-olympic-50 border border-olympic-100 text-olympic-600 hover:bg-olympic-100 focus:outline-none transition-colors"
+              className={`p-2.5 rounded-xl focus:outline-none transition-all duration-300 ${
+                showBackground
+                  ? 'bg-olympic-50 border border-olympic-100 text-olympic-600 hover:bg-olympic-100'
+                  : 'bg-white/10 border border-white/15 text-white hover:bg-white/20'
+              }`}
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -99,7 +172,7 @@ export default function Navbar() {
 
       {/* Drawer menu HP */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-slate-100 px-4 pt-3 pb-6 mt-1 shadow-xl animate-fade-in rounded-b-3xl">
+        <div className="md:hidden bg-white/95 backdrop-blur-xl border-b border-slate-100 px-4 pt-3 pb-6 mt-1 shadow-xl animate-fade-in rounded-b-3xl">
           <div className="flex flex-col gap-1.5">
             {navLinks.map((link) => (
               <NavLink
@@ -117,7 +190,14 @@ export default function Navbar() {
                 {link.label}
               </NavLink>
             ))}
-            <div className="pt-3 border-t border-slate-100 mt-2">
+            <div className="pt-3 border-t border-slate-100 mt-2 flex flex-col gap-2">
+              <NavLink
+                to="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border-2 border-olympic-500 text-olympic-500 font-bold text-sm tracking-wider hover:bg-olympic-50 transition-all"
+              >
+                Login
+              </NavLink>
               <NavLink
                 to="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}

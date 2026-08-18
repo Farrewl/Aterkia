@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { siteConfig } from '../data/siteConfig';
-import { Mail, MapPin, Send, CheckCircle2, Building2 } from 'lucide-react';
+import { Mail, MapPin, Send, CheckCircle2, Phone, Globe, Clock, ArrowUpRight } from 'lucide-react';
 
 export default function ContactPage() {
   const [formState, setFormState] = useState({
@@ -22,172 +22,239 @@ export default function ContactPage() {
     }, 800);
   };
 
+  const contactCards = [
+    {
+      icon: Mail,
+      label: 'Email Utama',
+      value: siteConfig.email,
+      href: `mailto:${siteConfig.email}`,
+      color: 'sky',
+    },
+    {
+      icon: Mail,
+      label: 'Sponsorship & Kemitraan',
+      value: siteConfig.partnershipEmail,
+      href: `mailto:${siteConfig.partnershipEmail}`,
+      color: 'blue',
+    },
+    {
+      icon: MapPin,
+      label: 'Markas Riset',
+      value: `Laboratorium Robotika & Sistem Maritim, ${siteConfig.affiliation}, ${siteConfig.location}`,
+      color: 'slate',
+    },
+  ];
+
+  const socialLinks = [
+    { label: 'Instagram', href: siteConfig.socials.instagram, icon: 'M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z' },
+    { label: 'LinkedIn', href: siteConfig.socials.linkedin, icon: 'M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z' },
+    { label: 'YouTube', href: siteConfig.socials.youtube, icon: 'M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z' },
+    { label: 'GitHub', href: siteConfig.socials.github, icon: 'M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z' },
+  ];
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
-      
-      {/* Header */}
-      <div className="max-w-3xl">
-        <span className="text-xs font-bold text-sky-400 uppercase tracking-widest block mb-2">
-          KOLABORASI & KEMITRAAN
-        </span>
-        <h1 className="text-4xl sm:text-5xl font-black font-display text-white tracking-tight mb-3">
-          Hubungi Tim Aterkia
-        </h1>
-        <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-light">
-          Kami terbuka untuk kerja sama sponsorship kompetisi, kolaborasi riset teknologi maritim bersama industri, serta pertanyaan umum seputar tim.
-        </p>
-      </div>
+    <div className="min-h-screen">
+      {/* Hero header */}
+      <section className="relative py-20 bg-gradient-to-br from-olympic-900 via-sky-900 to-olympic-950 overflow-hidden">
+        <div className="absolute inset-0 dot-pattern opacity-20" />
+        <div className="absolute top-0 right-[20%] w-96 h-96 bg-olympic-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-[10%] w-72 h-72 bg-sky-500/10 rounded-full blur-3xl" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        {/* Contact Info */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="clean-card rounded-3xl p-6 sm:p-8 space-y-6">
-            <h3 className="font-display font-bold text-xl text-white">
-              Informasi Kontak Resmi
-            </h3>
-
-            <div className="space-y-4 text-sm">
-              <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-400 shrink-0">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="text-xs text-slate-400 uppercase font-medium block">Email Utama</span>
-                  <a href={`mailto:${siteConfig.email}`} className="text-white hover:text-sky-400 font-semibold transition-colors">
-                    {siteConfig.email}
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="text-xs text-slate-400 uppercase font-medium block">Sponsorship & Kemitraan</span>
-                  <a href={`mailto:${siteConfig.partnershipEmail}`} className="text-sky-300 hover:text-sky-200 font-semibold transition-colors">
-                    {siteConfig.partnershipEmail}
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 shrink-0">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="text-xs text-slate-400 uppercase font-medium block">Markas Riset / Workshop</span>
-                  <span className="text-slate-300 text-xs sm:text-sm block">
-                    Laboratorium Robotika & Sistem Maritim, {siteConfig.affiliation}, {siteConfig.location}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-slate-800 text-xs text-slate-400 leading-relaxed font-light">
-              Tanggapan email resmi tim akan dibalas dalam waktu 1x24 jam hari kerja.
-            </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl">
+            <span className="inline-flex items-center gap-2 text-xs font-bold text-sky-300 uppercase tracking-widest mb-4">
+              <span className="w-8 h-px bg-sky-400" />
+              Kolaborasi & Kemitraan
+            </span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black font-display text-white tracking-tight leading-[0.95] mb-4">
+              Hubungi{' '}
+              <span className="bg-gradient-to-r from-sky-300 to-blue-200 bg-clip-text text-transparent">Tim Aterkia</span>
+            </h1>
+            <p className="text-slate-300/80 text-base sm:text-lg leading-relaxed font-light max-w-xl">
+              Kami terbuka untuk kerja sama sponsorship, kolaborasi riset teknologi maritim, serta pertanyaan umum seputar tim.
+            </p>
           </div>
         </div>
+      </section>
 
-        {/* Form */}
-        <div className="lg:col-span-7">
-          <div className="clean-card rounded-3xl p-6 sm:p-8">
-            {isSubmitted ? (
-              <div className="text-center py-10 space-y-3">
-                <div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="w-7 h-7" />
-                </div>
-                <h4 className="text-xl font-bold text-white">Pesan Anda Berhasil Terkirim!</h4>
-                <p className="text-slate-300 text-sm max-w-md mx-auto font-light">
-                  Terima kasih telah menghubungi Tim Aterkia. Koordinator divisi terkait akan segera menindaklanjuti pesan Anda.
+      {/* Content */}
+      <section className="relative py-16 sm:py-20 bg-[#f8fafc]">
+        <div className="absolute inset-0 dot-pattern opacity-20" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+
+            {/* Left — Contact cards + socials */}
+            <div className="lg:col-span-5 space-y-6">
+              {/* Contact cards */}
+              <div className="space-y-4">
+                {contactCards.map((card, idx) => {
+                  const Icon = card.icon;
+                  const Wrapper = card.href ? 'a' : 'div';
+                  const wrapperProps = card.href
+                    ? { href: card.href, target: '_blank', rel: 'noreferrer' }
+                    : {};
+
+                  return (
+                    <Wrapper
+                      key={idx}
+                      {...wrapperProps}
+                      className={`flex items-start gap-4 p-5 rounded-2xl border transition-all duration-300 group ${
+                        card.href
+                          ? 'bg-white border-slate-100 hover:border-sky-200 hover:shadow-lg hover:shadow-sky-100/50 cursor-pointer'
+                          : 'bg-white border-slate-100'
+                      }`}
+                    >
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-300 ${
+                        card.color === 'sky'
+                          ? 'bg-sky-50 text-sky-500 group-hover:bg-sky-500 group-hover:text-white'
+                          : card.color === 'blue'
+                            ? 'bg-blue-50 text-blue-500 group-hover:bg-blue-500 group-hover:text-white'
+                            : 'bg-slate-100 text-slate-500 group-hover:bg-slate-800 group-hover:text-white'
+                      }`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{card.label}</span>
+                        <span className={`text-sm font-semibold block leading-snug ${
+                          card.href ? 'text-olympic-700 group-hover:text-sky-600 transition-colors' : 'text-slate-600'
+                        }`}>
+                          {card.value}
+                        </span>
+                      </div>
+                      {card.href && (
+                        <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-sky-500 shrink-0 mt-1 transition-colors" />
+                      )}
+                    </Wrapper>
+                  );
+                })}
+              </div>
+
+              {/* Response time */}
+              <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-sky-50 border border-sky-100">
+                <Clock className="w-4 h-4 text-sky-500 shrink-0" />
+                <p className="text-xs text-sky-700 font-medium">
+                  Tanggapan email resmi dalam waktu <span className="font-bold">1×24 jam</span> hari kerja.
                 </p>
-                <button
-                  onClick={() => setIsSubmitted(false)}
-                  className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition-colors"
-                >
-                  Kirim Pesan Lainnya
-                </button>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">
-                      Nama Lengkap / Instansi *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Nama Anda"
-                      value={formState.name}
-                      onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-navy-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 transition-colors"
-                    />
+
+              {/* Social links */}
+              <div className="pt-2">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3 px-1">Ikuti Kami</span>
+                <div className="flex gap-2">
+                  {socialLinks.map((s) => (
+                    <a
+                      key={s.label}
+                      href={s.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={s.label}
+                      className="w-11 h-11 rounded-xl bg-white border border-slate-100 text-slate-400 hover:text-white hover:bg-olympic-500 hover:border-olympic-500 flex items-center justify-center transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-olympic-500/20"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d={s.icon} /></svg>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right — Form */}
+            <div className="lg:col-span-7">
+              <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 sm:p-10">
+                {isSubmitted ? (
+                  <div className="text-center py-12 space-y-4">
+                    <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center mx-auto">
+                      <CheckCircle2 className="w-8 h-8" />
+                    </div>
+                    <h4 className="text-xl font-black font-display text-olympic-900">Pesan Berhasil Terkirim!</h4>
+                    <p className="text-slate-500 text-sm max-w-sm mx-auto font-light leading-relaxed">
+                      Terima kasih telah menghubungi Tim Aterkia. Koordinator divisi terkait akan segera menindaklanjuti.
+                    </p>
+                    <button
+                      onClick={() => setIsSubmitted(false)}
+                      className="px-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-semibold text-slate-700 transition-colors mt-2"
+                    >
+                      Kirim Pesan Lainnya
+                    </button>
                   </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                          Nama Lengkap / Instansi
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="Nama Anda"
+                          value={formState.name}
+                          onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                          Alamat Email
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          placeholder="email@instansi.com"
+                          value={formState.email}
+                          onChange={(e) => setFormState({ ...formState, email: e.target.value })}
+                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
+                        />
+                      </div>
+                    </div>
 
-                  <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">
-                      Alamat Email *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="email@instansi.com"
-                      value={formState.email}
-                      onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-navy-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 transition-colors"
-                    />
-                  </div>
-                </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                        Kategori Keperluan
+                      </label>
+                      <select
+                        value={formState.category}
+                        onChange={(e) => setFormState({ ...formState, category: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
+                      >
+                        <option value="Sponsorship">Tawaran Sponsorship / Kemitraan</option>
+                        <option value="Riset ASV">Kolaborasi Divisi ASV</option>
+                        <option value="Riset AUV">Kolaborasi Divisi AUV</option>
+                        <option value="Media">Liputan Media / Wawancara</option>
+                        <option value="Lainnya">Pertanyaan Umum</option>
+                      </select>
+                    </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Kategori Keperluan *
-                  </label>
-                  <select
-                    value={formState.category}
-                    onChange={(e) => setFormState({ ...formState, category: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-navy-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-sky-400 transition-colors"
-                  >
-                    <option value="Sponsorship">Tawaran Sponsorship / Kemitraan</option>
-                    <option value="Riset ASV">Pertanyaan / Kolaborasi Divisi ASV</option>
-                    <option value="Riset AUV">Pertanyaan / Kolaborasi Divisi AUV</option>
-                    <option value="Media">Liputan Media / Wawancara</option>
-                    <option value="Lainnya">Pertanyaan Umum</option>
-                  </select>
-                </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                        Pesan
+                      </label>
+                      <textarea
+                        required
+                        rows={5}
+                        placeholder="Tuliskan pesan, penawaran kerja sama, atau pertanyaan Anda..."
+                        value={formState.message}
+                        onChange={(e) => setFormState({ ...formState, message: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all resize-none"
+                      ></textarea>
+                    </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Pesan *
-                  </label>
-                  <textarea
-                    required
-                    rows={5}
-                    placeholder="Tuliskan pesan, penawaran kerja sama, atau pertanyaan Anda..."
-                    value={formState.message}
-                    onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-navy-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 transition-colors resize-none"
-                  ></textarea>
-                </div>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full py-3.5 rounded-xl bg-olympic-500 hover:bg-olympic-600 text-white font-bold text-sm tracking-wide shadow-lg shadow-olympic-500/25 hover:shadow-xl hover:shadow-olympic-500/30 transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      <Send className="w-4 h-4" />
+                      <span>{isSubmitting ? 'Mengirim...' : 'Kirim Pesan'}</span>
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-md shadow-sky-500/20"
-                >
-                  <Send className="w-4 h-4" />
-                  <span>{isSubmitting ? 'Mengirim...' : 'Kirim Pesan Kolaborasi'}</span>
-                </button>
-              </form>
-            )}
           </div>
         </div>
-
-      </div>
-
+      </section>
     </div>
   );
 }

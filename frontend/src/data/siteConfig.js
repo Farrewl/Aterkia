@@ -9,9 +9,9 @@ export const siteConfig = {
   partnershipEmail: "sponsor@aterkia-undip.org",
   location: "Semarang, Jawa Tengah, Indonesia",
   socials: {
-    instagram: "https://instagram.com/aterkia_undip",
-    github: "https://github.com/aterkia-undip",
-    linkedin: "https://linkedin.com/company/aterkia-undip",
-    youtube: "https://youtube.com/@aterkia-undip"
+    instagram: "https://www.instagram.com/roboboat_undip?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+    github: "https://github.com/Roboboat-Aterkia",
+    linkedin: "https://id.linkedin.com/company/aterkia-roboboat",
+    youtube: "http://www.youtube.com/@roboboat_undip"
   }
 };
