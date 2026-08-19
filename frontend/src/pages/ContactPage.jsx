@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { siteConfig } from '../data/siteConfig';
 import { Mail, MapPin, Send, CheckCircle2, Phone, Globe, Clock, ArrowUpRight } from 'lucide-react';
+import { sponsorsData } from '../data/sponsorsData';
+
+// Duplicate for continuous scrolling marquee
+const marqueeSponsors = [...sponsorsData, ...sponsorsData];
 
 export default function ContactPage() {
   const [formState, setFormState] = useState({
@@ -129,13 +133,45 @@ export default function ContactPage() {
                   );
                 })}
               </div>
-
-              {/* Response time */}
+{/* Response time */}
               <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-sky-50 border border-sky-100">
+
                 <Clock className="w-4 h-4 text-sky-500 shrink-0" />
                 <p className="text-xs text-sky-700 font-medium">
                   Tanggapan email resmi dalam waktu <span className="font-bold">1×24 jam</span> hari kerja.
                 </p>
+              </div>
+
+              {/* Our Sponsors section */}
+              <div className="pt-6">
+                <span className="block text-xs font-bold text-olympic-400 uppercase tracking-wider text-center mb-4">Our Sponsors</span>
+                <div className="relative w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_60px,_black_calc(100%-60px),transparent_100%)]">
+                  <div className="flex w-max animate-marquee hover:[animation-play-state:paused] items-center gap-10 sm:gap-14 py-2">
+                    {marqueeSponsors.map((sponsor, idx) => (
+                      <a
+                        key={`${sponsor.id}-${idx}`}
+                        href={sponsor.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={sponsor.name}
+                        className="relative group"
+                      >
+                        <div
+                          onClick={(e) => e.stopPropagation()}
+                          className="shrink-0 opacity-50 hover:opacity-90 transition-opacity duration-300 cursor-pointer"
+                        >
+                          <ImageWithFallback
+                            src={sponsor.logo}
+                            alt={sponsor.name}
+                            name={sponsor.name}
+                            type="sponsor"
+                            className="w-14 h-14 sm:w-20 sm:h-20 object-contain"
+                          />
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Social links */}

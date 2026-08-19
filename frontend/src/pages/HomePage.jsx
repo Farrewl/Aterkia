@@ -81,17 +81,17 @@ export default function HomePage() {
 
               <div className="flex items-center gap-8 pt-6">
                 <div className="text-center">
-                  <span className="block text-3xl font-black gradient-text font-display drop-shadow-md">4+</span>
+                  <span className="block text-3xl font-black gradient-text font-display drop-shadow-md">4</span>
                   <span className="text-xs gradient-text/60 font-medium">Robot Dikembangkan</span>
                 </div>
                 <div className="w-px h-10 bg-white/30" />
                 <div className="text-center">
-                  <span className="block text-3xl font-black gradient-text font-display drop-shadow-md">10+</span>
+                  <span className="block text-3xl font-black gradient-text font-display drop-shadow-md">14</span>
                   <span className="text-xs gradient-text/60 font-medium">Anggota Aktif</span>
                 </div>
                 <div className="w-px h-10 bg-white/30" />
                 <div className="text-center">
-                  <span className="block text-3xl font-black font-display drop-shadow-md" style={{ color: '#FF6B35' }}>3</span>
+                  <span className="block text-3xl font-black font-display drop-shadow-md" style={{ color: '#FF6B35' }}>10</span>
                   <span className="text-xs gradient-text/60 font-medium">Tahun Riset</span>
                 </div>
               </div>
@@ -101,39 +101,48 @@ export default function HomePage() {
 
       {/* Wave Divider + Sponsors — combined shape */}
       <div className="relative bg-olympic-900">
-        {/* Top wave — white hero bg cutting into dark sponsors */}
+        {/* Top wave — white hero cutting into dark sponsors */}
         <div className="relative w-full">
-          <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="w-full block" style={{ height: '80px', marginBottom: '-1px' }}>
-            <path d="M0,0 L1440,0 L1440,35 Q1200,75 960,35 Q720,0 480,35 Q240,75 0,35 Z" fill="#ffffff" />
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full block" style={{ height: '80px', marginBottom: '-1px' }}>
+            <path d="M0,0 L1440,0 L1440,40 C1320,40 1260,90 1140,80 C1020,70 960,20 840,30 C720,40 660,95 540,85 C420,75 360,25 240,35 C120,45 60,90 0,80 Z" fill="#ffffff" />
           </svg>
         </div>
 
-        {/* Sponsors logos — filling the wave area */}
-        <div className="relative z-10 px-8 py-6 sm:py-8 overflow-hidden">
-          <div className="relative w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_60px,_black_calc(100%-60px),transparent_100%)]">
-            <div className="flex w-max animate-marquee hover:[animation-play-state:paused] items-center gap-10 sm:gap-14 py-2">
-              {marqueeSponsors.map((sponsor, idx) => (
-                <div
-                  key={`${sponsor.id}-${idx}`}
-                  className="shrink-0 opacity-50 hover:opacity-90 transition-opacity duration-300 cursor-default"
-                >
-                  <ImageWithFallback
-                    src={sponsor.logo}
-                    alt={sponsor.name}
-                    name={sponsor.name}
-                    type="sponsor"
-                    className="w-14 h-14 sm:w-20 sm:h-20 object-contain brightness-0 invert"
-                  />
-                </div>
-              ))}
-            </div>
+        {/* Our Sponsors — centered text */}
+        <div className="relative z-10 text-center pt-1 pb-1">
+          <span className="text-xs sm:text-sm font-bold tracking-widest uppercase gradient-text">
+            Our Sponsors
+          </span>
+        </div>
+
+        {/* Sponsors logos — seamless infinite marquee */}
+        <div className="relative z-10 overflow-hidden py-4">
+          <div className="flex w-max animate-marquee">
+            {[...marqueeSponsors, ...marqueeSponsors].map((sponsor, idx) => (
+              <a
+                key={`${sponsor.id}-${idx}`}
+                href={sponsor.url}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={sponsor.name}
+                className="shrink-0 mx-5 sm:mx-7 opacity-70 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+              >
+                <ImageWithFallback
+                  src={sponsor.logo}
+                  alt={sponsor.name}
+                  name={sponsor.name}
+                  type="sponsor"
+                  className="w-14 h-14 sm:w-20 sm:h-20 object-contain"
+                />
+              </a>
+            ))}
           </div>
         </div>
 
-        {/* Bottom wave — dark sponsors bg cutting into white robots section */}
+        {/* Bottom wave — dark sponsors cutting into white robots */}
         <div className="relative w-full">
-          <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="w-full block" style={{ height: '80px', marginTop: '-1px' }}>
-            <path d="M0,45 Q240,5 480,45 Q720,80 960,45 Q1200,5 1440,45 L1440,80 L0,80 Z" fill="#ffffff" />
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full block" style={{ height: '80px', marginTop: '-1px' }}>
+            <path d="M0,80 C120,80 180,30 300,35 C420,40 480,95 600,90 C720,85 780,30 900,25 C1020,20 1080,80 1200,85 C1320,90 1380,50 1440,40 L1440,120 L0,120 Z" fill="#ffffff" />
           </svg>
         </div>
       </div>
