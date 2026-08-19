@@ -96,8 +96,7 @@ export default function LoginPage() {
                 type="submit"
                 className="w-full py-3.5 rounded-xl bg-olympic-500 hover:bg-olympic-600 text-white font-bold text-sm tracking-wide shadow-lg shadow-olympic-500/30 hover:shadow-xl hover:shadow-olympic-500/40 transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.02]"
               >
-                <Anchor className="w-4 h-4" />
-                <span>Menyelam</span>
+                <span>Login</span>
               </button>
             </form>
 
