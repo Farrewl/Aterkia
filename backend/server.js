@@ -7,16 +7,29 @@
  * ============================================================================
  */
 
-const express = require('express');
-const cors = require('cors');
+import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+
+import authRoutes from './routes/auth.js';
+import { initDb } from './config/database.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  credentials: true,
+}));
 app.use(express.json());
+app.use(cookieParser());
 
-// In-Memory Database Fallback
+app.use('/api/auth', authRoutes);
+
+// In-Memory Database Fallback (for legacy endpoints)
 const db = {
   sponsors: [
     {
@@ -119,7 +132,7 @@ const db = {
   inquiries: []
 };
 
-// API Endpoints
+// Legacy API Endpoints
 app.get('/', (req, res) => {
   res.json({
     status: "online",
@@ -142,6 +155,18 @@ app.post('/api/contact', (req, res) => {
   res.json({ success: true, message: "Pesan berhasil diterima." });
 });
 
-app.listen(PORT, () => {
-  console.log(`[Aterkia Backend] Server running on port ${PORT}`);
-});
+// Initialize database and start server
+const startServer = async () => {
+  try {
+    await initDb();
+    app.listen(PORT, () => {
+      console.log(`[Aterkia Backend] Server running on port ${PORT}`);
+      console.log(`[Aterkia Backend] Auth endpoints: /api/auth/*`);
+    });
+  } catch (err) {
+    console.error('[Aterkia Backend] Failed to start:', err);
+    process.exit(1);
+  }
+};
+
+startServer();

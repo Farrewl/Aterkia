@@ -10,7 +10,7 @@ export const robotsData = [
     year: "2025 — Sekarang",
     status: "Aktif",
     tagline: "Kapal Cepat Permukaan Otonom",
-    image: "/images/robots/asv-baruna.jpg",
+    image: "/images/robots/robot-asv-1.png",
     description: "Kapal otonom generasi terbaru dengan lambung Catamaran serat karbon. Dilengkapi kamera AI dan sensor navigasi untuk deteksi rintangan secara mandiri.",
     specs: {
       "Kategori": "Kapal Permukaan (ASV)",
@@ -30,7 +30,7 @@ export const robotsData = [
     year: "2025 — Sekarang",
     status: "Aktif",
     tagline: "Robot Selam Bawah Air Otonom",
-    image: "/images/robots/auv-cakra.jpg",
+    image: "/images/robots/robot-av-subsea.png",
     description: "Robot selam dengan tabung akrilik tahan tekanan air (IP68). Memiliki 6 pendorong untuk gerak bebas 6 arah (6-DOF) dan kamera bawah air.",
     specs: {
       "Kategori": "Robot Selam (AUV)",
@@ -50,7 +50,7 @@ export const robotsData = [
     year: "2024",
     status: "Legacy",
     tagline: "Kapal Monohull Pertama",
-    image: "/images/robots/asv-nala.jpg",
+    image: "/images/robots/robot-asv-nala.png",
     description: "Wahana kapal pertama yang dirancang Aterkia untuk KKCTBN 2024 dengan lambung Deep-V Monohull fiberglass.",
     specs: {
       "Kategori": "Kapal Permukaan (ASV)",
@@ -70,7 +70,7 @@ export const robotsData = [
     year: "2026/2027 (R&D)",
     status: "Dalam Pengembangan",
     tagline: "Robot Selam Generasi Baru",
-    image: "/images/robots/auv-makara.jpg",
+    image: "/images/robots/robot-auv-makara.png",
     description: "Riset robot selam dengan manipulator gripper dan sensor akustik. Masih dalam tahap pengembangan.",
     specs: {
       "Kategori": "Robot Selam (AUV)",
