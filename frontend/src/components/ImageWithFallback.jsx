@@ -18,9 +18,9 @@ export default function ImageWithFallback({
   if (hasError || !src) {
     if (type === 'team') {
       return (
-        <div className={`flex flex-col items-center justify-center bg-blue-50 ${className}`}>
-          <span className="font-display text-xl font-bold text-brand-600">{getInitials(name || alt)}</span>
-          <span className="text-[10px] text-slate-400 mt-0.5">{division ? division.split(' ')[0] : 'Member'}</span>
+        <div className={`flex flex-col items-center justify-center bg-[#d5dfe4] ${className}`}>
+          <span className="font-display text-5xl font-black tracking-[-0.06em] text-[#7c98a7] sm:text-6xl">{getInitials(name || alt)}</span>
+          <span className="mt-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#718793]">{division ? division.split(' ')[0] : 'Member'}</span>
         </div>
       );
     }
@@ -64,6 +64,8 @@ export default function ImageWithFallback({
       )}
       <img
         src={src} alt={alt}
+        loading="lazy"
+        decoding="async"
         className={`${className} transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
         onLoad={() => setIsLoading(false)}
         onError={() => { setIsLoading(false); setHasError(true); }}
