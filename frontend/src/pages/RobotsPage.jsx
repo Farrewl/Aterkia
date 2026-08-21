@@ -1,16 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { robotsData, robotCategories } from '../data/robotsData';
 import ImageWithFallback from '../components/ImageWithFallback';
 import RobotModal from '../components/RobotModal';
 import { ChevronRight, Bot, Anchor, Waves } from 'lucide-react';
 
 export default function RobotsPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('Semua');
   const [selectedRobot, setSelectedRobot] = useState(null);
+  const robotRefs = useRef({});
+  const hasScrolled = useRef(false);
 
   const filteredRobots = activeCategory === 'Semua'
     ? robotsData
     : robotsData.filter(r => r.category === activeCategory);
+
+  // Handle URL query param robotId
+  useEffect(() => {
+    if (hasScrolled.current) return;
+    const params = new URLSearchParams(location.search);
+    const robotId = params.get('robotId');
+    if (robotId) {
+      const robot = robotsData.find(r => r.id === robotId);
+      if (robot) {
+        hasScrolled.current = true;
+        setActiveCategory('Semua');
+        setTimeout(() => {
+          const robotEl = robotRefs.current[robotId];
+          if (robotEl) {
+            robotEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => setSelectedRobot(robot), 500);
+          }
+        }, 300);
+      }
+    }
+  }, [location.search]);
 
   return (
     <div>
@@ -23,10 +49,6 @@ export default function RobotsPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div className="max-w-2xl">
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-olympic-500 uppercase tracking-widest mb-4">
-                <Bot className="w-4 h-4" />
-                Arsip Wahana Robot
-              </span>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black font-display text-olympic-900 tracking-tight leading-tight">
                 Robot Aterkia dari{' '}
                 <span className="gradient-text">Tahun ke Tahun</span>
@@ -68,6 +90,7 @@ export default function RobotsPage() {
               return (
                 <div
                   key={robot.id}
+                  ref={el => robotRefs.current[robot.id] = el}
                   className={`group relative bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-lg shadow-slate-100/50 hover:shadow-2xl hover:shadow-olympic-100/80 transition-all duration-500 hover:-translate-y-3 ${
                     idx % 2 === 1 ? 'md:translate-y-8' : ''
                   }`}
@@ -91,7 +114,7 @@ export default function RobotsPage() {
                     {/* Badges */}
                     <div className="absolute top-5 left-5 flex gap-2">
                       <span className={`flex items-center gap-1.5 text-[11px] font-bold px-4 py-2 rounded-xl uppercase shadow-lg backdrop-blur-sm ${
-                        isAUV ? 'bg-olympic-500/90 text-white' : 'bg-olympic-600/90 text-white'
+                        isAUV ? 'bg-blue-500/90 text-white' : 'bg-olympic-600/90 text-white'
                       }`}>
                         {isAUV ? <Waves className="w-3.5 h-3.5" /> : <Anchor className="w-3.5 h-3.5" />}
                         {robot.category}
@@ -141,7 +164,10 @@ export default function RobotsPage() {
 
       {/* Modal */}
       {selectedRobot && (
-        <RobotModal robot={selectedRobot} onClose={() => setSelectedRobot(null)} />
+        <RobotModal robot={selectedRobot} onClose={() => {
+          setSelectedRobot(null);
+          navigate('/robots');
+        }} />
       )}
 
     </div>

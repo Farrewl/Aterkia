@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronRight } from 'lucide-react';
+import { UserAvatar } from './auth';
+import { useAuth } from '../hooks';
 
 export default function Navbar() {
+  const { isAuthenticated } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -120,22 +123,26 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Kanan: Login + Contact Us */}
+          {/* Kanan: UserAvatar (logged in) atau Login button (logged out) + Contact Us */}
           <div className="hidden md:flex items-center gap-2.5">
-            <NavLink
-              to="/login"
-              className={({ isActive }) =>
-                `px-5 py-2.5 rounded-2xl text-[13px] font-bold transition-all duration-300 border-2 ${
-                  isActive
-                    ? 'border-olympic-900 text-olympic-900 bg-olympic-50'
-                    : showBackground
-                      ? 'border-olympic-500 text-olympic-500 hover:bg-olympic-50 hover:border-olympic-600 hover:text-olympic-600'
-                      : 'border-white/50 text-white hover:bg-white/10 hover:border-white/70'
-                }`
-              }
-            >
-              Login
-            </NavLink>
+            {isAuthenticated ? (
+              <UserAvatar />
+            ) : (
+              <NavLink
+                to="/login"
+                className={({ isActive }) =>
+                  `px-5 py-2.5 rounded-2xl text-[13px] font-bold transition-all duration-300 border-2 ${
+                    isActive
+                      ? 'border-olympic-900 text-olympic-900 bg-olympic-50'
+                      : showBackground
+                        ? 'border-olympic-500 text-olympic-500 hover:bg-olympic-50 hover:border-olympic-600 hover:text-olympic-600'
+                        : 'border-white/50 text-white hover:bg-white/10 hover:border-white/70'
+                  }`
+                }
+              >
+                Login
+              </NavLink>
+            )}
             <NavLink
               to="/contact"
               className={({ isActive }) =>
@@ -192,13 +199,17 @@ export default function Navbar() {
               </NavLink>
             ))}
             <div className="pt-3 border-t border-slate-100 mt-2 flex flex-col gap-2">
-              <NavLink
-                to="/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border-2 border-olympic-500 text-olympic-500 font-bold text-sm tracking-wider hover:bg-olympic-50 transition-all"
-              >
-                Login
-              </NavLink>
+              {isAuthenticated ? (
+                <UserAvatar />
+              ) : (
+                <NavLink
+                  to="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border-2 border-olympic-500 text-olympic-500 font-bold text-sm tracking-wider hover:bg-olympic-50 transition-all"
+                >
+                  Login
+                </NavLink>
+              )}
               <NavLink
                 to="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}
