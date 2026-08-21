@@ -12,6 +12,7 @@ export default function Navbar() {
   const navRef = useRef(null);
   const [indicator, setIndicator] = useState({ left: 0, width: 0, visible: false });
   const location = useLocation();
+  const useLightTeamHeader = location.pathname === '/team';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,7 +52,7 @@ export default function Navbar() {
     return () => window.removeEventListener('resize', updateIndicator);
   }, [location.pathname]);
 
-  const showBackground = isScrolled || isHovered;
+  const showBackground = isScrolled || isHovered || useLightTeamHeader;
 
   return (
     <header
