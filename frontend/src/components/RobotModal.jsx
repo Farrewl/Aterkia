@@ -25,10 +25,10 @@ export default function RobotModal({ robot, onClose }) {
             </div>
             <div>
               <h3 className="font-display font-bold text-lg text-slate-800">{robot.name}</h3>
-              <p className="text-xs text-slate-400">{robot.typeLabel} · {robot.year}</p>
+              <p className="text-xs text-slate-400">{robot.year}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl border border-slate-200 text-slate-400 hover:text-slate-700 transition-colors" aria-label="Tutup">
+          <button onClick={onClose} className="p-2 rounded-xl border border-slate-200 text-slate-400 hover:text-slate-700 transition-colors" aria-label="Close">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -81,7 +81,7 @@ export default function RobotModal({ robot, onClose }) {
             Selengkapnya di Robots Page
           </button>
           <button onClick={onClose} className="px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-semibold transition-colors">
-            Tutup
+            Close
           </button>
         </div>
       </div>

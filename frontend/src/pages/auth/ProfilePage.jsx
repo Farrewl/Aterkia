@@ -32,7 +32,7 @@ export default function ProfilePage() {
     setIsSaving(false);
 
     if (result.success) {
-      setMessage({ type: 'success', text: 'Profil berhasil diperbarui' });
+      setMessage({ type: 'success', text: 'Profile updated successfully' });
     } else {
       setMessage({ type: 'error', text: result.error });
     }
@@ -71,7 +71,7 @@ export default function ProfilePage() {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-olympic-50 border border-olympic-100 mb-4 shadow-lg shadow-olympic-500/10">
             <User className="w-10 h-10 text-olympic-500" />
           </div>
-          <h1 className="text-3xl font-black font-display text-olympic-900 tracking-tight">Profil Pengguna</h1>
+          <h1 className="text-3xl font-black font-display text-olympic-900 tracking-tight">User Profile</h1>
           <p className="text-slate-500 text-sm mt-1.5">Kelola informasi akun dan preferensi Anda</p>
         </div>
 
@@ -88,7 +88,7 @@ export default function ProfilePage() {
               >
                 <span className="flex items-center justify-center gap-2">
                   <User className="w-4 h-4" />
-                  Profil
+                  Profile
                 </span>
               </button>
               <button
@@ -202,7 +202,7 @@ export default function ProfilePage() {
                   >
                     {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
                     <Save className="w-4 h-4" />
-                    <span>Simpan Perubahan</span>
+                    <span>Save Changes</span>
                   </button>
                 </div>
               </form>
