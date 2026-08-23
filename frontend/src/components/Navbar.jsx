@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronRight } from 'lucide-react';
+import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, ChevronRight, Monitor } from 'lucide-react';
 import { UserAvatar } from './auth';
 import { useAuth } from '../hooks';
 
 export default function Navbar() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, hasRole } = useAuth();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLoginTooltip, setShowLoginTooltip] = useState(false);
   const navRef = useRef(null);
   const [indicator, setIndicator] = useState({ left: 0, width: 0, visible: false });
   const location = useLocation();
@@ -123,8 +125,40 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Kanan: UserAvatar (logged in) atau Login button (logged out) + Contact Us */}
+          {/* Kanan: Monitor button + UserAvatar/Login + Contact Us */}
           <div className="hidden md:flex items-center gap-2.5">
+            {/* Monitor button */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    setShowLoginTooltip(true);
+                    setTimeout(() => setShowLoginTooltip(false), 2000);
+                  } else {
+                    navigate('/dashboard');
+                  }
+                }}
+                className={`p-2.5 rounded-xl transition-all duration-300 ${
+                  isAuthenticated
+                    ? showBackground
+                      ? 'bg-olympic-50 border border-olympic-100 text-olympic-600 hover:bg-olympic-100 hover:border-olympic-200'
+                      : 'bg-white/10 border border-white/15 text-white hover:bg-white/20'
+                    : showBackground
+                      ? 'bg-slate-50 border border-slate-100 text-slate-300 cursor-not-allowed'
+                      : 'bg-white/5 border border-white/10 text-white/30 cursor-not-allowed'
+                }`}
+                title={!isAuthenticated ? 'Must login first' : hasRole('admin') ? 'Monitor (Admin)' : 'Monitor (View Only)'}
+              >
+                <Monitor className="w-4.5 h-4.5" />
+              </button>
+              {showLoginTooltip && (
+                <div className="absolute top-full mt-2 right-0 whitespace-nowrap px-3 py-1.5 bg-red-500 text-white text-[11px] font-semibold rounded-lg shadow-lg animate-fade-in z-50">
+                  Must login first
+                  <div className="absolute -top-1 right-3 w-2 h-2 bg-red-500 rotate-45" />
+                </div>
+              )}
+            </div>
+
             {isAuthenticated ? (
               <UserAvatar />
             ) : (
@@ -199,6 +233,26 @@ export default function Navbar() {
               </NavLink>
             ))}
             <div className="pt-3 border-t border-slate-100 mt-2 flex flex-col gap-2">
+              {/* Monitor button — mobile */}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  if (!isAuthenticated) {
+                    setShowLoginTooltip(true);
+                    setTimeout(() => setShowLoginTooltip(false), 2000);
+                  } else {
+                    navigate('/dashboard');
+                  }
+                }}
+                className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold tracking-wider transition-all ${
+                  isAuthenticated
+                    ? 'border-2 border-olympic-500 text-olympic-500 hover:bg-olympic-50'
+                    : 'border-2 border-slate-200 text-slate-300 cursor-not-allowed'
+                }`}
+              >
+                <Monitor className="w-4 h-4" />
+                {isAuthenticated ? (hasRole('admin') ? 'Monitor (Admin)' : 'Monitor (View)') : 'Monitor'}
+              </button>
               {isAuthenticated ? (
                 <UserAvatar />
               ) : (

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks';
 import { api } from '../../services/api';
 import {
-  Ship, Anchor, Activity, Wifi, Cpu, HardDrive,
-  TrendingUp, AlertTriangle, CheckCircle, RefreshCw,
-  BarChart3, MapPin, Settings, Terminal
+  Ship, Anchor, Activity, Wifi, HardDrive,
+  TrendingUp, RefreshCw,
+  BarChart3, MapPin, Terminal
 } from 'lucide-react';
 
 export default function DashboardPage() {

@@ -94,12 +94,4 @@ export const authApi = {
   updateProfile: (data) => api.put('/api/auth/me', data),
 };
 
-export const publicApi = {
-  getTeam: () => api.get('/api/team'),
-  getRobots: () => api.get('/api/robots'),
-  getNews: () => api.get('/api/news'),
-  getSponsors: () => api.get('/api/sponsors'),
-  contact: (data) => api.post('/api/contact', data),
-};
-
 export default api;

@@ -156,17 +156,26 @@ app.post('/api/contact', (req, res) => {
 });
 
 // Initialize database and start server
+let dbReady = false;
+
 const startServer = async () => {
   try {
     await initDb();
-    app.listen(PORT, () => {
-      console.log(`[Aterkia Backend] Server running on port ${PORT}`);
-      console.log(`[Aterkia Backend] Auth endpoints: /api/auth/*`);
-    });
+    dbReady = true;
+    console.log('[Aterkia Backend] Auth endpoints: /api/auth/*');
   } catch (err) {
-    console.error('[Aterkia Backend] Failed to start:', err);
-    process.exit(1);
+    console.error('[Aterkia Backend] Database unavailable, starting without DB:', err.message);
+    console.warn('[Aterkia Backend] Auth endpoints will not work until DB is connected.');
   }
+
+  app.listen(PORT, () => {
+    console.log(`[Aterkia Backend] Server running on port ${PORT}`);
+  });
 };
+
+// Expose dbReady for health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: dbReady ? 'healthy' : 'degraded', db: dbReady });
+});
 
 startServer();

@@ -55,6 +55,7 @@ export default {
         'bubble-rise': 'bubbleRise 4s ease-in infinite',
         'sail': 'sail 7s ease-in-out infinite',
         'cruise': 'cruise 9s ease-in-out infinite',
+        'cockpit-glow': 'cockpitGlow 4s ease-in-out infinite',
       },
       keyframes: {
         marquee: {
@@ -142,6 +143,10 @@ export default {
           '0%, 100%': { transform: 'translateY(0px) translateX(0px)' },
           '30%': { transform: 'translateY(-2px) translateX(6px)' },
           '60%': { transform: 'translateY(2px) translateX(-6px)' },
+        },
+        cockpitGlow: {
+          '0%, 100%': { opacity: '0.3', transform: 'scale(1)' },
+          '50%': { opacity: '0.6', transform: 'scale(1.05)' },
         },
       },
       backgroundSize: {

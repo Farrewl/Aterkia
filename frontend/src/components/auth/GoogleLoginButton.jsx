@@ -13,6 +13,22 @@ const GoogleIcon = () => (
   </svg>
 );
 
+const CustomGoogleButton = ({ onClick, disabled }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    disabled={disabled}
+    className="w-full flex items-center justify-center gap-3 px-4 py-3
+      rounded-xl border border-slate-200 bg-white text-slate-700
+      font-semibold text-sm hover:bg-slate-50 hover:border-slate-300
+      shadow-sm transition-all duration-200 hover:shadow-md
+      disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    <GoogleIcon />
+    <span>Lanjutkan dengan Google</span>
+  </button>
+);
+
 export default function GoogleLoginButton({ onSuccess, onError, className = '', disabled = false }) {
   const [loading, setLoading] = useState(false);
 
@@ -20,10 +36,12 @@ export default function GoogleLoginButton({ onSuccess, onError, className = '', 
     setLoading(true);
     try {
       await onSuccess?.(response);
+    } catch {
+      onError?.('Gagal login dengan Google');
     } finally {
       setLoading(false);
     }
-  }, [onSuccess]);
+  }, [onSuccess, onError]);
 
   const handleError = useCallback(() => {
     setLoading(false);

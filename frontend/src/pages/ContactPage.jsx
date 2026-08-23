@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { siteConfig } from '../data/siteConfig';
-import { Mail, MapPin, Send, CheckCircle2, Clock, ArrowUpRight, Anchor, MessageCircle, Users, Rocket } from 'lucide-react';
+import { Mail, MapPin, Send, CheckCircle2, ArrowUpRight, Anchor, MessageCircle, Users, Rocket } from 'lucide-react';
 import { sponsorsData } from '../data/sponsorsData';
 import ImageWithFallback from '../components/ImageWithFallback';
 
@@ -86,15 +86,15 @@ export default function ContactPage() {
   };
 
   const contactCards = [
-    { icon: Mail, label: 'Email Utama', value: siteConfig.email, href: `mailto:${siteConfig.email}`, color: 'from-sky-400 to-sky-600', bg: 'bg-sky-50' },
-    { icon: MessageCircle, label: 'Sponsorship & Kemitraan', value: siteConfig.partnershipEmail, href: `mailto:${siteConfig.partnershipEmail}`, color: 'from-blue-400 to-blue-600', bg: 'bg-blue-50' },
-    { icon: MapPin, label: 'Markas Riset', value: `Laboratorium Robotika & Sistem Maritim, ${siteConfig.affiliation}, ${siteConfig.location}`, color: 'from-slate-400 to-slate-600', bg: 'bg-slate-50' },
+    { icon: Mail, label: 'Primary Email', value: siteConfig.email, href: `mailto:${siteConfig.email}`, color: 'from-sky-400 to-sky-600', bg: 'bg-sky-50' },
+    { icon: MessageCircle, label: 'Sponsorship & Partnerships', value: siteConfig.partnershipEmail, href: `mailto:${siteConfig.partnershipEmail}`, color: 'from-blue-400 to-blue-600', bg: 'bg-blue-50' },
+    { icon: MapPin, label: 'Research HQ', value: `Student Center, ${siteConfig.affiliation}, ${siteConfig.location}`, color: 'from-slate-400 to-slate-600', bg: 'bg-slate-50' },
   ];
 
   const quickStats = [
-    { icon: Anchor, value: '2', label: 'Robot Aktif', color: 'text-sky-500' },
-    { icon: Users, value: '30+', label: 'Anggota Tim', color: 'text-blue-500' },
-    { icon: Rocket, value: '5+', label: 'Kompetisi', color: 'text-olympic-500' },
+    { icon: Anchor, value: '2', label: 'Active Robots', color: 'text-sky-500' },
+    { icon: Users, value: '30+', label: 'Team Members', color: 'text-blue-500' },
+    { icon: Rocket, value: '5+', label: 'Competitions', color: 'text-olympic-500' },
   ];
 
   const socialLinks = [
@@ -120,14 +120,14 @@ export default function ContactPage() {
           <div className="text-center max-w-3xl mx-auto">
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-display text-white tracking-tight leading-tight animate-fade-up" style={{ animationDelay: '100ms' }}>
-              Hubungi{' '}
+              Support{' '}
               <span className="bg-gradient-to-r from-sky-400 via-blue-400 to-sky-300 bg-clip-text text-transparent">
-                Kami
+                Aterkia
               </span>
             </h1>
 
             <p className="text-sky-200/60 text-lg sm:text-xl mt-5 font-light leading-relaxed animate-fade-up max-w-xl mx-auto" style={{ animationDelay: '200ms' }}>
-              Punya ide kolaborasi, tawaran sponsorship, atau ingin tahu lebih banyak tentang riset robotika maritim kami?
+              Have a collaboration idea, sponsorship offer, or want to learn more about our maritime robotics research?
             </p>
 
             {/* Quick Stats */}
@@ -193,16 +193,6 @@ export default function ContactPage() {
                 })}
               </div>
 
-              {/* Response time */}
-              <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl bg-sky-50 border border-sky-100 transition-all duration-500 delay-400 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-                <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center shrink-0">
-                  <Clock className="w-4 h-4 text-sky-500" />
-                </div>
-                <p className="text-xs text-sky-700 font-medium">
-                  Tanggapan email resmi dalam waktu <span className="font-bold">1x24 jam</span> hari kerja.
-                </p>
-              </div>
-
               {/* Sponsors */}
               <div className={`pt-6 transition-all duration-500 delay-500 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
                 <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-4">Our Sponsors</span>
@@ -234,7 +224,7 @@ export default function ContactPage() {
 
               {/* Social links */}
               <div className={`pt-2 transition-all duration-500 delay-[600ms] ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3 px-1">Ikuti Kami</span>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3 px-1">Follow Us</span>
                 <div className="flex gap-2">
                   {socialLinks.map((s) => (
                     <a
@@ -267,37 +257,37 @@ export default function ContactPage() {
                     <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center mx-auto animate-bounce-soft">
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
-                    <h4 className="text-xl font-black font-display text-olympic-900">Pesan Berhasil Terkirim!</h4>
+                    <h4 className="text-xl font-black font-display text-olympic-900">Message Sent Successfully!</h4>
                     <p className="text-slate-500 text-sm max-w-sm mx-auto font-light leading-relaxed">
-                      Terima kasih telah menghubungi Tim Aterkia. Koordinator divisi terkait akan segera menindaklanjuti.
+                      Thank you for contacting Team Aterkia. The relevant division coordinator will follow up shortly.
                     </p>
                     <button
                       onClick={() => setIsSubmitted(false)}
                       className="px-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-semibold text-slate-700 transition-colors mt-2"
                     >
-                      Kirim Pesan Lainnya
+                      Send Another Message
                     </button>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Lengkap / Instansi</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name / Organization</label>
                         <input
                           type="text"
                           required
-                          placeholder="Nama Anda"
+                          placeholder="Your name"
                           value={formState.name}
                           onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                           className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Email</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
                         <input
                           type="email"
                           required
-                          placeholder="email@instansi.com"
+                          placeholder="email@company.com"
                           value={formState.email}
                           onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                           className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
@@ -306,26 +296,26 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kategori Keperluan</label>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Inquiry Category</label>
                       <select
                         value={formState.category}
                         onChange={(e) => setFormState({ ...formState, category: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
                       >
-                        <option value="Sponsorship">Tawaran Sponsorship / Kemitraan</option>
-                        <option value="Riset ASV">Kolaborasi Divisi ASV</option>
-                        <option value="Riset AUV">Kolaborasi Divisi AUV</option>
-                        <option value="Media">Liputan Media / Wawancara</option>
-                        <option value="Lainnya">Pertanyaan Umum</option>
+                        <option value="Sponsorship">Sponsorship / Partnership Offer</option>
+                        <option value="Riset ASV">ASV Division Collaboration</option>
+                        <option value="Riset AUV">AUV Division Collaboration</option>
+                        <option value="Media">Media Coverage / Interview</option>
+                        <option value="Lainnya">General Inquiry</option>
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pesan</label>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Message</label>
                       <textarea
                         required
                         rows={5}
-                        placeholder="Tuliskan pesan, penawaran kerja sama, atau pertanyaan Anda..."
+                        placeholder="Write your message, collaboration proposal, or question..."
                         value={formState.message}
                         onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all resize-none"
@@ -338,7 +328,7 @@ export default function ContactPage() {
                       className="w-full py-3.5 rounded-xl bg-gradient-to-r from-olympic-500 to-olympic-600 hover:from-olympic-600 hover:to-olympic-700 text-white font-bold text-sm tracking-wide shadow-lg shadow-olympic-500/25 hover:shadow-xl hover:shadow-olympic-500/30 transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       <Send className="w-4 h-4" />
-                      <span>{isSubmitting ? 'Mengirim...' : 'Kirim Pesan'}</span>
+                      <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
                     </button>
                   </form>
                 )}
@@ -346,41 +336,7 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* === CTA / MAP SECTION === */}
-      <section className="relative bg-white py-16 sm:py-20 overflow-hidden">
-        <div className="absolute inset-0 dot-pattern opacity-10" />
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-olympic-500 to-olympic-700 text-white shadow-xl shadow-olympic-500/20 mb-6">
-            <Anchor className="w-7 h-7" />
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-black font-display text-olympic-900 tracking-tight">
-            Siap Berkolaborasi?
-          </h2>
-          <p className="text-slate-500 text-sm mt-3 max-w-lg mx-auto font-light leading-relaxed">
-            Kami terbuka untuk kemitraan riset, sponsorship, dan kolaborasi teknologi maritim. Mari bersama membangun inovasi robotika untuk laut Indonesia.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-3 mt-8">
-            <a
-              href={`mailto:${siteConfig.partnershipEmail}`}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-olympic-500 hover:bg-olympic-600 text-white text-sm font-bold shadow-lg shadow-olympic-500/25 hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-            >
-              <Mail className="w-4 h-4" />
-              Kirim Email Sponsorship
-            </a>
-            <a
-              href={siteConfig.socials.instagram}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 text-sm font-bold hover:border-sky-200 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6" /></svg>
-              Instagram Kami
-            </a>
-          </div>
-        </div>
-      </section>
+      </section>      
     </div>
   );
 }

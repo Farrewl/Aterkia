@@ -21,35 +21,23 @@ export default function Preloader({ children }) {
       {isLoading && (
         <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center">
           <div className="text-center">
-            <div className="w-28 h-28 mx-auto mb-3 relative">
-              <svg viewBox="0 0 200 100" className="w-full h-full animate-sail" style={{ transformOrigin: 'center' }}>
-                <defs>
-                  <linearGradient id="psGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#005EB8" />
-                    <stop offset="100%" stopColor="#003D7A" />
-                  </linearGradient>
-                </defs>
-                <path d="M30,65 L45,55 L155,55 L170,65 L165,68 L35,68 Z" fill="url(#psGrad)" />
-                <path d="M50,65 L60,70 L85,70 L80,65 Z" fill="#003D7A" />
-                <path d="M115,65 L125,70 L150,70 L145,65 Z" fill="#003D7A" />
-                <rect x="75" y="35" width="50" height="20" rx="6" fill="#0050A0" />
-                <rect x="82" y="24" width="36" height="11" rx="4" fill="#003D7A" />
-                <line x1="100" y1="24" x2="100" y2="15" stroke="#003D7A" strokeWidth="3" />
-                <circle cx="100" cy="12" r="4" fill="#FF6B35" />
-                <rect x="85" y="38" width="8" height="8" rx="2" fill="#93c5fd" opacity="0.8" />
-                <rect x="97" y="38" width="8" height="8" rx="2" fill="#93c5fd" opacity="0.8" />
-                <rect x="109" y="38" width="8" height="8" rx="2" fill="#93c5fd" opacity="0.8" />
-                <rect x="125" y="20" width="5" height="30" rx="2" fill="#003D7A" />
-                <ellipse cx="127.5" cy="18" rx="6" ry="3" fill="none" stroke="#3b82f6" strokeWidth="1.5" opacity="0.6" />
-                <ellipse cx="127.5" cy="18" rx="10" ry="5" fill="none" stroke="#3b82f6" strokeWidth="0.8" opacity="0.3" />
-                <path d="M20,65 Q10,68 5,72" stroke="#005EB8" strokeWidth="2" fill="none" opacity="0.5" />
-                <path d="M180,65 Q190,68 195,72" stroke="#005EB8" strokeWidth="2" fill="none" opacity="0.5" />
-              </svg>
-              <svg viewBox="0 0 200 40" className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-10 animate-wave-1" style={{ opacity: 0.35 }}>
-                <path d="M0,20 Q30,5 60,20 T120,20 T180,20 T200,20 V40 H0 Z" fill="#0ea5e9" />
+            <div className="w-28 h-28 mx-auto mb-4 relative">
+              <svg viewBox="0 0 120 120" className="w-full h-full animate-spin" style={{ animationDuration: '1.2s' }}>
+                <circle cx="60" cy="60" r="14" fill="#005EB8" />
+                <circle cx="60" cy="60" r="7" fill="#fff" />
+                <g>
+                  <path d="M60,46 C65,30 75,22 60,18 C45,22 55,30 60,46 Z" fill="#003D7A" />
+                  <path d="M74,60 C90,55 98,45 102,60 C98,75 90,65 74,60 Z" fill="#005EB8" />
+                  <path d="M60,74 C55,90 45,98 60,102 C75,98 65,90 60,74 Z" fill="#003D7A" />
+                  <path d="M46,60 C30,65 22,75 18,60 C22,45 30,55 46,60 Z" fill="#005EB8" />
+                  <path d="M68,48 C80,35 92,30 88,44 C84,58 76,52 68,48 Z" fill="#003D7A" opacity="0.7" />
+                  <path d="M72,68 C85,80 90,92 76,88 C62,84 68,76 72,68 Z" fill="#005EB8" opacity="0.7" />
+                  <path d="M52,72 C40,80 28,88 32,74 C36,60 44,68 52,72 Z" fill="#003D7A" opacity="0.7" />
+                  <path d="M48,52 C35,40 30,28 44,32 C58,36 52,44 48,52 Z" fill="#005EB8" opacity="0.7" />
+                </g>
               </svg>
             </div>
-            <p className="text-olympic-600 text-sm font-semibold tracking-wide">Memuat Aterkia RoboBoat...</p>
+            <p className="text-olympic-600 text-sm font-semibold tracking-wide">Loading ...</p>
           </div>
         </div>
       )}
