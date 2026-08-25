@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
 import { robotsData } from '../data/robotsData';
 import { Mail, MapPin, Send, CheckCircle2, ArrowUpRight, Anchor, MessageCircle, Users, Rocket, AlertCircle } from 'lucide-react';
@@ -7,6 +8,8 @@ import ImageWithFallback from '../components/ImageWithFallback';
 import { contactApi } from '../services/api';
 
 const marqueeSponsors = [...sponsorsData, ...sponsorsData];
+
+const CATEGORIES = ['Sponsorship', 'ASV Collaboration', 'AUV Collaboration', 'Media', 'General'];
 
 function Bubbles({ count = 15 }) {
   return (
@@ -29,7 +32,7 @@ function Bubbles({ count = 15 }) {
   );
 }
 
-function WaveDivider({ className = '', color = '#060d1a', from = 'transparent' }) {
+function WaveDivider({ className = '', color = '#f8fafc', from = 'transparent' }) {
   return (
     <div className={`relative w-full overflow-hidden leading-none ${className}`}>
       <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="w-full h-16 sm:h-20">
@@ -55,10 +58,15 @@ function FloatingShip() {
 }
 
 export default function ContactPage() {
+  const [searchParams] = useSearchParams();
+  const initialCategory = CATEGORIES.includes(searchParams.get('category'))
+    ? searchParams.get('category')
+    : 'Sponsorship';
+
   const [formState, setFormState] = useState({
     name: '',
     email: '',
-    category: 'Sponsorship',
+    category: initialCategory,
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -85,7 +93,7 @@ export default function ContactPage() {
     try {
       await contactApi.submit(formState);
       setIsSubmitted(true);
-      setFormState({ name: '', email: '', category: 'Sponsorship', message: '' });
+      setFormState({ name: '', email: '', category: initialCategory, message: '' });
     } catch (err) {
       const msg = err.response?.data?.message || 'Failed to send message. Please try again or email us directly.';
       setSubmitError(msg);
@@ -107,20 +115,19 @@ export default function ContactPage() {
   ];
 
   const socialLinks = [
-    { label: 'Instagram', href: siteConfig.socials.instagram, hover: 'hover:bg-pink-500/20 hover:border-pink-500/40 hover:text-pink-300', icon: 'M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z' },
-    { label: 'LinkedIn', href: siteConfig.socials.linkedin, hover: 'hover:bg-blue-500/20 hover:border-blue-500/40 hover:text-blue-300', icon: 'M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z' },
-    { label: 'YouTube', href: siteConfig.socials.youtube, hover: 'hover:bg-red-500/20 hover:border-red-500/40 hover:text-red-300', icon: 'M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z' },
-    { label: 'GitHub', href: siteConfig.socials.github, hover: 'hover:bg-white/15 hover:border-white/30 hover:text-white', icon: 'M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z' },
+    { label: 'Instagram', href: siteConfig.socials.instagram, hover: 'hover:bg-pink-500 hover:border-pink-500 hover:text-white', icon: 'M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z' },
+    { label: 'LinkedIn', href: siteConfig.socials.linkedin, hover: 'hover:bg-blue-600 hover:border-blue-600 hover:text-white', icon: 'M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z' },
+    { label: 'YouTube', href: siteConfig.socials.youtube, hover: 'hover:bg-red-500 hover:border-red-500 hover:text-white', icon: 'M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z' },
+    { label: 'GitHub', href: siteConfig.socials.github, hover: 'hover:bg-slate-800 hover:border-slate-800 hover:text-white', icon: 'M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z' },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0c4a6e] via-[#0a1628] to-[#060d1a]">
-      {/* === HERO SECTION === */}
+    <div className="min-h-screen">
+      {/* === HERO SECTION — dark ocean === */}
       <section className="relative overflow-hidden">
-        <Bubbles count={20} />
-        <FloatingShip />
-
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-olympic-900 via-slate-900 to-olympic-950">
+          <Bubbles count={20} />
+          <FloatingShip />
           <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-sky-500/8 rounded-full blur-3xl animate-float" />
           <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-500/6 rounded-full blur-3xl animate-float-delayed" />
         </div>
@@ -135,7 +142,7 @@ export default function ContactPage() {
               </span>
             </h1>
 
-            <p className="text-white/45 text-lg sm:text-xl mt-5 font-light leading-relaxed animate-fade-up max-w-xl mx-auto" style={{ animationDelay: '200ms' }}>
+            <p className="text-white/50 text-lg sm:text-xl mt-5 font-light leading-relaxed animate-fade-up max-w-xl mx-auto" style={{ animationDelay: '200ms' }}>
               Have a collaboration idea, sponsorship offer, or want to learn more about our maritime robotics research?
             </p>
 
@@ -149,7 +156,7 @@ export default function ContactPage() {
                       <Icon className="w-5 h-5 text-sky-400" />
                     </div>
                     <div className="text-2xl font-black text-white">{stat.value}</div>
-                    <div className="text-xs text-white/35 font-medium">{stat.label}</div>
+                    <div className="text-xs text-white/40 font-medium">{stat.label}</div>
                   </div>
                 );
               })}
@@ -157,11 +164,12 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <WaveDivider color="#060d1a" from="transparent" className="relative -mb-1" />
+        <WaveDivider color="#f8fafc" from="#0f172a" className="relative -mb-1 z-10" />
       </section>
 
-      {/* === MAIN CONTENT === */}
-      <section className="relative py-16 sm:py-20" ref={cardsRef}>
+      {/* === MAIN CONTENT — light === */}
+      <section className="relative bg-[#f8fafc] py-16 sm:py-20" ref={cardsRef}>
+        <div className="absolute inset-0 dot-pattern opacity-20" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
@@ -178,23 +186,23 @@ export default function ContactPage() {
                     <Wrapper
                       key={idx}
                       {...wrapperProps}
-                      className={`flex items-start gap-4 p-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md transition-all duration-300 group
-                        ${card.href ? 'hover:border-sky-500/30 hover:bg-white/10 cursor-pointer' : ''}
+                      className={`flex items-start gap-4 p-5 rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 group
+                        ${card.href ? 'hover:border-sky-200 hover:shadow-lg hover:shadow-sky-100/60 cursor-pointer' : ''}
                         ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}
                       `}
                       style={{ transitionDelay: `${idx * 120}ms` }}
                     >
-                      <div className="w-12 h-12 rounded-xl bg-sky-500/15 border border-sky-500/25 flex items-center justify-center shrink-0 text-sky-400 group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center shrink-0 text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="text-[11px] font-bold text-white/30 uppercase tracking-wider block mb-1">{card.label}</span>
-                        <span className={`text-sm font-semibold block leading-snug break-words ${card.href ? 'text-sky-300 group-hover:text-sky-200 transition-colors' : 'text-white/60'}`}>
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{card.label}</span>
+                        <span className={`text-sm font-semibold block leading-snug break-words ${card.href ? 'text-olympic-700 group-hover:text-sky-600 transition-colors' : 'text-slate-600'}`}>
                           {card.value}
                         </span>
                       </div>
                       {card.href && (
-                        <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-sky-400 shrink-0 mt-1 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-sky-500 shrink-0 mt-1 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                       )}
                     </Wrapper>
                   );
@@ -203,7 +211,7 @@ export default function ContactPage() {
 
               {/* Sponsors */}
               <div className={`pt-6 transition-all duration-500 delay-500 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-                <span className="block text-xs font-bold text-white/30 uppercase tracking-wider text-center mb-4">Our Sponsors</span>
+                <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-4">Our Sponsors</span>
                 <div className="relative w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_60px,_black_calc(100%-60px),transparent_100%)]">
                   <div className="flex w-max animate-marquee hover:[animation-play-state:paused] items-center gap-10 sm:gap-14 py-2">
                     {marqueeSponsors.map((sponsor, idx) => (
@@ -232,7 +240,7 @@ export default function ContactPage() {
 
               {/* Social links */}
               <div className={`pt-2 transition-all duration-500 delay-[600ms] ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-                <span className="text-[11px] font-bold text-white/30 uppercase tracking-wider block mb-3 px-1">Follow Us</span>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3 px-1">Follow Us</span>
                 <div className="flex gap-2">
                   {socialLinks.map((s) => (
                     <a
@@ -241,7 +249,7 @@ export default function ContactPage() {
                       target="_blank"
                       rel="noreferrer"
                       aria-label={s.label}
-                      className={`w-11 h-11 rounded-xl bg-white/5 border border-white/10 text-white/40 flex items-center justify-center transition-all duration-300 hover:scale-110 ${s.hover}`}
+                      className={`w-11 h-11 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg ${s.hover}`}
                     >
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d={s.icon} /></svg>
                     </a>
@@ -252,22 +260,26 @@ export default function ContactPage() {
 
             {/* Right — Contact Form */}
             <div className={`lg:col-span-7 transition-all duration-700 delay-200 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-              <div className="relative bg-white/5 backdrop-blur-md rounded-3xl shadow-2xl shadow-black/30 border border-white/10 p-8 sm:p-10 overflow-hidden">
-                {/* Gradient accent top */}
-                <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-sky-400/50 to-transparent" />
+              <div className="relative bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-8 sm:p-10 overflow-hidden">
+                {/* Decorative corner waves */}
+                <div className="absolute -top-1 -right-1 w-32 h-32 opacity-[0.04] pointer-events-none">
+                  <svg viewBox="0 0 120 120" className="w-full h-full">
+                    <path d="M0,0 Q60,20 120,0 L120,120 Q60,100 0,120 Z" fill="#005EB8" />
+                  </svg>
+                </div>
 
                 {isSubmitted ? (
                   <div className="text-center py-12 space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 flex items-center justify-center mx-auto animate-bounce-soft">
+                    <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-500 flex items-center justify-center mx-auto animate-bounce-soft">
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
-                    <h4 className="text-xl font-black font-display text-white">Message Sent Successfully!</h4>
-                    <p className="text-white/40 text-sm max-w-sm mx-auto font-light leading-relaxed">
+                    <h4 className="text-xl font-black font-display text-olympic-900">Message Sent Successfully!</h4>
+                    <p className="text-slate-500 text-sm max-w-sm mx-auto font-light leading-relaxed">
                       Thank you for contacting Team Aterkia. The relevant division coordinator will follow up shortly.
                     </p>
                     <button
                       onClick={() => setIsSubmitted(false)}
-                      className="px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm font-semibold text-white/70 hover:text-white transition-colors mt-2"
+                      className="px-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-semibold text-slate-700 transition-colors mt-2"
                     >
                       Send Another Message
                     </button>
@@ -275,7 +287,7 @@ export default function ContactPage() {
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-5">
                     {submitError && (
-                      <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/25 text-red-300 text-sm" role="alert">
+                      <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm" role="alert">
                         <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
                         <span>{submitError}</span>
                       </div>
@@ -283,7 +295,7 @@ export default function ContactPage() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label htmlFor="contact-name" className="block text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Full Name / Organization</label>
+                        <label htmlFor="contact-name" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name / Organization</label>
                         <input
                           id="contact-name"
                           type="text"
@@ -292,11 +304,11 @@ export default function ContactPage() {
                           placeholder="Your name"
                           value={formState.name}
                           onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/50 transition-all"
+                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
                         />
                       </div>
                       <div>
-                        <label htmlFor="contact-email" className="block text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Email Address</label>
+                        <label htmlFor="contact-email" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
                         <input
                           id="contact-email"
                           type="email"
@@ -304,18 +316,18 @@ export default function ContactPage() {
                           placeholder="email@company.com"
                           value={formState.email}
                           onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/50 transition-all"
+                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label htmlFor="contact-category" className="block text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Inquiry Category</label>
+                      <label htmlFor="contact-category" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Inquiry Category</label>
                       <select
                         id="contact-category"
                         value={formState.category}
                         onChange={(e) => setFormState({ ...formState, category: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/50 transition-all [&>option]:bg-olympic-900"
+                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
                       >
                         <option value="Sponsorship">Sponsorship / Partnership Offer</option>
                         <option value="ASV Collaboration">ASV Division Collaboration</option>
@@ -326,7 +338,7 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label htmlFor="contact-message" className="block text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Message</label>
+                      <label htmlFor="contact-message" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Message</label>
                       <textarea
                         id="contact-message"
                         required
@@ -335,14 +347,14 @@ export default function ContactPage() {
                         placeholder="Write your message, collaboration proposal, or question..."
                         value={formState.message}
                         onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/50 transition-all resize-none"
+                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all resize-none"
                       ></textarea>
                     </div>
 
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-sky-500/20 hover:shadow-xl hover:shadow-sky-500/30 transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-olympic-500 to-olympic-600 hover:from-olympic-600 hover:to-olympic-700 text-white font-bold text-sm tracking-wide shadow-lg shadow-olympic-500/25 hover:shadow-xl hover:shadow-olympic-500/30 transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       <Send className="w-4 h-4" />
                       <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>

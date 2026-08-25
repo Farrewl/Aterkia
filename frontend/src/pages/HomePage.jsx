@@ -1,9 +1,10 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Calendar, ChevronRight, ChevronLeft, ExternalLink } from 'lucide-react';
+import { ArrowRight, Calendar, ChevronRight, ChevronLeft, ExternalLink, Trophy, Flag, Users, Anchor, Handshake } from 'lucide-react';
 import { robotsData } from '../data/robotsData';
 import { newsData } from '../data/newsData';
 import { sponsorsData } from '../data/sponsorsData';
+import { aboutData } from '../data/aboutData';
 import ImageWithFallback from '../components/ImageWithFallback';
 
 export default function HomePage() {
@@ -68,7 +69,7 @@ export default function HomePage() {
               <span className="bg-gradient-to-r from-white via-blue-400 to-white bg-clip-text text-transparent drop-shadow-lg block mt-2">RoboBoat</span>
             </h1>
 
-            <p className="from-white via-blue-600 to-black text-lg sm:text-xl md:text-xl mt-6 max-w-xl mx-auto font-semibold leading-relaxed drop-shadow-md">
+            <p className="text-white text-lg sm:text-xl md:text-xl mt-6 max-w-xl mx-auto font-semibold leading-relaxed drop-shadow-md">
               An autonomous maritime robotics team from Universitas Diponegoro. Designing, building, and testing ocean robots for international competition.
             </p>
 
@@ -119,6 +120,41 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+        {/* Stats strip — proof of track record for sponsors */}
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { icon: Trophy, value: `${aboutData.achievements.length}+`, label: 'Awards Won', color: 'text-amber-500' },
+              { icon: Flag, value: '5+', label: 'Competitions Entered', color: 'text-olympic-500' },
+              { icon: Users, value: '30+', label: 'Team Members', color: 'text-sky-600' },
+              { icon: Anchor, value: '2023', label: 'Founded at Undip', color: 'text-blue-700' },
+            ].map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <div key={i} className="flex flex-col items-center text-center rounded-2xl bg-slate-50 border border-slate-100 py-5 px-3">
+                  <Icon className={`w-6 h-6 mb-2 ${stat.color}`} />
+                  <span className="text-2xl sm:text-3xl font-black font-display text-olympic-900 leading-none">{stat.value}</span>
+                  <span className="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1.5">{stat.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Sponsor CTA */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-4 text-center">
+          <p className="text-sm text-slate-500 font-light mb-4">
+            Interested in supporting Aterkia Roboboat Team?
+          </p>
+          <Link
+            to="/contact?category=Sponsorship"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-olympic-500 hover:bg-olympic-600 text-white text-sm font-bold shadow-lg shadow-olympic-500/25 hover:shadow-xl hover:shadow-olympic-500/30 transition-all duration-300 hover:-translate-y-0.5"
+          >
+            <Handshake className="w-4.5 h-4.5" />
+            Become a Sponsor
+          </Link>
+        </div>
+
         {/* Bottom wave — sponsors into robots deep ocean */}
         <div className="relative w-full">
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full block" style={{ height: '80px', marginTop: '-1px' }}>
@@ -154,7 +190,7 @@ export default function HomePage() {
                   News{' '}
                 </h2>
                 <p className="text-slate-500 text-base sm:text-lg mt-2 font-light max-w-xl">
-                  
+                  The latest updates from our fleet — competitions, field tests, and research milestones.
                 </p>
               </div>
             </div>

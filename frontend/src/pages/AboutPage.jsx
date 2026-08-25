@@ -125,24 +125,28 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Achievements */}
-      <section className="relative py-20 bg-gradient-to-b from-[#060d1a] via-olympic-950 to-[#060d1a]">
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-[20%] right-[10%] w-1.5 h-1.5 bg-sky-300/10 rounded-full animate-float" />
-          <div className="absolute top-[60%] left-[25%] w-1 h-1 bg-cyan-300/8 rounded-full animate-float-delayed" />
-        </div>
+      {/* Wave transition: dark vision/mission → light achievements */}
+      <div className="relative leading-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="w-full block h-14 sm:h-20" style={{ background: '#060d1a' }}>
+          <path d="M0,40 C240,0 480,80 720,40 C960,0 1200,80 1440,40 L1440,80 L0,80 Z" fill="#f8fafc" />
+        </svg>
+      </div>
+
+      {/* Achievements — LIGHT */}
+      <section className="relative py-16 sm:py-20 bg-[#f8fafc]">
+        <div className="absolute inset-0 dot-pattern opacity-30 pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mb-14 reveal" ref={addSectionRef}>
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 uppercase tracking-widest mb-4">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-olympic-500 uppercase tracking-widest mb-4">
               <Trophy className="w-4 h-4" />
               Competition Track Record
             </span>
-            <h2 className="text-4xl sm:text-5xl font-black font-display text-white tracking-tight leading-tight">
+            <h2 className="text-4xl sm:text-5xl font-black font-display text-olympic-900 tracking-tight leading-tight">
               Achievements{' '}
-              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">So Far</span>
+              <span className="gradient-text">So Far</span>
             </h2>
-            <p className="text-white/40 text-base mt-3 font-light">
+            <p className="text-slate-500 text-base mt-3 font-light">
               A collection of awards and achievements by Team Aterkia in national & international competitions.
             </p>
           </div>
@@ -152,30 +156,32 @@ export default function AboutPage() {
               <div
                 key={idx}
                 ref={addSectionRef}
-                className="reveal group relative bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-7 sm:p-8 hover:bg-white/8 hover:border-white/20 hover:shadow-2xl hover:shadow-sky-500/5 transition-all duration-500 hover:-translate-y-1"
+                className="reveal group relative bg-white border border-slate-100 rounded-3xl p-7 sm:p-8 shadow-md shadow-slate-200/60 hover:shadow-xl hover:shadow-olympic-100 hover:border-olympic-100 transition-all duration-500 hover:-translate-y-1"
                 style={{ transitionDelay: `${idx * 80}ms` }}
               >
-                {/* Accent glow */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-sky-500/5 to-transparent rounded-tr-3xl pointer-events-none" />
+                {/* Accent corner */}
+                <div className="absolute top-0 right-0 w-24 h-24 overflow-hidden rounded-tr-3xl pointer-events-none">
+                  <div className="absolute -top-10 -right-10 w-20 h-20 bg-gradient-to-br from-amber-50 to-orange-100 rotate-45" />
+                </div>
 
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400/20 to-orange-400/20 border border-amber-400/20 flex items-center justify-center text-amber-400">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center text-white shadow-md shadow-amber-200">
                         <Trophy className="w-5 h-5" />
                       </div>
-                      <span className="text-sm font-black text-white font-display">{item.year}</span>
+                      <span className="text-sm font-black text-olympic-900 font-display">{item.year}</span>
                     </div>
-                    <span className="text-[10px] font-bold px-3 py-1.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-300 uppercase tracking-wider">
+                    <span className="text-[10px] font-bold px-3 py-1.5 rounded-xl bg-olympic-50 border border-olympic-100 text-olympic-600 uppercase tracking-wider">
                       {item.category}
                     </span>
                   </div>
 
-                  <h3 className="font-display font-bold text-xl text-white mb-3 leading-snug group-hover:text-sky-300 transition-colors">
+                  <h3 className="font-display font-bold text-xl text-olympic-900 mb-3 leading-snug group-hover:text-olympic-600 transition-colors">
                     {item.title}
                   </h3>
 
-                  <p className="text-white/40 text-sm leading-relaxed font-light">
+                  <p className="text-slate-500 text-sm leading-relaxed font-light">
                     {item.description}
                   </p>
                 </div>
@@ -184,6 +190,13 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* Wave transition: light achievements → dark core values */}
+      <div className="relative leading-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="w-full block h-14 sm:h-20" style={{ background: '#f8fafc' }}>
+          <path d="M0,40 C240,0 480,80 720,40 C960,0 1200,80 1440,40 L1440,80 L0,80 Z" fill="#060d1a" />
+        </svg>
+      </div>
 
       {/* Core Values */}
       <section className="relative py-20 bg-gradient-to-b from-[#060d1a] to-olympic-950">

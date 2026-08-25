@@ -122,12 +122,16 @@ export default function RobotsPage() {
         </div>
       </section>
 
-      {/* Robot Grid */}
-      <section className="relative py-20 bg-gradient-to-b from-olympic-950 via-[#060d1a] to-[#0a1628]">
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute bottom-[20%] left-[15%] w-2 h-2 rounded-full border border-white/8 animate-bubble-rise" style={{ animationDuration: '7s' }} />
-          <div className="absolute bottom-[10%] right-[25%] w-3 h-3 rounded-full border border-white/6 animate-bubble-rise" style={{ animationDuration: '9s', animationDelay: '2s' }} />
-        </div>
+      {/* Wave transition: dark hero → light grid */}
+      <div className="relative leading-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="w-full block h-14 sm:h-20" style={{ background: '#060d1a' }}>
+          <path d="M0,40 C240,0 480,80 720,40 C960,0 1200,80 1440,40 L1440,80 L0,80 Z" fill="#f8fafc" />
+        </svg>
+      </div>
+
+      {/* Robot Grid — LIGHT */}
+      <section className="relative py-16 sm:py-20 bg-[#f8fafc]">
+        <div className="absolute inset-0 dot-pattern opacity-30 pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -137,7 +141,7 @@ export default function RobotsPage() {
                 <div
                   key={robot.id}
                   ref={(el) => { robotRefs.current[robot.id] = el; addSectionRef(el); }}
-                  className={`reveal group relative bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden transition-all duration-500 hover:bg-white/10 hover:border-white/20 hover:shadow-2xl hover:shadow-sky-500/5 hover:-translate-y-2`}
+                  className={`reveal group relative bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-md shadow-slate-200/60 hover:shadow-xl hover:shadow-olympic-100/80 hover:border-olympic-100 transition-all duration-500 hover:-translate-y-2`}
                   style={{ transitionDelay: `${idx * 100}ms` }}
                 >
                   {/* Top gradient accent */}
@@ -148,7 +152,7 @@ export default function RobotsPage() {
                   }`} />
 
                   {/* Image */}
-                  <div className="relative h-56 w-full bg-white/5 overflow-hidden">
+                  <div className="relative h-56 w-full bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden">
                     <ImageWithFallback
                       src={robot.image}
                       alt={robot.name}
@@ -158,19 +162,17 @@ export default function RobotsPage() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       containerClassName="w-full h-full"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#060d1a] via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
                     {/* Badges */}
                     <div className="absolute top-4 left-4 flex gap-2">
-                      <span className={`flex items-center gap-1.5 text-[11px] font-bold px-4 py-2 rounded-xl uppercase backdrop-blur-sm ${
-                        isAUV
-                          ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                          : 'bg-sky-500/20 text-sky-300 border border-sky-500/30'
+                      <span className={`flex items-center gap-1.5 text-[11px] font-bold px-4 py-2 rounded-xl uppercase shadow-lg backdrop-blur-sm ${
+                        isAUV ? 'bg-blue-500/90 text-white' : 'bg-olympic-600/90 text-white'
                       }`}>
                         {isAUV ? <Waves className="w-3.5 h-3.5" /> : <Anchor className="w-3.5 h-3.5" />}
                         {robot.category}
                       </span>
-                      <span className="text-[11px] font-bold px-3 py-2 rounded-xl bg-white/10 text-white/70 border border-white/10 backdrop-blur-sm">
+                      <span className="text-[11px] font-bold px-3 py-2 rounded-xl bg-white/90 text-olympic-600 shadow-lg backdrop-blur-sm">
                         {robot.year}
                       </span>
                     </div>
@@ -178,26 +180,26 @@ export default function RobotsPage() {
 
                   {/* Content */}
                   <div className="p-7 sm:p-8">
-                    <h2 className="font-display font-bold text-2xl text-white mb-3 group-hover:text-sky-300 transition-colors">
+                    <h2 className="font-display font-bold text-2xl text-olympic-900 mb-3 group-hover:text-olympic-600 transition-colors">
                       {robot.name}
                     </h2>
-                    <p className="text-white/40 text-sm leading-relaxed font-light mb-6 line-clamp-3">
+                    <p className="text-slate-500 text-sm leading-relaxed font-light mb-6 line-clamp-3">
                       {robot.description}
                     </p>
 
                     {/* Specs */}
                     <div className="flex flex-wrap gap-2 mb-7">
                       {Object.entries(robot.specs).slice(0, 4).map(([k, v]) => (
-                        <span key={k} className="text-xs bg-white/5 border border-white/10 text-white/50 px-3 py-2 rounded-xl hover:border-sky-500/30 hover:text-white/70 transition-colors">
-                          <span className="text-white/30 font-medium">{k}:</span>{' '}
-                          <span className="font-semibold text-white/60">{v}</span>
+                        <span key={k} className="text-xs bg-slate-50 border border-slate-100 text-slate-600 px-3 py-2 rounded-xl hover:border-olympic-200 hover:bg-olympic-50/50 transition-colors">
+                          <span className="text-slate-400 font-medium">{k}:</span>{' '}
+                          <span className="font-semibold">{v}</span>
                         </span>
                       ))}
                     </div>
 
                     <button
                       onClick={() => setSelectedRobot(robot)}
-                      className="w-full py-3.5 rounded-xl bg-white/5 border border-white/10 text-white/60 text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 group/btn hover:bg-sky-500/10 hover:border-sky-500/25 hover:text-sky-300"
+                      className="w-full py-3.5 rounded-xl bg-olympic-50 hover:bg-olympic-500 hover:text-white text-olympic-600 text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 group/btn"
                     >
                       <span>View Specifications</span>
                       <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
