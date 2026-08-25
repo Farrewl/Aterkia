@@ -15,7 +15,7 @@ function Submarine({ size = 'desktop', topPx, docked, svgRef, propRef, trailRef,
   return (
     <div
       aria-hidden="true"
-      className={`absolute z-[1] pointer-events-none ${isDesk ? 'hidden md:block left-1/2 -ml-[58px]' : 'md:hidden left-6 -ml-[36px]'}`}
+      className={`absolute z-[-1] pointer-events-none ${isDesk ? 'hidden md:block left-1/2 -ml-[58px]' : 'md:hidden left-6 -ml-[36px]'}`}
       style={{ top: `${topPx}px` }}
     >
       {/* bubble trail — opacity follows scroll speed */}

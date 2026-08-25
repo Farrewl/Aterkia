@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { robotsData, robotCategories } from '../data/robotsData';
 import ImageWithFallback from '../components/ImageWithFallback';
 import RobotModal from '../components/RobotModal';
-import { Anchor, Waves, ArrowRight, Radar, Award, Cpu, Gauge } from 'lucide-react';
+import { Anchor, Waves, ArrowRight, Radar, Award } from 'lucide-react';
 import { TiltCard } from '../components/motion';
 
 const statusColors = {
@@ -69,6 +69,18 @@ export default function RobotsPage() {
 
   const featured = filteredRobots[0];
   const rest = filteredRobots.slice(1);
+
+  // IntersectionObserver for reveal animations
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return;
+    const els = document.querySelectorAll('.reveal-left, .reveal-right, .reveal-zoom');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, [filteredRobots]);
 
   return (
     <div className="min-h-screen bg-[#060d1a]">
