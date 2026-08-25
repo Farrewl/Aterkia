@@ -282,32 +282,35 @@
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   }
 
-  /* Expanded gallery — all photos in a horizontal row, can overflow card */
+  /* Expanded gallery — all photos in a horizontal row, full size, can overflow card */
   .gallery-expanded {
     height: auto !important;
     display: flex;
-    gap: 10px;
+    gap: 12px;
     padding: 8px 0;
     overflow: visible;
     justify-content: flex-start;
+    position: relative;
+    z-index: 30;
   }
   .photo-layer-expanded {
     position: relative !important;
     bottom: auto !important;
     left: auto !important;
-    width: 140px !important;
-    height: 105px !important;
-    min-width: 140px;
+    width: 72% !important;
+    height: 210px !important;
+    min-width: 180px;
     transform: none !important;
-    filter: brightness(0.9) saturate(0.85) !important;
-    border-radius: 10px;
+    filter: brightness(0.92) saturate(0.85) !important;
+    border-radius: 12px;
     transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
   }
   .gallery-expanded .photo-layer-expanded:hover {
-    transform: scale(1.08) rotate(-1deg) !important;
+    transform: scale(1.06) rotate(-1.5deg) !important;
     filter: brightness(1) saturate(1) !important;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.5) !important;
-    z-index: 20 !important;
+    box-shadow: 0 10px 36px rgba(0,0,0,0.55) !important;
+    z-index: 40 !important;
   }
   .gallery-expanded .photo-sonar { display: none; }
 
@@ -433,7 +436,7 @@
   /* ── Spotlight sweep — smooth light beam on passed cards ── */
   .spotlight-card {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
   .spotlight-sweep {
     position: absolute;
