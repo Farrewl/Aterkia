@@ -158,6 +158,364 @@
 }
 
 @layer utilities {
+  /* ── Spotlight: cursor-following radial glow (vars set by motion.jsx) ── */
+  .spotlight::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: var(--spot-op, 0);
+    transition: opacity 0.4s ease;
+    background: radial-gradient(
+      320px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(var(--spot-c), 0.22),
+      transparent 65%
+    );
+  }
+
+  /* ── Reveal direction variants ── */
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-48px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(48px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .reveal-zoom {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+  .reveal-zoom.visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  /* Sonar ping rings (RobotsPage hero) */
+  @keyframes sonarPing {
+    0% { transform: scale(0.3); opacity: 0.8; }
+    80%, 100% { transform: scale(1); opacity: 0; }
+  }
+
+  /* ── HistoryPage Deep Dive ── */
+  /* Underwater recovered polaroid — stacked photos with maritime feel */
+
+  /* Float animation — photos drift gently like they're underwater */
+  .photo-stack-float {
+    animation: photoFloat 4.5s ease-in-out infinite;
+  }
+  @keyframes photoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  /* Photo layers — each layer pre-spread in normal state, fans wider on hover */
+  .photo-layer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80%;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    transition: transform 0.55s cubic-bezier(0.22,1,0.36,1),
+                box-shadow 0.55s ease,
+                filter 0.5s ease;
+    filter: brightness(0.78) saturate(0.7);
+  }
+  .photo-layer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* Front photo — brightest, on top */
+  .photo-layer-front {
+    filter: brightness(0.88) saturate(0.85);
+  }
+
+  /* Normal state — photos already slightly spread so you can see edges */
+  .photo-layer:nth-child(1) { transform: rotate(-7deg) translate(-14px, 2px); }
+  .photo-layer:nth-child(2) { transform: rotate(-3.5deg) translate(-6px, 1px); }
+  .photo-layer:nth-child(3) { transform: rotate(0deg) translate(3px, 0px); }
+  .photo-layer:nth-child(4) { transform: rotate(3.5deg) translate(10px, 1px); }
+  .photo-layer:nth-child(5) { transform: rotate(7deg) translate(18px, 2px); }
+
+  /* Hover — fan out wide, all photos clearly visible */
+  .log-card:hover .photo-layer {
+    filter: brightness(1) saturate(1);
+  }
+  .log-card:hover .photo-layer:nth-child(1) {
+    transform: rotate(-10deg) translate(-480px, -4px);
+    box-shadow: -4px 6px 24px rgba(0,0,0,0.45);
+  }
+  .log-card:hover .photo-layer:nth-child(2) {
+    transform: rotate(-5deg) translate(-240px, -3px);
+    box-shadow: -2px 4px 20px rgba(0,0,0,0.4);
+  }
+  .log-card:hover .photo-layer:nth-child(3) {
+    transform: rotate(0deg) translate(0px, -2px);
+    box-shadow: 2px 5px 20px rgba(0,0,0,0.4);
+  }
+  .log-card:hover .photo-layer:nth-child(4) {
+    transform: rotate(5deg) translate(240px, -3px);
+    box-shadow: 4px 6px 24px rgba(0,0,0,0.45);
+  }
+  .log-card:hover .photo-layer:nth-child(5) {
+    transform: rotate(10deg) translate(480px, -4px);
+    box-shadow: 6px 8px 28px rgba(0,0,0,0.5);
+  }
+  .log-card:hover .photo-layer-front {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+
+  /* Sonar ping — radiates from center of photo stack on hover */
+  .photo-sonar {
+    position: absolute;
+    top: 50%;
+    left: 36%;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid rgba(56,189,248,0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .log-card:hover .photo-sonar {
+    animation: photoSonarPing 1.2s ease-out forwards;
+  }
+  @keyframes photoSonarPing {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0.7; border-color: rgba(56,189,248,0.6); }
+    100% { transform: translate(-50%, -50%) scale(5); opacity: 0; border-color: rgba(56,189,248,0); }
+  }
+
+  /* Tether line — connects photo stack to the timeline cable */
+  .photo-tether {
+    position: absolute;
+    top: 50%;
+    width: 28px;
+    border-top: 1px dashed rgba(56,189,248,0.15);
+    z-index: 0;
+  }
+  .photo-tether-right { right: 100%; margin-right: 4px; }
+  .photo-tether-left { left: 100%; margin-left: 4px; }
+
+  /* ── Bioluminescent particles — ambient deep-sea glow ── */
+  .bio-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(103,232,249,0.9) 0%, rgba(56,189,248,0.4) 50%, transparent 70%);
+    pointer-events: none;
+    animation: bioFloat ease-in-out infinite;
+  }
+  @keyframes bioFloat {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.25; }
+    50% { transform: translateY(-14px) scale(1.4); opacity: 0.7; }
+  }
+
+  /* ── Spotlight sweep — smooth light beam on passed cards ── */
+  .spotlight-card {
+    position: relative;
+    overflow: visible;
+  }
+  .spotlight-sweep {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 60% 80% at 50% 0%,
+      rgba(56,189,248,0.1) 0%,
+      rgba(56,189,248,0.04) 40%,
+      transparent 70%
+    );
+    animation: spotlightSweep 2.8s ease-in-out forwards;
+    opacity: 0;
+  }
+  @keyframes spotlightSweep {
+    0% {
+      opacity: 0;
+      background-position: 0% -20%;
+    }
+    25% {
+      opacity: 1;
+    }
+    50% {
+      background-position: 100% 10%;
+    }
+    75% {
+      opacity: 0.6;
+    }
+    100% {
+      opacity: 0.3;
+      background-position: 50% 50%;
+    }
+  }
+  /* Log entries EMERGE from the center cable outward to their side:
+     the dotted connector draws first, then the card slides out. */
+  .reveal-row .log-card {
+    opacity: 0;
+    transform: translateX(var(--emerge, 72px)) scale(0.97);
+    transition: opacity 0.7s ease, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal-row.visible .log-card {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  .reveal-row .log-conn {
+    transform: scaleX(0);
+    transform-origin: var(--origin, right);
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.18s;
+  }
+  .reveal-row.visible .log-conn {
+    transform: scaleX(1);
+  }
+
+  /* Expanding contact ring when the submarine passes a log entry */
+  @keyframes sonarContact {
+    0% { transform: scale(0.4); opacity: 0.85; }
+    100% { transform: scale(2.8); opacity: 0; }
+  }
+  .sonar-ring {
+    position: absolute;
+    inset: -7px;
+    border-radius: 9999px;
+    border: 2px solid rgba(125, 211, 252, 0.75);
+    animation: sonarContact 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    pointer-events: none;
+  }
+
+  /* Bubble trail behind the submarine */
+  @keyframes trailBubble {
+    0% { transform: translateY(8px) scale(0.5); opacity: 0.85; }
+    70% { opacity: 0.5; }
+    100% { transform: translateY(-34px) translateX(4px) scale(1.1); opacity: 0; }
+  }
+  .trail-bubble {
+    animation: trailBubble 1.6s ease-out infinite;
+  }
+
+  /* Timeline dot pop when lit */
+  @keyframes dotPop {
+    0% { transform: scale(0.6); }
+    55% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+  }
+  .dot-lit {
+    animation: dotPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Flowing light pulse along the timeline progress fill */
+  @keyframes lineFlow {
+    0% { background-position-y: -120px; }
+    100% { background-position-y: 240px; }
+  }
+  .line-flow {
+    background-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(125, 211, 252, 0.55) 45%,
+      rgba(255, 255, 255, 0.85) 50%,
+      rgba(125, 211, 252, 0.55) 55%,
+      transparent 100%
+    );
+    background-size: 100% 240px;
+    background-repeat: repeat-y;
+    animation: lineFlow 2.8s linear infinite;
+  }
+
+  /* Trophy shine sweep on hover */
+  .shine-wrap {
+    position: relative;
+    overflow: hidden;
+  }
+  .shine-wrap::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    left: -80%;
+    width: 60%;
+    height: 220%;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.75) 50%,
+      transparent 70%
+    );
+    transform: skewX(-20deg);
+    transition: left 0.7s ease;
+    pointer-events: none;
+  }
+  .group:hover .shine-wrap::before {
+    left: 130%;
+  }
+
+  /* Respect reduced motion globally for decorative animation */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .reveal-left, .reveal-right, .reveal-zoom {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .reveal-row .log-card, .reveal-row .log-conn {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .line-flow, .dot-lit, .sonar-ring, .trail-bubble, .photo-sonar, .spotlight-sweep,
+    .bio-particle {
+      animation: none !important;
+    }
+    .sonar-ring, .photo-sonar, .spotlight-sweep { display: none; }
+    .photo-stack-float { animation: none !important; }
+    .photo-layer, .photo-layer-front {
+      transition: none !important;
+    }
+    .spotlight-card { overflow: visible; }
+  }
+
+  /* Leaflet map — dark theme adjustments */
+  .map-dark .leaflet-container {
+    background: #0a1628;
+    font-family: inherit;
+  }
+  .map-dark .leaflet-tile {
+    filter: brightness(0.72) contrast(1.05) saturate(0.75);
+  }
+  .map-dark .leaflet-control-zoom a {
+    background: #111d32 !important;
+    color: #cbd5e1 !important;
+    border-color: rgba(255,255,255,0.1) !important;
+  }
+  .map-dark .leaflet-control-attribution {
+    background: rgba(6,13,26,0.7) !important;
+    color: #64748b !important;
+    font-size: 9px !important;
+  }
+  .map-dark .leaflet-control-attribution a {
+    color: #94a3b8 !important;
+  }
+  .map-dark .leaflet-popup-content-wrapper,
+  .map-dark .leaflet-popup-tip {
+    background: #111d32;
+    color: #e2e8f0;
+  }
+
   .reveal {
     opacity: 0;
     transform: translateY(30px);

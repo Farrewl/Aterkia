@@ -27,7 +27,7 @@ export const robotsData = [
     category: "AUV",
     year: "2025 — Present",
     status: "Active",
-    image: "/images/robots/robot-av-subsea.png",
+    image: "/images/robots/robot-asv-1.png",
     description: "Cakra Subsea is Aterkia's autonomous underwater vehicle designed for deep-water inspection and competition missions. Housed in a pressure-rated IP68 acrylic enclosure, it is built to withstand sustained submersion at depths of up to 15 meters. The 6-DOF vectoring thruster configuration enables full freedom of movement — forward, backward, lateral, yaw, pitch, and roll — making it highly maneuverable in complex underwater environments. An integrated underwater camera and depth sensor provide real-time feedback for autonomous depth-hold, path tracking, and object detection tasks. Cakra Subsea has been developed to compete in international AUV competitions such as SAUVC in Singapore and RoboSub, where precision control and reliable sensor fusion are critical to success.",
     snippet: "Underwater robot with 6-DOF control and depth sensors for SAUVC & RoboSub.",
     specs: {
@@ -46,7 +46,7 @@ export const robotsData = [
     category: "ASV",
     year: "2024",
     status: "Legacy",
-    image: "/images/robots/robot-asv-nala.png",
+    image: "/images/robots/robot-asv-1.png",
     description: "Nala-01 was the very first autonomous surface vehicle designed and built by the Aterkia team, marking the beginning of the team's journey into maritime robotics. It features a Deep-V monohull fiberglass hull optimized for straight-line speed and stability in choppy water conditions. The navigation system relies on waypoint GPS combined with an IMU for heading and attitude estimation, enabling basic autonomous path-following capabilities. Twin brushless thrusters provide propulsion, and the onboard electronics are housed in a waterproof enclosure for reliability during field testing. Although Nala-01 has been retired from active competition, it remains an important part of the team's heritage and served as the foundational platform for testing early autonomous navigation algorithms.",
     snippet: "First monohull boat with Deep-V design for KKCTBN 2024.",
     specs: {
@@ -65,7 +65,7 @@ export const robotsData = [
     category: "AUV",
     year: "2026/2027 (R&D)",
     status: "In Development",
-    image: "/images/robots/robot-auv-makara.png",
+    image: "/images/robots/robot-asv-1.png",
     description: "Makara-X is Aterkia's next-generation autonomous underwater vehicle, currently under active research and development. It is being designed with a modular enclosure architecture that allows rapid reconfiguration of sensors, propulsion, and payload modules for different mission profiles. The primary innovation is an integrated manipulator gripper arm capable of performing basic underwater manipulation tasks such as object retrieval and valve turning. A hydrophone array and enhanced underwater vision system provide advanced sensing capabilities for acoustic target detection and visual inspection in low-visibility environments. With an 8-thruster matrix for superior maneuverability, Makara-X aims to push the boundaries of what a student-built AUV can achieve in both competition and real-world maritime applications.",
     snippet: "Next-gen AUV with manipulator gripper for SAUVC & inspection missions.",
     specs: {

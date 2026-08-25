@@ -94,4 +94,8 @@ export const authApi = {
   updateProfile: (data) => api.put('/api/auth/me', data),
 };
 
+export const contactApi = {
+  submit: (data) => api.post('/api/contact', data),
+};
+
 export default api;
