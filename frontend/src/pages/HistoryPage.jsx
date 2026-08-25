@@ -394,7 +394,7 @@ export default function HistoryPage() {
 
                           {/* Stacked polaroid photos — fan out on hover */}
                           {photos.length > 0 && (
-                            <div className="photo-stack photo-stack-float relative h-52 mb-6 mx-auto max-w-[280px]">
+                            <div className="photo-stack photo-stack-float relative h-72 sm:h-80 mb-6">
                               {/* Tether line to timeline cable */}
                               <div className={`photo-tether ${isLeft ? 'photo-tether-right' : 'photo-tether-left'}`} />
 

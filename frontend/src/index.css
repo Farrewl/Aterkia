@@ -226,8 +226,8 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 72%;
-    height: 85%;
+    width: 80%;
+    height: 100%;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 14px rgba(0,0,0,0.3);
@@ -239,7 +239,7 @@
   .photo-layer img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     display: block;
   }
   /* Front photo — brightest, on top */
@@ -248,35 +248,35 @@
   }
 
   /* Normal state — photos already slightly spread so you can see edges */
-  .photo-layer:nth-child(1) { transform: rotate(-6deg) translate(-10px, 2px); }
-  .photo-layer:nth-child(2) { transform: rotate(-3deg) translate(-4px, 1px); }
-  .photo-layer:nth-child(3) { transform: rotate(0deg) translate(2px, 0px); }
-  .photo-layer:nth-child(4) { transform: rotate(3deg) translate(8px, 1px); }
-  .photo-layer:nth-child(5) { transform: rotate(6deg) translate(14px, 2px); }
+  .photo-layer:nth-child(1) { transform: rotate(-7deg) translate(-14px, 2px); }
+  .photo-layer:nth-child(2) { transform: rotate(-3.5deg) translate(-6px, 1px); }
+  .photo-layer:nth-child(3) { transform: rotate(0deg) translate(3px, 0px); }
+  .photo-layer:nth-child(4) { transform: rotate(3.5deg) translate(10px, 1px); }
+  .photo-layer:nth-child(5) { transform: rotate(7deg) translate(18px, 2px); }
 
   /* Hover — fan out wide, all photos clearly visible */
   .log-card:hover .photo-layer {
     filter: brightness(1) saturate(1);
   }
   .log-card:hover .photo-layer:nth-child(1) {
-    transform: rotate(-8deg) translate(-100px, -4px);
-    box-shadow: -4px 6px 20px rgba(0,0,0,0.45);
+    transform: rotate(-10deg) translate(-250px, -4px);
+    box-shadow: -4px 6px 24px rgba(0,0,0,0.45);
   }
   .log-card:hover .photo-layer:nth-child(2) {
-    transform: rotate(-4deg) translate(-50px, -3px);
-    box-shadow: -2px 4px 16px rgba(0,0,0,0.4);
+    transform: rotate(-5deg) translate(-125px, -3px);
+    box-shadow: -2px 4px 20px rgba(0,0,0,0.4);
   }
   .log-card:hover .photo-layer:nth-child(3) {
     transform: rotate(0deg) translate(0px, -2px);
-    box-shadow: 2px 5px 18px rgba(0,0,0,0.4);
+    box-shadow: 2px 5px 20px rgba(0,0,0,0.4);
   }
   .log-card:hover .photo-layer:nth-child(4) {
-    transform: rotate(4deg) translate(50px, -3px);
-    box-shadow: 4px 6px 20px rgba(0,0,0,0.45);
+    transform: rotate(5deg) translate(125px, -3px);
+    box-shadow: 4px 6px 24px rgba(0,0,0,0.45);
   }
   .log-card:hover .photo-layer:nth-child(5) {
-    transform: rotate(8deg) translate(100px, -4px);
-    box-shadow: 6px 8px 24px rgba(0,0,0,0.5);
+    transform: rotate(10deg) translate(250px, -4px);
+    box-shadow: 6px 8px 28px rgba(0,0,0,0.5);
   }
   .log-card:hover .photo-layer-front {
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
