@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { historyData } from '../data/historyData';
-import { CheckCircle2, Anchor, Compass } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 const CABLE_INSET = 96;
 
@@ -15,7 +15,7 @@ function Submarine({ size = 'desktop', topPx, docked, svgRef, propRef, trailRef,
   return (
     <div
       aria-hidden="true"
-      className={`absolute z-20 pointer-events-none ${isDesk ? 'hidden md:block left-1/2 -ml-[58px]' : 'md:hidden left-6 -ml-[36px]'}`}
+      className={`absolute z-[1] pointer-events-none ${isDesk ? 'hidden md:block left-1/2 -ml-[58px]' : 'md:hidden left-6 -ml-[36px]'}`}
       style={{ top: `${topPx}px` }}
     >
       {/* bubble trail — opacity follows scroll speed */}
@@ -434,11 +434,9 @@ export default function HistoryPage() {
                               </span>
                               <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 ${isLeft ? 'md:text-left' : ''}`}>
                                 {item.milestones.map((m, mIdx) => (
-                                  <div key={mIdx} className={`flex items-start gap-2 text-xs text-white/60 ${isLeft ? 'md:justify-end' : ''}`}>
-                                    {isLeft && <span className="hidden md:inline">{m}</span>}
-                                    <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${lit ? 'text-sky-400/90' : 'text-sky-400/40'} ${isLeft ? 'md:order-2' : ''}`} />
-                                    <span className={isLeft ? 'hidden md:inline md:order-1' : ''}>{m}</span>
-                                    {isLeft && <span className="md:hidden">{m}</span>}
+                                  <div key={mIdx} className={`flex items-start gap-2 text-xs text-white/60 ${isLeft ? 'md:flex-row-reverse md:text-right' : ''}`}>
+                                    <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${lit ? 'text-sky-400/90' : 'text-sky-400/40'}`} />
+                                    <span>{m}</span>
                                   </div>
                                 ))}
                               </div>
@@ -499,80 +497,38 @@ export default function HistoryPage() {
               })}
             </div>
 
-            {/* ── Decorative elements — scattered maritime artifacts ── */}
+            {/* ── Bioluminescent particles — ambient deep-sea glow ── */}
             <div aria-hidden="true" className="absolute inset-0 pointer-events-none z-[2] overflow-hidden">
-
-              {/* Floating polaroids — small photos drifting in the water */}
-              <div className="deco-polaroid hidden md:block" style={{ top: '8%', right: '3%', width: 64, height: 80, '--deco-rot': '-6deg', animationDelay: '0s' }}>
-                <img src="/images/robots/robot-asv-1.png" alt="" />
-              </div>
-              <div className="deco-polaroid hidden md:block" style={{ top: '32%', left: '2%', width: 56, height: 70, '--deco-rot': '8deg', animationDelay: '2s' }}>
-                <img src="/images/news/foto1-768x496.webp" alt="" />
-              </div>
-              <div className="deco-polaroid hidden md:block" style={{ top: '55%', right: '5%', width: 60, height: 75, '--deco-rot': '-3deg', animationDelay: '4s' }}>
-                <img src="/images/team/aterkia-team-group.png" alt="" />
-              </div>
-              <div className="deco-polaroid hidden md:block" style={{ top: '78%', left: '4%', width: 52, height: 65, '--deco-rot': '5deg', animationDelay: '1s' }}>
-                <img src="/images/robots/testblow.png" alt="" />
-              </div>
-              <div className="deco-polaroid hidden md:block" style={{ top: '92%', right: '8%', width: 48, height: 60, '--deco-rot': '-7deg', animationDelay: '3s' }}>
-                <img src="/images/news/images.png" alt="" />
-              </div>
-
-              {/* Anchor icons */}
-              <div className="deco-anchor" style={{ top: '15%', left: '6%' }}>
-                <Anchor size={28} strokeWidth={1.2} />
-              </div>
-              <div className="deco-anchor" style={{ top: '60%', right: '4%', animationDelay: '3s' }}>
-                <Anchor size={22} strokeWidth={1.2} />
-              </div>
-              <div className="deco-anchor" style={{ top: '85%', left: '8%', animationDelay: '5s' }}>
-                <Anchor size={18} strokeWidth={1.2} />
-              </div>
-
-              {/* Compass rose */}
-              <div className="deco-compass hidden md:block" style={{ top: '22%', right: '8%' }}>
-                <Compass size={64} strokeWidth={0.8} />
-              </div>
-
-              {/* Mini submarine silhouettes */}
-              <div className="deco-sub hidden md:block" style={{ top: '42%', left: '5%' }}>
-                <svg width="48" height="24" viewBox="0 0 130 64" fill="none">
-                  <rect x="18" y="18" width="84" height="28" rx="14" fill="rgba(125,211,252,0.3)" />
-                  <rect x="52" y="6" width="22" height="14" rx="3" fill="rgba(125,211,252,0.2)" />
-                  <path d="M18 24 L8 18 V46 L18 40 Z" fill="rgba(125,211,252,0.15)" />
-                  <ellipse cx="11" cy="32" rx="2.6" ry="9" fill="rgba(125,211,252,0.2)" />
-                </svg>
-              </div>
-              <div className="deco-sub hidden md:block" style={{ top: '70%', right: '6%', animationDelay: '5s' }}>
-                <svg width="36" height="18" viewBox="0 0 130 64" fill="none" style={{ transform: 'scaleX(-1)' }}>
-                  <rect x="18" y="18" width="84" height="28" rx="14" fill="rgba(125,211,252,0.25)" />
-                  <rect x="52" y="6" width="22" height="14" rx="3" fill="rgba(125,211,252,0.15)" />
-                  <path d="M18 24 L8 18 V46 L18 40 Z" fill="rgba(125,211,252,0.1)" />
-                </svg>
-              </div>
-
-              {/* Sonar rings — decorative expanding rings */}
-              <div className="deco-sonar hidden md:block" style={{ top: '18%', left: '10%', width: 40, height: 40 }} />
-              <div className="deco-sonar hidden md:block" style={{ top: '50%', right: '7%', width: 50, height: 50, animationDelay: '1.5s' }} />
-              <div className="deco-sonar hidden md:block" style={{ top: '80%', left: '12%', width: 35, height: 35, animationDelay: '3s' }} />
-
-              {/* Wave separators */}
-              <div className="deco-wave hidden md:block" style={{ top: '25%', left: '0', right: '0' }}>
-                <svg viewBox="0 0 1200 24" preserveAspectRatio="none" className="w-full h-5">
-                  <path d="M0 12 Q150 0 300 12 T600 12 T900 12 T1200 12" stroke="currentColor" strokeWidth="1" fill="none" />
-                </svg>
-              </div>
-              <div className="deco-wave hidden md:block" style={{ top: '48%', left: '0', right: '0', animationDelay: '2s' }}>
-                <svg viewBox="0 0 1200 24" preserveAspectRatio="none" className="w-full h-5">
-                  <path d="M0 12 Q150 24 300 12 T600 12 T900 12 T1200 12" stroke="currentColor" strokeWidth="1" fill="none" />
-                </svg>
-              </div>
-              <div className="deco-wave hidden md:block" style={{ top: '72%', left: '0', right: '0', animationDelay: '4s' }}>
-                <svg viewBox="0 0 1200 24" preserveAspectRatio="none" className="w-full h-5">
-                  <path d="M0 12 Q150 0 300 12 T600 12 T900 12 T1200 12" stroke="currentColor" strokeWidth="1" fill="none" />
-                </svg>
-              </div>
+              {[
+                { top: '5%', left: '8%', size: 3, dur: '8s', delay: '0s' },
+                { top: '12%', left: '72%', size: 2, dur: '10s', delay: '1.5s' },
+                { top: '20%', left: '35%', size: 4, dur: '7s', delay: '3s' },
+                { top: '28%', left: '88%', size: 2, dur: '9s', delay: '0.5s' },
+                { top: '35%', left: '15%', size: 3, dur: '11s', delay: '2s' },
+                { top: '42%', left: '60%', size: 2, dur: '8s', delay: '4s' },
+                { top: '50%', left: '5%', size: 3, dur: '10s', delay: '1s' },
+                { top: '55%', left: '82%', size: 4, dur: '7s', delay: '2.5s' },
+                { top: '62%', left: '45%', size: 2, dur: '9s', delay: '3.5s' },
+                { top: '68%', left: '92%', size: 3, dur: '11s', delay: '0.8s' },
+                { top: '75%', left: '20%', size: 2, dur: '8s', delay: '4.5s' },
+                { top: '80%', left: '68%', size: 3, dur: '10s', delay: '1.8s' },
+                { top: '85%', left: '10%', size: 4, dur: '7s', delay: '3.2s' },
+                { top: '90%', left: '50%', size: 2, dur: '9s', delay: '0.3s' },
+                { top: '95%', left: '78%', size: 3, dur: '11s', delay: '2.8s' },
+              ].map((p, i) => (
+                <span
+                  key={i}
+                  className="bio-particle"
+                  style={{
+                    top: p.top,
+                    left: p.left,
+                    width: p.size,
+                    height: p.size,
+                    animationDuration: p.dur,
+                    animationDelay: p.delay,
+                  }}
+                />
+              ))}
             </div>
 
             {/* Seafloor — welcomes the final log entry in the abyssal zone */}
@@ -591,15 +547,7 @@ export default function HistoryPage() {
                 <path d="M0,160 L0,124 Q140,106 300,120 T620,116 T960,122 T1260,114 T1440,122 L1440,160 Z" fill="#030a13" />
                 <path d="M0,160 L0,138 Q240,126 480,136 T960,134 T1440,138 L1440,160 Z" fill="#02060c" />
               </svg>
-            </div>
-
-            {/* Seabed terminal marker */}
-            <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 bottom-44 z-10 flex-col items-center">
-              {!docked && (
-                <span className="font-mono text-[10px] text-white/25 tracking-[0.25em] mb-2">SEABED</span>
-              )}
-              <div className="w-3 h-3 rounded-full bg-sky-400/40 ring-4 ring-sky-400/10" />
-            </div>
+            </div>            
           </div>
         </div>
       </section>

@@ -11,9 +11,7 @@ export const historyData = [
       "/images/news/Pelepasan-Kontingen-KKI-Undip-2025-1536x862.webp",
     ],
     milestones: [
-      "Finalist at Singapore AUV Challenge (SAUVC)",
       "AUV Makara-X underwater robot research",
-      "Sensor system and battery efficiency development"
     ]
   },
   {
