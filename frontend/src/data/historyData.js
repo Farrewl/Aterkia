@@ -2,6 +2,7 @@
 export const historyData = [
   {
     year: "2023",
+    depth: 8,
     title: "Team Founded",
     description: "Team Aterkia was formed by a group of Undip engineering students interested in maritime robotics. Started with manually designing the first boat hull prototype.",
     photos: [
@@ -17,6 +18,7 @@ export const historyData = [
   },
   {
     year: "2024",
+    depth: 18,
     title: "KKCTBN Competition Debut",
     description: "First participation in the National Unmanned Fast Boat Contest (KKCTBN) with ASV Nala-01. Started learning GPS-based autonomous navigation integration.",
     photos: [
@@ -32,6 +34,7 @@ export const historyData = [
   },
   {
     year: "2025",
+    depth: 30,
     title: "AUV Expansion & National Champion",
     description: "AUV Division formed for underwater robot research. ASV Baruna won 1st Place at KKCTBN. Team began implementing Computer Vision for object detection.",
     photos: [
@@ -47,6 +50,7 @@ export const historyData = [
   },
   {
     year: "2026 — Present",
+    depth: 42,
     title: "Heading to International Competition",
     description: "Aterkia expands reach to international competitions like SAUVC Singapore and RoboBoat, while preparing the next generation of team members.",
     photos: [

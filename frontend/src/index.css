@@ -210,34 +210,116 @@
   }
 
   /* ── HistoryPage Deep Dive ── */
-  /* Photo gallery inside log cards — compact on rest, expands on hover */
-  .photo-gallery {
-    max-height: 80px;
-    transition: max-height 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
-    opacity: 0.6;
+  /* Underwater recovered polaroid — stacked photos with maritime feel */
+
+  /* Float animation — photos drift gently like they're underwater */
+  .photo-stack-float {
+    animation: photoFloat 4.5s ease-in-out infinite;
   }
-  .log-card:hover .photo-gallery,
-  .photo-gallery.gallery-open {
-    max-height: 260px;
-    opacity: 1;
+  @keyframes photoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
   }
-  .photo-gallery img {
-    transition: transform 0.4s ease, filter 0.4s ease;
-    filter: brightness(0.85) saturate(0.8);
+
+  /* Front photo — slightly tilted, darker like it's been underwater */
+  .photo-front {
+    position: absolute;
+    width: 70%;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    z-index: 2;
+    transform: rotate(-1deg);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1),
+                box-shadow 0.5s ease,
+                filter 0.5s ease;
+    filter: brightness(0.82) saturate(0.75);
   }
-  .log-card:hover .photo-gallery img {
+  .log-card:hover .photo-front {
+    transform: rotate(-3deg) translate(-8px, -4px);
+    box-shadow: 4px 8px 28px rgba(0,0,0,0.45);
     filter: brightness(1) saturate(1);
   }
-  .photo-cell {
+
+  /* Back photo — more tilted, darker, reveals on hover like surfacing from depth */
+  .photo-back {
+    position: absolute;
+    width: 62%;
+    height: 88%;
+    right: 0;
+    bottom: 4px;
+    border-radius: 12px;
     overflow: hidden;
-    border-radius: 10px;
+    z-index: 1;
+    transform: rotate(-4deg);
+    opacity: 0;
+    box-shadow: -2px 4px 12px rgba(0,0,0,0.25);
+    transition: all 0.55s cubic-bezier(0.22,1,0.36,1);
+    filter: brightness(0.6) saturate(0.45);
   }
-  .photo-cell img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  .log-card:hover .photo-back {
+    opacity: 1;
+    transform: rotate(3deg) translate(14px, -6px);
+    box-shadow: -6px 10px 32px rgba(0,0,0,0.5);
+    filter: brightness(0.92) saturate(0.85);
   }
+
+  /* Sonar ping — radiates from center of photo stack on hover */
+  .photo-sonar {
+    position: absolute;
+    top: 50%;
+    left: 35%;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid rgba(56,189,248,0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .log-card:hover .photo-sonar {
+    animation: photoSonarPing 1.2s ease-out forwards;
+  }
+  @keyframes photoSonarPing {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0.7; border-color: rgba(56,189,248,0.6); }
+    100% { transform: translate(-50%, -50%) scale(5); opacity: 0; border-color: rgba(56,189,248,0); }
+  }
+
+  /* Depth tag — shows how deep this entry is in the timeline */
+  .photo-depth-tag {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 3;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(14,116,144,0.3);
+    color: rgba(125,211,252,0.85);
+    border: 1px solid rgba(56,189,248,0.2);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.4s ease 0.15s, transform 0.4s ease 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .log-card:hover .photo-depth-tag {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Tether line — connects photo stack to the timeline cable */
+  .photo-tether {
+    position: absolute;
+    top: 50%;
+    width: 28px;
+    border-top: 1px dashed rgba(56,189,248,0.15);
+    z-index: 0;
+  }
+  .photo-tether-right { right: 100%; margin-right: 4px; }
+  .photo-tether-left { left: 100%; margin-left: 4px; }
   /* Log entries EMERGE from the center cable outward to their side:
      the dotted connector draws first, then the card slides out. */
   .reveal-row .log-card {
@@ -349,10 +431,16 @@
       transform: none !important;
       transition: none !important;
     }
-    .line-flow, .dot-lit, .sonar-ring, .trail-bubble {
+    .line-flow, .dot-lit, .sonar-ring, .trail-bubble, .photo-sonar {
       animation: none !important;
     }
-    .sonar-ring { display: none; }
+    .sonar-ring, .photo-sonar { display: none; }
+    .photo-stack-float { animation: none !important; }
+    .photo-front, .photo-back, .photo-depth-tag {
+      transition: none !important;
+    }
+    .photo-back { opacity: 1 !important; transform: rotate(3deg) translate(14px, -6px) !important; }
+    .photo-depth-tag { opacity: 1 !important; transform: none !important; }
   }
 
   /* Leaflet map — dark theme adjustments */

@@ -377,18 +377,29 @@ export default function HistoryPage() {
                             {item.year}
                           </div>
 
-                          {/* Photo gallery — compact strip that expands on hover */}
+                          {/* Stacked polaroid photos — underwater recovered */}
                           {item.photos && item.photos.length > 0 && (
-                            <div className="photo-gallery rounded-xl overflow-hidden mb-5 grid grid-cols-3 gap-1.5">
-                              {item.photos.slice(0, 3).map((src, pIdx) => (
-                                <div key={pIdx} className="photo-cell aspect-[4/3]">
-                                  <img
-                                    src={src}
-                                    alt={`${item.year} photo ${pIdx + 1}`}
-                                    loading="lazy"
-                                  />
+                            <div className={`photo-stack photo-stack-float relative h-40 mb-5 ${isLeft ? '' : ''}`}>
+                              {/* Tether line to timeline cable */}
+                              <div className={`photo-tether ${isLeft ? 'photo-tether-right' : 'photo-tether-left'}`} />
+
+                              {/* Back photo — hidden, fans out on hover */}
+                              {item.photos[1] && (
+                                <div className="photo-back">
+                                  <img src={item.photos[1]} alt="" loading="lazy" />
                                 </div>
-                              ))}
+                              )}
+
+                              {/* Front photo — main image */}
+                              <div className="photo-front">
+                                <img src={item.photos[0]} alt={`${item.year} photo`} loading="lazy" />
+                              </div>
+
+                              {/* Sonar ping effect on hover */}
+                              <span className="photo-sonar" />
+
+                              {/* Depth tag */}
+                              <span className="photo-depth-tag">−{item.depth}m</span>
                             </div>
                           )}
 
