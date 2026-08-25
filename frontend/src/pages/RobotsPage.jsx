@@ -266,8 +266,8 @@ export default function RobotsPage() {
                               : 'bg-gradient-to-r from-olympic-700 via-sky-500 to-sky-300'
                           }`} />
 
-                          {/* Image */}
-                          <div className="relative h-48 w-full overflow-hidden">
+                            {/* Image */}
+                            <div className="relative w-full overflow-hidden">
                             <ImageWithFallback
                               src={robot.image} alt={robot.name} name={robot.name}
                               category={robot.category} type="robot"

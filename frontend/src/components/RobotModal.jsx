@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { X, Ship, Waves, Award, Check } from 'lucide-react';
 import ImageWithFallback from './ImageWithFallback';
 
@@ -16,14 +15,8 @@ const statusDots = {
 };
 
 export default function RobotModal({ robot, onClose }) {
-  const navigate = useNavigate();
   if (!robot) return null;
   const isAUV = robot.category.includes('AUV');
-
-  const handleDetail = () => {
-    onClose();
-    navigate(`/robots?robotId=${robot.id}`);
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/50 backdrop-blur-md animate-fade-in" onClick={onClose}>
@@ -54,8 +47,8 @@ export default function RobotModal({ robot, onClose }) {
         {/* Content */}
         <div className="p-6 sm:p-8 max-h-[75vh] overflow-y-auto space-y-5">
           {/* Image */}
-          <div className="rounded-xl overflow-hidden border border-white/8 h-64 sm:h-72 w-full bg-white/[0.03]">
-            <ImageWithFallback src={robot.image} alt={robot.name} name={robot.name} category={robot.category} type="robot" className="w-full h-full object-cover" containerClassName="w-full h-full" />
+          <div className="rounded-xl overflow-hidden border border-white/8 w-full bg-white/[0.03]">
+            <ImageWithFallback src={robot.image} alt={robot.name} name={robot.name} category={robot.category} type="robot" className="w-full h-auto object-contain max-h-[50vh]" containerClassName="w-full" />
           </div>
 
           {/* Snippet */}
@@ -95,19 +88,6 @@ export default function RobotModal({ robot, onClose }) {
               </ul>
             </div>
           )}
-        </div>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-white/8 flex gap-3">
-          <button
-            onClick={handleDetail}
-            className="flex-1 py-3 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 border border-sky-500/20"
-          >
-            View on Robots Page
-          </button>
-          <button onClick={onClose} className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white text-sm font-semibold transition-colors border border-white/8">
-            Close
-          </button>
         </div>
       </div>
     </div>

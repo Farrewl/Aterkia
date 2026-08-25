@@ -108,12 +108,6 @@ export default function ContactPage() {
     { icon: MapPin, label: 'Research HQ', value: `Student Center, ${siteConfig.affiliation}, ${siteConfig.location}`, href: null },
   ];
 
-  const quickStats = [
-    { icon: Anchor, value: String(robotsData.length), label: 'Robots Built' },
-    { icon: Users, value: '30+', label: 'Team Members' },
-    { icon: Rocket, value: '5+', label: 'Competitions' },
-  ];
-
   const socialLinks = [
     { label: 'Instagram', href: siteConfig.socials.instagram, hover: 'hover:bg-pink-500 hover:border-pink-500 hover:text-white', icon: 'M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z' },
     { label: 'LinkedIn', href: siteConfig.socials.linkedin, hover: 'hover:bg-blue-600 hover:border-blue-600 hover:text-white', icon: 'M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z' },
@@ -145,22 +139,6 @@ export default function ContactPage() {
             <p className="text-white/50 text-lg sm:text-xl mt-5 font-light leading-relaxed animate-fade-up max-w-xl mx-auto" style={{ animationDelay: '200ms' }}>
               Have a collaboration idea, sponsorship offer, or want to learn more about our maritime robotics research?
             </p>
-
-            {/* Quick Stats */}
-            <div className="flex justify-center gap-8 sm:gap-12 mt-10 animate-fade-up" style={{ animationDelay: '300ms' }}>
-              {quickStats.map((stat, i) => {
-                const Icon = stat.icon;
-                return (
-                  <div key={i} className="text-center group">
-                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300">
-                      <Icon className="w-5 h-5 text-sky-400" />
-                    </div>
-                    <div className="text-2xl font-black text-white">{stat.value}</div>
-                    <div className="text-xs text-white/40 font-medium">{stat.label}</div>
-                  </div>
-                );
-              })}
-            </div>
           </div>
         </div>
 
@@ -261,12 +239,6 @@ export default function ContactPage() {
             {/* Right — Contact Form */}
             <div className={`lg:col-span-7 transition-all duration-700 delay-200 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               <div className="relative bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-8 sm:p-10 overflow-hidden">
-                {/* Decorative corner waves */}
-                <div className="absolute -top-1 -right-1 w-32 h-32 opacity-[0.04] pointer-events-none">
-                  <svg viewBox="0 0 120 120" className="w-full h-full">
-                    <path d="M0,0 Q60,20 120,0 L120,120 Q60,100 0,120 Z" fill="#005EB8" />
-                  </svg>
-                </div>
 
                 {isSubmitted ? (
                   <div className="text-center py-12 space-y-4">
