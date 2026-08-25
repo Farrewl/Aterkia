@@ -127,7 +127,7 @@ export default function HomePage() {
               { icon: Trophy, value: `${aboutData.achievements.length}+`, label: 'Awards Won', color: 'text-amber-500' },
               { icon: Flag, value: '5+', label: 'Competitions Entered', color: 'text-olympic-500' },
               { icon: Users, value: '30+', label: 'Team Members', color: 'text-sky-600' },
-              { icon: Anchor, value: '2023', label: 'Founded at Undip', color: 'text-blue-700' },
+              { icon: Anchor, value: '2023', label: 'Since', color: 'text-blue-700' },
             ].map((stat, i) => {
               const Icon = stat.icon;
               return (
@@ -190,7 +190,7 @@ export default function HomePage() {
                   News{' '}
                 </h2>
                 <p className="text-slate-500 text-base sm:text-lg mt-2 font-light max-w-xl">
-                  The latest updates from our fleet — competitions, field tests, and research milestones.
+                  The latest updates about our activities.
                 </p>
               </div>
             </div>

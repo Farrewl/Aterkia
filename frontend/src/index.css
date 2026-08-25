@@ -158,6 +158,124 @@
 }
 
 @layer utilities {
+  /* ── Spotlight: cursor-following radial glow (vars set by motion.jsx) ── */
+  .spotlight::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: var(--spot-op, 0);
+    transition: opacity 0.4s ease;
+    background: radial-gradient(
+      320px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(var(--spot-c), 0.22),
+      transparent 65%
+    );
+  }
+
+  /* ── Reveal direction variants ── */
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-48px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(48px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .reveal-zoom {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+  .reveal-zoom.visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  /* Sonar ping rings (RobotsPage hero) */
+  @keyframes sonarPing {
+    0% { transform: scale(0.3); opacity: 0.8; }
+    80%, 100% { transform: scale(1); opacity: 0; }
+  }
+
+  /* Timeline dot pop when lit */
+  @keyframes dotPop {
+    0% { transform: scale(0.6); }
+    55% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+  }
+  .dot-lit {
+    animation: dotPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Flowing light pulse along the timeline progress fill */
+  @keyframes lineFlow {
+    0% { background-position-y: -120px; }
+    100% { background-position-y: 240px; }
+  }
+  .line-flow {
+    background-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(125, 211, 252, 0.55) 45%,
+      rgba(255, 255, 255, 0.85) 50%,
+      rgba(125, 211, 252, 0.55) 55%,
+      transparent 100%
+    );
+    background-size: 100% 240px;
+    background-repeat: repeat-y;
+    animation: lineFlow 2.8s linear infinite;
+  }
+
+  /* Trophy shine sweep on hover */
+  .shine-wrap {
+    position: relative;
+    overflow: hidden;
+  }
+  .shine-wrap::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    left: -80%;
+    width: 60%;
+    height: 220%;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.75) 50%,
+      transparent 70%
+    );
+    transform: skewX(-20deg);
+    transition: left 0.7s ease;
+    pointer-events: none;
+  }
+  .group:hover .shine-wrap::before {
+    left: 130%;
+  }
+
+  /* Respect reduced motion globally for decorative animation */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .reveal-left, .reveal-right, .reveal-zoom {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .line-flow, .dot-lit {
+      animation: none !important;
+    }
+  }
+
   /* Leaflet map — dark theme adjustments */
   .map-dark .leaflet-container {
     background: #0a1628;
