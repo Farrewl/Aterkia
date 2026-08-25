@@ -548,13 +548,6 @@ export default function HistoryPage() {
                 <path d="M0,160 L0,138 Q240,126 480,136 T960,134 T1440,138 L1440,160 Z" fill="#02060c" />
               </svg>
             </div>
-
-            {/* Gradient blend — seamless transition into footer */}
-            <div
-              aria-hidden="true"
-              className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, transparent 0%, #02060c 40%, #0A1628 100%)' }}
-            />
           </div>
         </div>
       </section>
