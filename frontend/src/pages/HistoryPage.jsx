@@ -96,7 +96,6 @@ export default function HistoryPage() {
   const [docked, setDocked] = useState(false);
   const [cableMax, setCableMax] = useState(0);
   const [passedCards, setPassedCards] = useState([]);
-  const [expandedGallery, setExpandedGallery] = useState(null); // idx of expanded card
 
   // Submarine pose — written straight to DOM nodes inside the rAF loop
   const subDeskRef = useRef(null);
@@ -393,15 +392,9 @@ export default function HistoryPage() {
                             {item.year}
                           </div>
 
-                          {/* Stacked polaroid photos — click to expand all in a row */}
+                          {/* Stacked polaroid photos — fan out on hover */}
                           {photos.length > 0 && (
-                            <div
-                              className={`photo-stack photo-stack-float relative mb-6 ${expandedGallery === idx ? 'gallery-expanded' : 'h-52 cursor-pointer'}`}
-                              onClick={() => setExpandedGallery(expandedGallery === idx ? null : idx)}
-                              role="button"
-                              tabIndex={0}
-                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpandedGallery(expandedGallery === idx ? null : idx); } }}
-                            >
+                            <div className="photo-stack photo-stack-float relative h-52 mb-6 mx-auto max-w-[280px]">
                               {/* Tether line to timeline cable */}
                               <div className={`photo-tether ${isLeft ? 'photo-tether-right' : 'photo-tether-left'}`} />
 
@@ -413,7 +406,7 @@ export default function HistoryPage() {
                                 return (
                                   <div
                                     key={pIdx}
-                                    className={`photo-layer ${isLast ? 'photo-layer-front' : ''} ${expandedGallery === idx ? 'photo-layer-expanded' : ''}`}
+                                    className={`photo-layer ${isLast ? 'photo-layer-front' : ''}`}
                                     style={{ zIndex: z }}
                                   >
                                     <img src={src} alt="" loading="lazy" />
@@ -423,13 +416,6 @@ export default function HistoryPage() {
 
                               {/* Sonar ping effect on hover */}
                               <span className="photo-sonar" />
-
-                              {/* Expand hint */}
-                              {expandedGallery !== idx && (
-                                <div className="absolute -bottom-5 left-0 right-0 text-center">
-                                  <span className="text-[10px] text-white/25 font-mono tracking-wider">click to expand</span>
-                                </div>
-                              )}
                             </div>
                           )}
 

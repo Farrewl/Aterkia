@@ -239,7 +239,7 @@
   .photo-layer img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
   }
   /* Front photo — brightest, on top */
@@ -259,85 +259,28 @@
     filter: brightness(1) saturate(1);
   }
   .log-card:hover .photo-layer:nth-child(1) {
-    transform: rotate(-14deg) translate(-40px, -6px);
+    transform: rotate(-8deg) translate(-100px, -4px);
     box-shadow: -4px 6px 20px rgba(0,0,0,0.45);
   }
   .log-card:hover .photo-layer:nth-child(2) {
-    transform: rotate(-6deg) translate(-18px, -4px);
+    transform: rotate(-4deg) translate(-50px, -3px);
     box-shadow: -2px 4px 16px rgba(0,0,0,0.4);
   }
   .log-card:hover .photo-layer:nth-child(3) {
-    transform: rotate(1deg) translate(4px, -5px);
+    transform: rotate(0deg) translate(0px, -2px);
     box-shadow: 2px 5px 18px rgba(0,0,0,0.4);
   }
   .log-card:hover .photo-layer:nth-child(4) {
-    transform: rotate(8deg) translate(22px, -6px);
+    transform: rotate(4deg) translate(50px, -3px);
     box-shadow: 4px 6px 20px rgba(0,0,0,0.45);
   }
   .log-card:hover .photo-layer:nth-child(5) {
-    transform: rotate(14deg) translate(42px, -4px);
+    transform: rotate(8deg) translate(100px, -4px);
     box-shadow: 6px 8px 24px rgba(0,0,0,0.5);
   }
   .log-card:hover .photo-layer-front {
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   }
-
-  /* Expanded gallery — photos spread across full card width with animation */
-  .gallery-expanded {
-    height: auto !important;
-    display: flex;
-    gap: 10px;
-    padding: 8px 0;
-    overflow: visible;
-    justify-content: center;
-    align-items: flex-start;
-    position: relative;
-    z-index: 30;
-    animation: galleryOpen 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-  @keyframes galleryOpen {
-    0% { opacity: 0.5; transform: scale(0.95); }
-    100% { opacity: 1; transform: scale(1); }
-  }
-  .gallery-closing {
-    animation: galleryClose 0.3s ease forwards;
-  }
-  @keyframes galleryClose {
-    0% { opacity: 1; transform: scale(1); }
-    100% { opacity: 0.5; transform: scale(0.95); }
-  }
-  .photo-layer-expanded {
-    position: relative !important;
-    bottom: auto !important;
-    left: auto !important;
-    width: 100% !important;
-    height: 220px !important;
-    flex: 1 1 0;
-    min-width: 0;
-    transform: none !important;
-    filter: brightness(0.92) saturate(0.85) !important;
-    border-radius: 12px;
-    transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
-    animation: photoReveal 0.4s cubic-bezier(0.22,1,0.36,1) forwards;
-    opacity: 0;
-  }
-  .photo-layer-expanded:nth-child(1) { animation-delay: 0.05s; }
-  .photo-layer-expanded:nth-child(2) { animation-delay: 0.1s; }
-  .photo-layer-expanded:nth-child(3) { animation-delay: 0.15s; }
-  .photo-layer-expanded:nth-child(4) { animation-delay: 0.2s; }
-  .photo-layer-expanded:nth-child(5) { animation-delay: 0.25s; }
-  @keyframes photoReveal {
-    0% { opacity: 0; transform: translateY(12px) scale(0.9); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  .gallery-expanded .photo-layer-expanded:hover {
-    transform: scale(1.05) rotate(-1deg) !important;
-    filter: brightness(1) saturate(1) !important;
-    box-shadow: 0 10px 36px rgba(0,0,0,0.55) !important;
-    z-index: 40 !important;
-  }
-  .gallery-expanded .photo-sonar { display: none; }
 
   /* Sonar ping — radiates from center of photo stack on hover */
   .photo-sonar {

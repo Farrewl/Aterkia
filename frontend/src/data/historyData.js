@@ -6,9 +6,9 @@ export const historyData = [
     title: "Heading to International Competition",
     description: "Aterkia expands reach to international competitions like SAUVC Singapore and RoboBoat, while preparing the next generation of team members.",
     photos: [
-      "/images/news/Pelepasan-Kontingen-KKI-Undip-2025-1536x862.webp",
       "/images/team/aterkia-team-group.png",
       "/images/robots/testblow.png",
+      "/images/news/Pelepasan-Kontingen-KKI-Undip-2025-1536x862.webp",
     ],
     milestones: [
       "Finalist at Singapore AUV Challenge (SAUVC)",
