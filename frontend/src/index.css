@@ -259,11 +259,11 @@
     filter: brightness(1) saturate(1);
   }
   .log-card:hover .photo-layer:nth-child(1) {
-    transform: rotate(-10deg) translate(-250px, -4px);
+    transform: rotate(-10deg) translate(-500px, -4px);
     box-shadow: -4px 6px 24px rgba(0,0,0,0.45);
   }
   .log-card:hover .photo-layer:nth-child(2) {
-    transform: rotate(-5deg) translate(-125px, -3px);
+    transform: rotate(-5deg) translate(-250px, -3px);
     box-shadow: -2px 4px 20px rgba(0,0,0,0.4);
   }
   .log-card:hover .photo-layer:nth-child(3) {
@@ -271,11 +271,11 @@
     box-shadow: 2px 5px 20px rgba(0,0,0,0.4);
   }
   .log-card:hover .photo-layer:nth-child(4) {
-    transform: rotate(5deg) translate(125px, -3px);
+    transform: rotate(5deg) translate(250px, -3px);
     box-shadow: 4px 6px 24px rgba(0,0,0,0.45);
   }
   .log-card:hover .photo-layer:nth-child(5) {
-    transform: rotate(10deg) translate(250px, -4px);
+    transform: rotate(10deg) translate(500px, -4px);
     box-shadow: 6px 8px 28px rgba(0,0,0,0.5);
   }
   .log-card:hover .photo-layer-front {
