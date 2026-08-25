@@ -16,6 +16,7 @@ import ContactPage from './pages/ContactPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/auth/DashboardPage';
 import ProfilePage from './pages/auth/ProfilePage';
+import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 export default function App() {
@@ -24,7 +25,7 @@ export default function App() {
       <Preloader>
         <Router>
           <ScrollToTop />
-          <div className="min-h-screen bg-[#fafbfc] text-slate-800 font-sans flex flex-col">
+          <div className="min-h-screen bg-[#060d1a] text-slate-800 font-sans flex flex-col">
             <Navbar />
             <main className="flex-grow">
               <Routes>
@@ -45,7 +46,7 @@ export default function App() {
                     <DashboardPage />
                   </ProtectedRoute>
                 } />
-                <Route path="*" element={<HomePage />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </main>
             <Footer />

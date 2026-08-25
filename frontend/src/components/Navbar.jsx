@@ -14,7 +14,9 @@ export default function Navbar() {
   const navRef = useRef(null);
   const [indicator, setIndicator] = useState({ left: 0, width: 0, visible: false });
   const location = useLocation();
-  const useLightTeamHeader = location.pathname === '/team';
+  // Pages with light backgrounds need dark navbar chrome; everything else is dark ocean themed
+  const isLightPage = location.pathname.startsWith('/team');
+  const showBackground = isScrolled || isHovered || isLightPage;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,7 +56,8 @@ export default function Navbar() {
     return () => window.removeEventListener('resize', updateIndicator);
   }, [location.pathname]);
 
-  const showBackground = isScrolled || isHovered || useLightTeamHeader;
+  // Chrome tone: light pages get dark text, dark ocean pages always use white text
+  const chromeLight = isLightPage && showBackground;
 
   return (
     <header
@@ -79,12 +82,12 @@ export default function Navbar() {
             </div>
             <div className="hidden sm:block">
               <span className={`font-display font-extrabold text-lg tracking-tight block leading-none transition-colors duration-300 ${
-                showBackground ? 'text-olympic-900' : 'text-white drop-shadow-md'
+                chromeLight ? 'text-olympic-900' : 'text-white drop-shadow-md'
               }`}>
                 ATERKIA
               </span>
               <span className={`text-[9px] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 ${
-                showBackground ? 'text-olympic-400' : 'text-white/70 drop-shadow-sm'
+                chromeLight ? 'text-olympic-400' : 'text-white/70 drop-shadow-sm'
               }`}>
                 RoboBoat Team
               </span>
@@ -93,7 +96,7 @@ export default function Navbar() {
 
           {/* Menu Tengah — sliding indicator */}
           <nav ref={navRef} className={`hidden md:flex items-center gap-0.5 px-2 py-1.5 rounded-2xl shadow-sm relative transition-all duration-500 ${
-            showBackground
+            chromeLight
               ? 'bg-slate-50 border border-slate-100'
               : 'bg-white/10 border border-white/15 backdrop-blur-sm'
           }`}>
@@ -114,9 +117,9 @@ export default function Navbar() {
                   `relative z-10 px-4 py-1.5 text-[13px] font-semibold rounded-xl transition-colors duration-200 ${
                     isActive
                       ? 'nav-active text-white'
-                      : showBackground
+                      : chromeLight
                         ? 'text-slate-500 hover:text-olympic-600'
-                        : 'text-white/80 hover:text-white'
+                        : 'text-white/75 hover:text-white'
                   }`
                 }
               >
@@ -140,10 +143,10 @@ export default function Navbar() {
                 }}
                 className={`p-2.5 rounded-xl transition-all duration-300 ${
                   isAuthenticated
-                    ? showBackground
+                    ? chromeLight
                       ? 'bg-olympic-50 border border-olympic-100 text-olympic-600 hover:bg-olympic-100 hover:border-olympic-200'
                       : 'bg-white/10 border border-white/15 text-white hover:bg-white/20'
-                    : showBackground
+                    : chromeLight
                       ? 'bg-slate-50 border border-slate-100 text-slate-300 cursor-not-allowed'
                       : 'bg-white/5 border border-white/10 text-white/30 cursor-not-allowed'
                 }`}
@@ -167,8 +170,8 @@ export default function Navbar() {
                 className={({ isActive }) =>
                   `px-5 py-2.5 rounded-2xl text-[13px] font-bold transition-all duration-300 border-2 ${
                     isActive
-                      ? 'border-olympic-900 text-olympic-900 bg-olympic-50'
-                      : showBackground
+                      ? 'border-olympic-900 text-olympic-900 bg-white'
+                      : chromeLight
                         ? 'border-olympic-500 text-olympic-500 hover:bg-olympic-50 hover:border-olympic-600 hover:text-olympic-600'
                         : 'border-white/50 text-white hover:bg-white/10 hover:border-white/70'
                   }`
@@ -199,7 +202,7 @@ export default function Navbar() {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={`p-2.5 rounded-xl focus:outline-none transition-all duration-300 ${
-                showBackground
+                chromeLight
                   ? 'bg-olympic-50 border border-olympic-100 text-olympic-600 hover:bg-olympic-100'
                   : 'bg-white/10 border border-white/15 text-white hover:bg-white/20'
               }`}

@@ -63,12 +63,12 @@ export default function HomePage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black font-display text-balance drop-shadow-lg leading-tight">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-display text-balance drop-shadow-lg leading-tight">
               <span className="text-white block">Aterkia</span>
               <span className="bg-gradient-to-r from-white via-blue-400 to-white bg-clip-text text-transparent drop-shadow-lg block mt-2">RoboBoat</span>
             </h1>
 
-            <p className="text-white text-lg sm:text-xl md:text-2xl mt-8 max-w-2xl mx-auto font-semibold leading-relaxed drop-shadow-md">
+            <p className="from-white via-blue-600 to-black text-lg sm:text-xl md:text-xl mt-6 max-w-xl mx-auto font-semibold leading-relaxed drop-shadow-md">
               An autonomous maritime robotics team from Universitas Diponegoro. Designing, building, and testing ocean robots for international competition.
             </p>
 

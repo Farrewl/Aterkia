@@ -15,6 +15,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 import authRoutes from './routes/auth.js';
+import contactRoutes from './routes/contact.js';
 import { initDb } from './config/database.js';
 
 const app = express();
@@ -28,6 +29,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/contact', contactRoutes);
 
 // In-Memory Database Fallback (for legacy endpoints)
 const db = {
@@ -145,15 +147,6 @@ app.get('/api/team', (req, res) => res.json({ success: true, data: db.team }));
 app.get('/api/robots', (req, res) => res.json({ success: true, data: db.robots }));
 app.get('/api/news', (req, res) => res.json({ success: true, data: db.news }));
 app.get('/api/sponsors', (req, res) => res.json({ success: true, data: db.sponsors }));
-
-app.post('/api/contact', (req, res) => {
-  const { name, email, message } = req.body;
-  if (!name || !email || !message) {
-    return res.status(400).json({ success: false, error: "Harap isi nama, email, dan pesan." });
-  }
-  db.inquiries.push({ name, email, message, date: new Date().toISOString() });
-  res.json({ success: true, message: "Pesan berhasil diterima." });
-});
 
 // Initialize database and start server
 let dbReady = false;
