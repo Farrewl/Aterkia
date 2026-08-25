@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { historyData } from '../data/historyData';
-import { CheckCircle2, Clock } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 const MAX_DEPTH = 42;
 const CABLE_INSET = 96;
@@ -91,11 +91,12 @@ export default function HistoryPage() {
   const dotRefs = useRef([]);
   const dotOffsetsRef = useRef(null);
 
-  const [lineHeight, setLineHeight] = useState(0);   // clamped to cable length
+  const [lineHeight, setLineHeight] = useState(0);
   const [progress, setProgress] = useState(0);
   const [litDots, setLitDots] = useState([]);
   const [docked, setDocked] = useState(false);
-  const [cableMax, setCableMax] = useState(0);       // px length of usable cable
+  const [cableMax, setCableMax] = useState(0);
+  const [passedCards, setPassedCards] = useState([]);
 
   // Submarine pose — written straight to DOM nodes inside the rAF loop
   const subDeskRef = useRef(null);
@@ -157,14 +158,23 @@ export default function HistoryPage() {
       const rawProgress = (scrollY + viewportMiddle - timelineTop) / timelineHeight;
       const p = Math.min(1, Math.max(0, rawProgress));
 
-      const travelPx = p * cableTravel;
+      const travelPx = Math.min(p * cableTravel, cableTravel);
 
       setLineHeight(travelPx);
       setProgress(p);
       setCableMax(cableTravel);
 
       const offsets = dotOffsetsRef.current;
-      if (offsets) setLitDots(offsets.map((o) => travelPx >= o * cableTravel));
+      if (offsets) {
+        const newLit = offsets.map((o) => travelPx >= o * cableTravel);
+        setLitDots((prev) => {
+          const newPassed = newLit.map((l, i) => l || (prev[i] ?? false));
+          if (JSON.stringify(newPassed) !== JSON.stringify(passedCards)) {
+            setPassedCards(newPassed);
+          }
+          return newLit;
+        });
+      }
 
       const nowDocked = travelPx >= cableTravel - 4;
       if (nowDocked !== dockedRef.current) {
@@ -350,6 +360,8 @@ export default function HistoryPage() {
               {historyData.map((item, idx) => {
                 const isLeft = idx % 2 === 0;
                 const lit = litDots[idx];
+                const passed = passedCards[idx];
+                const photos = (item.photos || []).slice(0, 5);
 
                 return (
                   <div
@@ -364,8 +376,12 @@ export default function HistoryPage() {
                         className={`log-card group relative rounded-3xl p-7 sm:p-8 border transition-all duration-500 hover:-translate-y-1.5 hover:bg-white/[0.09]
                           bg-white/[0.06] backdrop-blur-md border-white/12
                           ${lit ? '!border-sky-400/30 shadow-xl shadow-sky-500/5' : ''}
+                          ${passed ? 'spotlight-card' : ''}
                           hover:border-sky-400/30 hover:shadow-2xl hover:shadow-sky-500/10`}
                       >
+                        {/* Spotlight sweep overlay — smooth light beam when passed */}
+                        {passed && <div className="spotlight-sweep" aria-hidden="true" />}
+
                         <div className="relative z-10">
                           {/* stamped log header */}
                           <div className={`inline-flex items-center gap-2.5 font-mono text-[11px] tracking-[0.22em] px-3.5 py-2 rounded-lg border mb-5 ${
@@ -377,29 +393,39 @@ export default function HistoryPage() {
                             {item.year}
                           </div>
 
-                          {/* Stacked polaroid photos — underwater recovered */}
-                          {item.photos && item.photos.length > 0 && (
-                            <div className={`photo-stack photo-stack-float relative h-40 mb-5 ${isLeft ? '' : ''}`}>
+                          {/* Stacked polaroid photos — fan out on hover, up to 5 */}
+                          {photos.length > 0 && (
+                            <div className="photo-stack photo-stack-float relative h-52 mb-6">
                               {/* Tether line to timeline cable */}
                               <div className={`photo-tether ${isLeft ? 'photo-tether-right' : 'photo-tether-left'}`} />
 
-                              {/* Back photo — hidden, fans out on hover */}
-                              {item.photos[1] && (
-                                <div className="photo-back">
-                                  <img src={item.photos[1]} alt="" loading="lazy" />
-                                </div>
-                              )}
-
-                              {/* Front photo — main image */}
-                              <div className="photo-front">
-                                <img src={item.photos[0]} alt={`${item.year} photo`} loading="lazy" />
-                              </div>
+                              {/* Photos fanned from back to front */}
+                              {photos.map((src, pIdx) => {
+                                const total = photos.length;
+                                const isLast = pIdx === total - 1;
+                                // back-to-front: first = backmost (lowest z), last = frontmost
+                                const z = pIdx + 1;
+                                // spread angle: evenly distribute negative (left-tilt) to positive (right-tilt)
+                                const spreadDeg = total > 1
+                                  ? -8 + (16 / (total - 1)) * pIdx
+                                  : -2;
+                                return (
+                                  <div
+                                    key={pIdx}
+                                    className={`photo-layer ${isLast ? 'photo-layer-front' : ''}`}
+                                    style={{
+                                      zIndex: z,
+                                      '--base-rot': `${spreadDeg}deg`,
+                                      '--fan-offset': `${(pIdx - (total - 1) / 2) * 18}px`,
+                                    }}
+                                  >
+                                    <img src={src} alt="" loading="lazy" />
+                                  </div>
+                                );
+                              })}
 
                               {/* Sonar ping effect on hover */}
                               <span className="photo-sonar" />
-
-                              {/* Depth tag */}
-                              <span className="photo-depth-tag">−{item.depth}m</span>
                             </div>
                           )}
 
