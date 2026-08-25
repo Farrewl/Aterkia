@@ -282,32 +282,57 @@
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   }
 
-  /* Expanded gallery — all photos in a horizontal row, full size, can overflow card */
+  /* Expanded gallery — photos spread across full card width with animation */
   .gallery-expanded {
     height: auto !important;
     display: flex;
-    gap: 12px;
+    gap: 10px;
     padding: 8px 0;
     overflow: visible;
-    justify-content: flex-start;
+    justify-content: center;
+    align-items: flex-start;
     position: relative;
     z-index: 30;
+    animation: galleryOpen 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  @keyframes galleryOpen {
+    0% { opacity: 0.5; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .gallery-closing {
+    animation: galleryClose 0.3s ease forwards;
+  }
+  @keyframes galleryClose {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0.5; transform: scale(0.95); }
   }
   .photo-layer-expanded {
     position: relative !important;
     bottom: auto !important;
     left: auto !important;
-    width: 72% !important;
-    height: 210px !important;
-    min-width: 180px;
+    width: 100% !important;
+    height: 220px !important;
+    flex: 1 1 0;
+    min-width: 0;
     transform: none !important;
     filter: brightness(0.92) saturate(0.85) !important;
     border-radius: 12px;
     transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
+    animation: photoReveal 0.4s cubic-bezier(0.22,1,0.36,1) forwards;
+    opacity: 0;
+  }
+  .photo-layer-expanded:nth-child(1) { animation-delay: 0.05s; }
+  .photo-layer-expanded:nth-child(2) { animation-delay: 0.1s; }
+  .photo-layer-expanded:nth-child(3) { animation-delay: 0.15s; }
+  .photo-layer-expanded:nth-child(4) { animation-delay: 0.2s; }
+  .photo-layer-expanded:nth-child(5) { animation-delay: 0.25s; }
+  @keyframes photoReveal {
+    0% { opacity: 0; transform: translateY(12px) scale(0.9); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
   }
   .gallery-expanded .photo-layer-expanded:hover {
-    transform: scale(1.06) rotate(-1.5deg) !important;
+    transform: scale(1.05) rotate(-1deg) !important;
     filter: brightness(1) saturate(1) !important;
     box-shadow: 0 10px 36px rgba(0,0,0,0.55) !important;
     z-index: 40 !important;
