@@ -2,23 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import { historyData } from '../data/historyData';
 import { CheckCircle2, Clock } from 'lucide-react';
 
-const MAX_DEPTH = 42; // meters — full timeline depth
-
-const ZONES = [
-  { at: 0.125, name: 'SUNLIGHT ZONE' },
-  { at: 0.375, name: 'TWILIGHT ZONE' },
-  { at: 0.625, name: 'MIDNIGHT ZONE' },
-  { at: 0.875, name: 'ABYSSAL ZONE' },
-];
+const MAX_DEPTH = 42;      // meters — full timeline depth
+const CABLE_INSET = 96;    // px of timeline container reserved below the cable end (bottom-24)
 
 const DEPTH_MARKS = [10, 20, 30]; // meter labels along the cable
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
 /* ── Submarine marker (side view, nose pointing right).
-      Pitch + propeller speed + bubble trail are driven from
-      outside via refs — no re-renders while scrolling. ── */
-function Submarine({ size = 'desktop', topPx, svgRef, propRef, trailRef }) {
+      Pitch + propeller + bubble trail + lights are driven from
+      outside via refs — no re-renders while scrolling.
+      When `docked`, it powers down at the end of the cable. ── */
+function Submarine({ size = 'desktop', topPx, docked, svgRef, propRef, trailRef, lightRef }) {
   const isDesk = size === 'desktop';
   return (
     <div
@@ -41,6 +36,17 @@ function Submarine({ size = 'desktop', topPx, svgRef, propRef, trailRef }) {
         ))}
       </div>
 
+      {/* docking status */}
+      {docked && (
+        <div
+          className={`absolute top-full mt-2 whitespace-nowrap font-mono text-[9px] tracking-[0.28em] text-sky-300/60 bg-[#04101f]/90 border border-sky-400/20 rounded px-2.5 py-1 animate-fade-in ${
+            isDesk ? 'left-1/2 -translate-x-1/2' : '-left-2'
+          }`}
+        >
+          DOCKED · SYS IDLE
+        </div>
+      )}
+
       <svg
         ref={svgRef}
         width={isDesk ? 116 : 72}
@@ -56,8 +62,12 @@ function Submarine({ size = 'desktop', topPx, svgRef, propRef, trailRef }) {
           </linearGradient>
         </defs>
 
-        {/* headlight beam */}
-        <path d="M100 28 L128 40 L128 60 L102 38 Z" fill={`url(#beam-${size})`} />
+        {/* lights group — dims when docked */}
+        <g ref={lightRef} style={{ transition: 'opacity 0.9s ease' }}>
+          <path d="M100 28 L128 40 L128 60 L102 38 Z" fill={`url(#beam-${size})`} />
+          <circle cx="99" cy="32" r="3" fill="#fde68a" opacity="0.9" />
+        </g>
+
         {/* hull */}
         <rect x="18" y="18" width="84" height="28" rx="14"
           fill="rgba(255,255,255,0.07)" stroke="#7dd3fc" strokeWidth="2" />
@@ -74,7 +84,7 @@ function Submarine({ size = 'desktop', topPx, svgRef, propRef, trailRef }) {
         {/* tail fin */}
         <path d="M18 24 L8 18 V46 L18 40 Z" stroke="#7dd3fc" strokeWidth="2"
           strokeLinejoin="round" fill="rgba(125,211,252,0.08)" />
-        {/* propeller — animationDuration set from scroll velocity */}
+        {/* propeller — animationDuration set from scroll velocity; stalls when docked */}
         <g
           ref={propRef}
           className="animate-spin"
@@ -83,8 +93,6 @@ function Submarine({ size = 'desktop', topPx, svgRef, propRef, trailRef }) {
           <ellipse cx="11" cy="32" rx="2.6" ry="9" stroke="#7dd3fc" strokeWidth="1.8" fill="rgba(125,211,252,0.15)" />
         </g>
         <circle cx="11" cy="32" r="2.4" fill="#7dd3fc" />
-        {/* headlight */}
-        <circle cx="99" cy="32" r="3" fill="#fde68a" opacity="0.9" />
       </svg>
     </div>
   );
@@ -96,9 +104,11 @@ export default function HistoryPage() {
   const dotRefs = useRef([]);
   const dotOffsetsRef = useRef(null);
 
-  const [lineHeight, setLineHeight] = useState(0);
+  const [lineHeight, setLineHeight] = useState(0);   // clamped to cable length
   const [progress, setProgress] = useState(0);
   const [litDots, setLitDots] = useState([]);
+  const [docked, setDocked] = useState(false);
+  const [cableMax, setCableMax] = useState(0);       // px length of usable cable
 
   // Submarine pose — written straight to DOM nodes inside the rAF loop
   const subDeskRef = useRef(null);
@@ -107,7 +117,10 @@ export default function HistoryPage() {
   const propMobRef = useRef(null);
   const trailDeskRef = useRef(null);
   const trailMobRef = useRef(null);
+  const lightDeskRef = useRef(null);
+  const lightMobRef = useRef(null);
   const scrollData = useRef({ lastY: null, lastT: 0, vy: 0 });
+  const dockedRef = useRef(false);
 
   /* Measure each dot's relative position once (and on resize) */
   useEffect(() => {
@@ -126,7 +139,19 @@ export default function HistoryPage() {
     return () => { clearTimeout(timer); window.removeEventListener('resize', measureDots); };
   }, []);
 
-  /* Scroll → progress, line height, lit dots, velocity */
+  /* Reveal observer — rows register via .reveal-row */
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      }),
+      { threshold: 0.15, rootMargin: '0px 0px -60px 0px' }
+    );
+    document.querySelectorAll('.reveal-row').forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
+  /* Scroll → progress, line height (clamped to cable), lit dots, velocity */
   useEffect(() => {
     const handleScroll = () => {
       const container = containerRef.current;
@@ -137,6 +162,7 @@ export default function HistoryPage() {
       const timelineRect = timeline.getBoundingClientRect();
       const timelineTop = timelineRect.top - containerRect.top;
       const timelineHeight = timelineRect.height;
+      const cableTravel = Math.max(0, timelineHeight - CABLE_INSET);
 
       const scrollY = -containerRect.top;
       const viewportMiddle = window.innerHeight / 2;
@@ -144,11 +170,20 @@ export default function HistoryPage() {
       const rawProgress = (scrollY + viewportMiddle - timelineTop) / timelineHeight;
       const p = Math.min(1, Math.max(0, rawProgress));
 
-      setLineHeight(p * timelineHeight);
+      const travelPx = p * cableTravel;
+
+      setLineHeight(travelPx);
       setProgress(p);
+      setCableMax(cableTravel);
 
       const offsets = dotOffsetsRef.current;
-      if (offsets) setLitDots(offsets.map((o) => p >= o));
+      if (offsets) setLitDots(offsets.map((o) => travelPx >= o * cableTravel));
+
+      const nowDocked = travelPx >= cableTravel - 4;
+      if (nowDocked !== dockedRef.current) {
+        dockedRef.current = nowDocked;
+        setDocked(nowDocked);
+      }
 
       // smoothed velocity (px per ~frame)
       const now = performance.now();
@@ -167,7 +202,8 @@ export default function HistoryPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  /* Submarine pose loop — lerped pitch/speed applied directly to DOM */
+  /* Submarine pose loop — lerped pitch/speed applied directly to DOM.
+     When docked: levels out, propeller stalls, lights and trail shut down. */
   useEffect(() => {
     let raf;
     const pose = { pitch: 0, speed: 0.18 };
@@ -175,24 +211,30 @@ export default function HistoryPage() {
     const tick = () => {
       const sd = scrollData.current;
       sd.vy *= 0.93;
+      const isDocked = dockedRef.current;
 
-      const targetPitch = Math.max(-12, Math.min(12, sd.vy * 0.5));
-      const targetSpeed = Math.max(0.18, Math.min(2.6, Math.abs(sd.vy) / 20));
+      const targetPitch = isDocked ? 0 : Math.max(-12, Math.min(12, sd.vy * 0.5));
+      const targetSpeed = isDocked ? 0.05 : Math.max(0.18, Math.min(2.6, Math.abs(sd.vy) / 20));
 
-      pose.pitch += (targetPitch - pose.pitch) * 0.09;
+      pose.pitch += (targetPitch - pose.pitch) * 0.07;
       pose.speed += (targetSpeed - pose.speed) * 0.09;
 
       const rot = `rotate(${pose.pitch.toFixed(2)}deg)`;
       if (subDeskRef.current) subDeskRef.current.style.transform = rot;
       if (subMobRef.current) subMobRef.current.style.transform = rot;
 
-      const dur = `${(1.1 / pose.speed).toFixed(2)}s`;
+      // stall the propeller almost fully when docked
+      const dur = `${Math.max(14, 1.1 / pose.speed).toFixed(2)}s`;
       if (propDeskRef.current) propDeskRef.current.style.animationDuration = dur;
       if (propMobRef.current) propMobRef.current.style.animationDuration = dur;
 
-      const trailOp = Math.min(0.95, Math.max(0, (pose.speed - 0.3) / 1.5)).toFixed(2);
+      const trailOp = isDocked ? 0 : Math.min(0.95, Math.max(0, (pose.speed - 0.3) / 1.5)).toFixed(2);
       if (trailDeskRef.current) trailDeskRef.current.style.opacity = trailOp;
       if (trailMobRef.current) trailMobRef.current.style.opacity = trailOp;
+
+      const lightOp = isDocked ? 0.12 : 1;
+      if (lightDeskRef.current) lightDeskRef.current.style.opacity = lightOp;
+      if (lightMobRef.current) lightMobRef.current.style.opacity = lightOp;
 
       raf = requestAnimationFrame(tick);
     };
@@ -206,8 +248,12 @@ export default function HistoryPage() {
   const bioOp = clamp01((progress - 0.5) / 0.35);
 
   const isDeskViewport = typeof window !== 'undefined' && window.innerWidth >= 768;
-  const subHalf = isDeskViewport ? 29 : 18;
-  const subTop = Math.max(0, lineHeight - subHalf);
+  const subH = isDeskViewport ? 58 : 36;
+  const subHalf = subH * 0.45;
+  // ride with center on the tip, but never let the hull pass the cable's end
+  const rawTop = lineHeight - subHalf;
+  const maxTop = Math.max(0, cableMax - subH);
+  const subTop = Math.max(0, Math.min(rawTop, maxTop));
 
   return (
     <div ref={containerRef} className="relative min-h-screen bg-gradient-to-b from-[#0c4a6e] via-[#0a1628] to-[#060d1a] overflow-x-hidden">
@@ -315,31 +361,24 @@ export default function HistoryPage() {
               ))}
             </div>
 
-            {/* Zone station signs sitting on the cable — desktop only */}
-            {ZONES.map((z) => (
-              <div
-                key={z.name}
-                className="hidden lg:flex absolute left-1/2 -translate-x-1/2 -translate-y-1/2 items-center px-3.5 py-1.5 rounded-full bg-[#0a1628]/90 border border-white/10 text-[9px] font-bold uppercase tracking-[0.3em] text-white/25 backdrop-blur-sm whitespace-nowrap"
-                style={{ top: `${z.at * 100}%` }}
-              >
-                {z.name}
-              </div>
-            ))}
-
-            {/* THE SUBMARINE — rides the cable as you scroll */}
+            {/* THE SUBMARINE — rides the cable, docks at its end */}
             <Submarine
               size="desktop"
               topPx={subTop}
+              docked={docked}
               svgRef={subDeskRef}
               propRef={propDeskRef}
               trailRef={trailDeskRef}
+              lightRef={lightDeskRef}
             />
             <Submarine
               size="mobile"
               topPx={subTop}
+              docked={docked}
               svgRef={subMobRef}
               propRef={propMobRef}
               trailRef={trailMobRef}
+              lightRef={lightMobRef}
             />
 
             <div className="space-y-24 relative">
@@ -348,12 +387,16 @@ export default function HistoryPage() {
                 const lit = litDots[idx];
 
                 return (
-                  <div key={idx} className={`relative flex items-start gap-8 md:gap-0 ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                  <div
+                    key={idx}
+                    className={`reveal-row relative flex items-start gap-8 md:gap-0 ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+                    style={{ '--emerge': isLeft ? '72px' : '-72px', '--origin': isLeft ? 'right' : 'left' }}
+                  >
 
-                    {/* Sonar contact log card */}
+                    {/* Sonar contact log card — emerges outward from the cable */}
                     <div className={`flex-1 md:w-1/2 ${isLeft ? 'md:pr-16 md:text-right' : 'md:pl-16'}`}>
                       <div
-                        className={`group relative rounded-3xl p-7 sm:p-8 border transition-all duration-500 hover:-translate-y-1.5 reveal reveal-left hover:bg-white/[0.09]
+                        className={`log-card group relative rounded-3xl p-7 sm:p-8 border transition-all duration-500 hover:-translate-y-1.5 hover:bg-white/[0.09]
                           bg-white/[0.06] backdrop-blur-md border-white/12
                           ${lit ? '!border-sky-400/30 shadow-xl shadow-sky-500/5' : ''}
                           hover:border-sky-400/30 hover:shadow-2xl hover:shadow-sky-500/10`}
@@ -398,10 +441,10 @@ export default function HistoryPage() {
                       </div>
                     </div>
 
-                    {/* Dotted connector: cable → card (desktop) */}
+                    {/* Dotted connector: draws from the cable outward to the card */}
                     <div
                       aria-hidden="true"
-                      className={`hidden md:block absolute top-9 border-t-2 border-dashed transition-colors duration-500 ${
+                      className={`log-conn hidden md:block absolute top-9 border-t-2 border-dashed transition-colors duration-500 ${
                         lit ? 'border-sky-400/35' : 'border-white/10'
                       } ${isLeft ? 'right-1/2 mr-4' : 'left-1/2 ml-4'} w-12`}
                     />
@@ -469,7 +512,7 @@ export default function HistoryPage() {
 
             {/* Seabed terminal marker */}
             <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 bottom-44 z-10 flex-col items-center">
-              {!litDots[historyData.length - 1] && (
+              {!docked && (
                 <span className="font-mono text-[10px] text-white/25 tracking-[0.25em] mb-2">SEABED</span>
               )}
               <div className="w-3 h-3 rounded-full bg-sky-400/40 ring-4 ring-sky-400/10" />

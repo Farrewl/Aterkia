@@ -210,6 +210,26 @@
   }
 
   /* ── HistoryPage Deep Dive ── */
+  /* Log entries EMERGE from the center cable outward to their side:
+     the dotted connector draws first, then the card slides out. */
+  .reveal-row .log-card {
+    opacity: 0;
+    transform: translateX(var(--emerge, 72px)) scale(0.97);
+    transition: opacity 0.7s ease, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal-row.visible .log-card {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  .reveal-row .log-conn {
+    transform: scaleX(0);
+    transform-origin: var(--origin, right);
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.18s;
+  }
+  .reveal-row.visible .log-conn {
+    transform: scaleX(1);
+  }
+
   /* Expanding contact ring when the submarine passes a log entry */
   @keyframes sonarContact {
     0% { transform: scale(0.4); opacity: 0.85; }
@@ -292,6 +312,11 @@
   /* Respect reduced motion globally for decorative animation */
   @media (prefers-reduced-motion: reduce) {
     .reveal, .reveal-left, .reveal-right, .reveal-zoom {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .reveal-row .log-card, .reveal-row .log-conn {
       opacity: 1 !important;
       transform: none !important;
       transition: none !important;
