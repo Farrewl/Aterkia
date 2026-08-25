@@ -2,10 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { historyData } from '../data/historyData';
 import { CheckCircle2, Clock } from 'lucide-react';
 
-const MAX_DEPTH = 42;      // meters — full timeline depth
-const CABLE_INSET = 96;    // px of timeline container reserved below the cable end (bottom-24)
-
-const DEPTH_MARKS = [10, 20, 30]; // meter labels along the cable
+const MAX_DEPTH = 42;
+const CABLE_INSET = 96;
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
@@ -35,17 +33,6 @@ function Submarine({ size = 'desktop', topPx, docked, svgRef, propRef, trailRef,
           />
         ))}
       </div>
-
-      {/* docking status */}
-      {docked && (
-        <div
-          className={`absolute top-full mt-2 whitespace-nowrap font-mono text-[9px] tracking-[0.28em] text-sky-300/60 bg-[#04101f]/90 border border-sky-400/20 rounded px-2.5 py-1 animate-fade-in ${
-            isDesk ? 'left-1/2 -translate-x-1/2' : '-left-2'
-          }`}
-        >
-          DOCKED · SYS IDLE
-        </div>
-      )}
 
       <svg
         ref={svgRef}
@@ -299,21 +286,13 @@ export default function HistoryPage() {
       <section className="relative py-20 overflow-hidden z-10">
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 uppercase tracking-widest mb-4 animate-fade-up">
-              <Clock className="w-4 h-4" />
-              Dive Log · The Journey of Aterkia
-            </span>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black font-display text-white tracking-tight leading-tight mb-5 animate-fade-up" style={{ animationDelay: '120ms' }}>
-              Descend Into{' '}
-              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">Our History</span>
+              Our{' '}
+              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">History</span>
             </h1>
             <p className="text-white/50 text-base sm:text-lg leading-relaxed font-light max-w-2xl animate-fade-up" style={{ animationDelay: '240ms' }}>
-              Scroll to dive. The deeper you go, the deeper into Aterkia's story — from our founding at Universitas Diponegoro to today's maritime research.
+              Our journey from our founding to the present
             </p>
-            <div className="mt-6 inline-flex items-center gap-2 font-mono text-xs text-sky-300/70 border border-sky-400/20 bg-sky-500/5 rounded-lg px-3 py-2 animate-fade-up" style={{ animationDelay: '360ms' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
-              SUBMERGED · MAX DEPTH −{MAX_DEPTH}m
-            </div>
           </div>
         </div>
       </section>
@@ -345,20 +324,6 @@ export default function HistoryPage() {
               style={{ height: `${lineHeight}px`, background: 'linear-gradient(to bottom, rgba(56,189,248,0.85), rgba(56,189,248,0.45))' }}
             >
               <div className="absolute inset-0 line-flow opacity-70 rounded-full" />
-            </div>
-
-            {/* Depth labels along the cable — desktop only */}
-            <div className="hidden md:block">
-              {DEPTH_MARKS.map((m) => (
-                <div
-                  key={m}
-                  className="absolute left-1/2 flex items-center gap-2 font-mono text-[10px] text-white/25 whitespace-nowrap"
-                  style={{ top: `${(m / MAX_DEPTH) * 100}%`, transform: 'translate(calc(-50% + 22px), -50%)' }}
-                >
-                  <span className="w-3 h-px bg-white/25" />
-                  −{m}m
-                </div>
-              ))}
             </div>
 
             {/* THE SUBMARINE — rides the cable, docks at its end */}
@@ -409,8 +374,23 @@ export default function HistoryPage() {
                               : 'border-white/15 bg-white/5 text-white/40'
                           } ${isLeft ? 'md:ml-auto' : ''}`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${lit ? 'bg-sky-400 animate-pulse' : 'bg-white/25'}`} />
-                            LOG&nbsp;·&nbsp;{item.year}
+                            {item.year}
                           </div>
+
+                          {/* Photo gallery — compact strip that expands on hover */}
+                          {item.photos && item.photos.length > 0 && (
+                            <div className="photo-gallery rounded-xl overflow-hidden mb-5 grid grid-cols-3 gap-1.5">
+                              {item.photos.slice(0, 3).map((src, pIdx) => (
+                                <div key={pIdx} className="photo-cell aspect-[4/3]">
+                                  <img
+                                    src={src}
+                                    alt={`${item.year} photo ${pIdx + 1}`}
+                                    loading="lazy"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          )}
 
                           <h2 className="text-xl sm:text-2xl font-bold font-display text-white mb-3 leading-snug group-hover:text-sky-300 transition-colors">
                             {item.title}
@@ -423,7 +403,7 @@ export default function HistoryPage() {
                           {item.milestones && item.milestones.length > 0 && (
                             <div className="pt-5 border-t border-white/10 space-y-2.5">
                               <span className="text-xs font-bold text-white/30 uppercase tracking-wider block mb-1">
-                                Contacts Logged:
+                                Key Achievements:
                               </span>
                               <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 ${isLeft ? 'md:text-left' : ''}`}>
                                 {item.milestones.map((m, mIdx) => (

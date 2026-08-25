@@ -210,6 +210,34 @@
   }
 
   /* ── HistoryPage Deep Dive ── */
+  /* Photo gallery inside log cards — compact on rest, expands on hover */
+  .photo-gallery {
+    max-height: 80px;
+    transition: max-height 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+    opacity: 0.6;
+  }
+  .log-card:hover .photo-gallery,
+  .photo-gallery.gallery-open {
+    max-height: 260px;
+    opacity: 1;
+  }
+  .photo-gallery img {
+    transition: transform 0.4s ease, filter 0.4s ease;
+    filter: brightness(0.85) saturate(0.8);
+  }
+  .log-card:hover .photo-gallery img {
+    filter: brightness(1) saturate(1);
+  }
+  .photo-cell {
+    overflow: hidden;
+    border-radius: 10px;
+  }
+  .photo-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
   /* Log entries EMERGE from the center cable outward to their side:
      the dotted connector draws first, then the card slides out. */
   .reveal-row .log-card {
