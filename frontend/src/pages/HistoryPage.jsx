@@ -10,7 +10,7 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v));
       Pitch + propeller + bubble trail + lights are driven from
       outside via refs — no re-renders while scrolling.
       When `docked`, it powers down at the end of the cable. ── */
-function Submarine({ size = 'desktop', topPx, docked, svgRef, propRef, trailRef, lightRef }) {
+function Submarine({ size = 'desktop', topPx, docked, facingLeft, svgRef, propRef, trailRef, lightRef }) {
   const isDesk = size === 'desktop';
   return (
     <div
@@ -18,10 +18,10 @@ function Submarine({ size = 'desktop', topPx, docked, svgRef, propRef, trailRef,
       className={`absolute z-[2] pointer-events-none ${isDesk ? 'hidden md:block left-1/2 -ml-[58px]' : 'md:hidden left-6 -ml-[36px]'}`}
       style={{ top: `${topPx}px` }}
     >
-      {/* bubble trail — opacity follows scroll speed */}
+      {/* bubble trail — behind the tail, swaps side when flipped */}
       <div
         ref={trailRef}
-        className="absolute right-full top-1/2 -translate-y-1/2 mr-1.5 flex flex-col gap-2"
+        className={`absolute top-1/2 -translate-y-1/2 flex flex-col gap-2 ${facingLeft ? 'left-full ml-1.5' : 'right-full mr-1.5'}`}
         style={{ opacity: 0 }}
       >
         {[0, 1, 2, 3].map((i) => (
@@ -39,7 +39,7 @@ function Submarine({ size = 'desktop', topPx, docked, svgRef, propRef, trailRef,
         height={isDesk ? 58 : 36}
         viewBox="0 0 130 64"
         fill="none"
-        style={{ transformOrigin: '50% 55%', display: 'block' }}
+        style={{ transformOrigin: '50% 55%', display: 'block', transform: facingLeft ? 'scaleX(-1)' : undefined }}
       >
         <defs>
           <linearGradient id={`beam-${size}`} x1="0" y1="0" x2="1" y2="1">
@@ -96,6 +96,7 @@ export default function HistoryPage() {
   const [docked, setDocked] = useState(false);
   const [cableMax, setCableMax] = useState(0);
   const [passedCards, setPassedCards] = useState([]);
+  const [facingLeft, setFacingLeft] = useState(false);
 
   // Submarine pose — written straight to DOM nodes inside the rAF loop
   const subDeskRef = useRef(null);
@@ -108,6 +109,7 @@ export default function HistoryPage() {
   const lightMobRef = useRef(null);
   const scrollData = useRef({ lastY: null, lastT: 0, vy: 0 });
   const dockedRef = useRef(false);
+  const facingLeftRef = useRef(false);
 
   /* Measure each dot's relative position once (and on resize) */
   useEffect(() => {
@@ -181,6 +183,22 @@ export default function HistoryPage() {
         setDocked(nowDocked);
       }
 
+      // Determine which card the submarine is closest to → direction
+      if (offsets && offsets.length > 0) {
+        const subNorm = cableTravel > 0 ? travelPx / cableTravel : 0;
+        let closestIdx = 0;
+        let closestDist = Infinity;
+        offsets.forEach((o, i) => {
+          const d = Math.abs(o - subNorm);
+          if (d < closestDist) { closestDist = d; closestIdx = i; }
+        });
+        const fl = closestIdx % 2 === 0; // even = LEFT card
+        if (fl !== facingLeftRef.current) {
+          facingLeftRef.current = fl;
+          setFacingLeft(fl);
+        }
+      }
+
       // smoothed velocity (px per ~frame)
       const now = performance.now();
       const sd = scrollData.current;
@@ -215,9 +233,9 @@ export default function HistoryPage() {
       pose.pitch += (targetPitch - pose.pitch) * 0.07;
       pose.speed += (targetSpeed - pose.speed) * 0.09;
 
-      const rot = `rotate(${pose.pitch.toFixed(2)}deg)`;
+      const rot = `${facingLeftRef.current ? 'scaleX(-1) ' : ''}rotate(${pose.pitch.toFixed(2)}deg)`;
       if (subDeskRef.current) subDeskRef.current.style.transform = rot;
-      if (subMobRef.current) subMobRef.current.style.transform = rot;
+      if (subMobRef.current) subMobRef.current.style.transform = `rotate(${pose.pitch.toFixed(2)}deg)`;
 
       // stall the propeller almost fully when docked
       const dur = `${Math.max(14, 1.1 / pose.speed).toFixed(2)}s`;
@@ -340,6 +358,7 @@ export default function HistoryPage() {
               size="desktop"
               topPx={subTop}
               docked={docked}
+              facingLeft={facingLeft}
               svgRef={subDeskRef}
               propRef={propDeskRef}
               trailRef={trailDeskRef}
@@ -349,6 +368,7 @@ export default function HistoryPage() {
               size="mobile"
               topPx={subTop}
               docked={docked}
+              facingLeft={false}
               svgRef={subMobRef}
               propRef={propMobRef}
               trailRef={trailMobRef}
