@@ -365,12 +365,12 @@ function RobotsCockpit() {
               {/* Glow behind image */}
               <div
                 className={`absolute -inset-4 rounded-3xl blur-2xl opacity-20 transition-colors duration-700 ${
-                  isASV ? 'bg-sky-400' : 'bg-emerald-400'
+                  isASV ? 'bg-sky-300/40' : 'bg-teal-300/40'
                 } animate-cockpit-glow`}
               />
 
               {/* Image container */}
-              <div className="relative rounded-2xl overflow-hidden bg-sky-900/30 backdrop-blur-sm border border-sky-400/10 shadow-lg shadow-black/30 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-sky-500/10">
+              <div className="relative rounded-2xl overflow-hidden bg-sky-900/30 backdrop-blur-sm border border-sky-300/10 shadow-lg shadow-black/30 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-sky-500/10">
                 <div className="relative w-full aspect-[16/10]">
                   <ImageWithFallback
                     key={imageKey}
@@ -397,8 +397,8 @@ function RobotsCockpit() {
                       group/thumb relative aspect-[3/2] rounded-xl overflow-hidden
                       transition-all duration-300 border
                       ${i === activeIdx
-                        ? 'border-sky-400/60 shadow-md shadow-sky-400/20 scale-[1.02] ring-2 ring-sky-400/20'
-                        : 'border-sky-400/10 opacity-40 hover:opacity-70 hover:border-sky-400/30 hover:shadow-sm'
+                        ? 'border-sky-300/40 shadow-md shadow-sky-300/10 scale-[1.02] ring-2 ring-sky-300/15'
+                        : 'border-sky-300/10 opacity-40 hover:opacity-70 hover:border-sky-300/25 hover:shadow-sm'
                       }
                     `}
                     aria-label={r.name}
@@ -423,7 +423,7 @@ function RobotsCockpit() {
             <div key={imageKey} className="animate-fade-up space-y-4">
               <div>
                 <span className={`text-xs font-bold uppercase tracking-widest ${
-                  isASV ? 'text-sky-400' : 'text-emerald-400'
+                  isASV ? 'text-sky-300' : 'text-teal-300'
                 }`}>
                   {robot.category}
                 </span>

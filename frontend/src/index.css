@@ -377,6 +377,9 @@
     opacity: 1;
     transform: translateX(0) scale(1);
   }
+  .reveal-row .log-card:hover {
+    z-index: 3;
+  }
   .reveal-row .log-conn {
     transform: scaleX(0);
     transform-origin: var(--origin, right);
