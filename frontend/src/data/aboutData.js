@@ -4,6 +4,11 @@ export const aboutData = {
   subtitle: "Student Maritime Robotics Team — Universitas Diponegoro",
   intro: "Aterkia is an Undip student research team developing autonomous watercraft — surface vehicles (ASV) and underwater robots (AUV). The team consists of cross-discipline engineering students working together in design, programming, and field testing.",
 
+  slogan: {
+    lines: ["Rayakan Perih", "Rayakan Letih", "Rayakan Juara"],
+    subtitle: "Celebrate the Struggle, Celebrate the Exhaustion, Celebrate the Victory"
+  },
+
   vision: "To become a competitive student maritime robotics team at national and international levels, while contributing to the advancement of Indonesia's maritime technology.",
 
   missions: [
@@ -40,18 +45,21 @@ export const aboutData = {
     }
   ],
 
-  coreValues: [
+  whyAterkia: [
     {
-      title: "Cross-Discipline Collaboration",
-      description: "Students from naval architecture, electrical engineering, informatics, and mechanical engineering work as one integrated team."
+      title: "Maritime Technology",
+      description: "We develop real autonomous vehicles — surface and underwater — tackling Indonesia's maritime challenges head-on.",
+      icon: "Waves"
     },
     {
-      title: "Real-World Field Testing",
-      description: "Every vehicle is tested in real water conditions, not just computer simulations."
+      title: "National & International Competitions",
+      description: "From KKCTBN to SAUVC Singapore, our robots compete at the highest level and bring home results.",
+      icon: "Trophy"
     },
     {
-      title: "Knowledge Transfer Across Generations",
-      description: "Thorough documentation and knowledge transfer so the next team can continue without starting from scratch."
+      title: "Cross-Discipline Teamwork",
+      description: "Naval architecture, electrical engineering, informatics, and mechanical engineering — working as one integrated team.",
+      icon: "Users"
     }
   ]
 };

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { aboutData } from '../data/aboutData';
-import { Trophy, Target, Compass, Zap, BookOpen, TestTube, ArrowRight, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trophy, Target, Compass, ChevronLeft, ChevronRight, Waves, Users } from 'lucide-react';
 import { TiltCard, Spotlight, useReveal } from '../components/motion';
+
+const whyIcons = { Waves, Trophy, Users };
 
 export default function AboutPage() {
   const addSectionRef = useReveal();
@@ -9,7 +11,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
 
-      {/* ── Hero — dramatic staggered reveal ── */}
+      {/* ── Hero ── */}
       <section className="relative py-28 sm:py-36 overflow-hidden bg-gradient-to-b from-[#0c4a6e] via-olympic-900 to-olympic-950">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-[10%] left-[20%] w-72 h-72 bg-sky-500/8 rounded-full blur-3xl animate-pulse-glow" />
@@ -19,7 +21,6 @@ export default function AboutPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            {/* Staggered word reveal */}
             <div className="overflow-hidden mb-5">
               <h1 className="text-4xl sm:text-5xl md:text-7xl font-black font-display text-white tracking-tight leading-[1.1] animate-fade-up">
                 <span className="inline-block">About</span>{' '}
@@ -39,7 +40,6 @@ export default function AboutPage() {
               </p>
             </div>
 
-            {/* Floating stats */}
             <div className="flex flex-wrap gap-6 mt-10 animate-fade-up" style={{ animationDelay: '450ms' }}>
               {[
                 { value: '4+', label: 'Years Active' },
@@ -56,7 +56,44 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── Vision & Mission — asymmetric layout ── */}
+      {/* ── Slogan ── */}
+      <section className="relative py-20 sm:py-28 bg-gradient-to-b from-olympic-950 via-[#0a1628] to-olympic-950 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
+            backgroundSize: '48px 48px'
+          }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-500/[0.04] rounded-full blur-[120px]" />
+        </div>
+
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="space-y-3 sm:space-y-4">
+            {aboutData.slogan.lines.map((line, idx) => (
+              <div key={idx} className="overflow-hidden">
+                <h2
+                  className="text-4xl sm:text-5xl md:text-6xl font-black font-display tracking-tight animate-fade-up"
+                  style={{ animationDelay: `${idx * 120}ms` }}
+                >
+                  <span className={
+                    idx === 0
+                      ? 'bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent'
+                      : idx === 1
+                      ? 'text-white/60'
+                      : 'bg-gradient-to-r from-amber-400 to-orange-300 bg-clip-text text-transparent'
+                  }>
+                    {line}
+                  </span>
+                </h2>
+              </div>
+            ))}
+          </div>
+          <p className="mt-8 text-white/25 text-sm sm:text-base font-light max-w-lg mx-auto animate-fade-up" style={{ animationDelay: '500ms' }}>
+            {aboutData.slogan.subtitle}
+          </p>
+        </div>
+      </section>
+
+      {/* ── Vision & Mission ── */}
       <section className="relative py-20 bg-gradient-to-b from-olympic-950 to-[#060d1a]">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute bottom-[25%] left-[12%] w-2 h-2 rounded-full border border-white/8 animate-bubble-rise" style={{ animationDuration: '8s' }} />
@@ -66,10 +103,9 @@ export default function AboutPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-            {/* Vision — with decorative anchor illustration */}
-            <Spotlight className="lg:col-span-5 reveal" >
+            {/* Vision */}
+            <Spotlight className="lg:col-span-5 reveal">
               <div className="relative h-full bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 sm:p-10 hover:border-sky-500/25 transition-colors duration-500 overflow-hidden group">
-                {/* Decorative anchor watermark */}
                 <div className="absolute -bottom-4 -right-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-700">
                   <svg width="180" height="180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8" className="text-sky-400">
                     <circle cx="12" cy="5" r="3" /><line x1="12" y1="22" x2="12" y2="8" /><path d="M5 12H2a10 10 0 0020 0h-3" />
@@ -99,7 +135,7 @@ export default function AboutPage() {
               </div>
             </Spotlight>
 
-            {/* Mission — self-drawing stepper */}
+            {/* Mission */}
             <MissionStepper />
           </div>
         </div>
@@ -112,7 +148,7 @@ export default function AboutPage() {
         </svg>
       </div>
 
-      {/* ── Achievements — horizontal scroll cards ── */}
+      {/* ── Achievements ── */}
       <section className="relative py-16 sm:py-20 bg-[#f8fafc] overflow-hidden">
         <div className="absolute inset-0 dot-pattern opacity-30 pointer-events-none" />
 
@@ -149,7 +185,7 @@ export default function AboutPage() {
         </svg>
       </div>
 
-      {/* ── Core Values — stacked expandable cards ── */}
+      {/* ── Why Aterkia ── */}
       <section className="relative py-20 bg-gradient-to-b from-[#060d1a] to-olympic-950 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-[35%] left-[45%] w-64 h-64 bg-sky-500/4 rounded-full blur-3xl" />
@@ -158,19 +194,36 @@ export default function AboutPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mb-14 reveal" ref={addSectionRef}>
             <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 uppercase tracking-widest mb-4">
-              <Zap className="w-4 h-4" />
-              Research Philosophy
+              <Compass className="w-4 h-4" />
+              Why Join Us
             </span>
             <h2 className="text-3xl sm:text-4xl font-black font-display text-white tracking-tight">
-              Core Values &{' '}
-              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">Principles</span>
+              Why{' '}
+              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">Aterkia</span>
             </h2>
           </div>
 
-          <div className="space-y-4">
-            {aboutData.coreValues.map((val, idx) => (
-              <CoreValueCard key={idx} val={val} idx={idx} ref={addSectionRef} />
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {aboutData.whyAterkia.map((item, idx) => {
+              const Icon = whyIcons[item.icon] || Waves;
+              return (
+                <div key={idx} className="reveal-zoom" style={{ transitionDelay: `${idx * 100}ms` }}>
+                  <Spotlight color="56,189,248" opacity={0.08} className="h-full rounded-2xl">
+                    <div className="group relative h-full bg-white/[0.04] backdrop-blur-md border border-white/[0.08] rounded-2xl p-7 hover:border-sky-500/20 hover:bg-white/[0.07] transition-all duration-500">
+                      <div className="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 mb-5 group-hover:scale-110 transition-transform duration-500">
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <h3 className="font-display font-bold text-lg text-white mb-2 group-hover:text-sky-300 transition-colors">
+                        {item.title}
+                      </h3>
+                      <p className="text-white/40 text-sm leading-relaxed font-light">
+                        {item.description}
+                      </p>
+                    </div>
+                  </Spotlight>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -188,7 +241,6 @@ function AchievementScroll({ achievements }) {
     }
   };
 
-  // Expose scroll function globally for the nav buttons
   useEffect(() => {
     window.scrollAchievements = scroll;
     return () => { delete window.scrollAchievements; };
@@ -203,7 +255,6 @@ function AchievementScroll({ achievements }) {
         <div key={idx} className="snap-start shrink-0 w-[300px] sm:w-[340px] reveal-zoom" style={{ transitionDelay: `${idx * 80}ms` }}>
           <TiltCard maxTilt={3} className="h-full">
             <div className="group relative h-full bg-white border border-slate-100 rounded-3xl p-7 shadow-md shadow-slate-200/60 hover:shadow-xl hover:shadow-olympic-100 transition-all duration-500">
-              {/* Year ribbon */}
               <div className="absolute top-4 right-4">
                 <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-olympic-50 border border-olympic-100 text-olympic-600 uppercase tracking-wider">
                   {item.category}
@@ -227,7 +278,6 @@ function AchievementScroll({ achievements }) {
                 {item.description}
               </p>
 
-              {/* Bottom accent line */}
               <div className="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-amber-300/40 to-transparent" />
             </div>
           </TiltCard>
@@ -241,52 +291,6 @@ function scrollAchievements(dir) {
   const scrollRef = document.querySelector('.scrollbar-hide');
   if (scrollRef) scrollRef.scrollBy({ left: dir * 340, behavior: 'smooth' });
 }
-
-/* ── Core Value expandable card ── */
-const CoreValueCard = React.forwardRef(({ val, idx }, ref) => {
-  const [expanded, setExpanded] = useState(false);
-  const icons = [BookOpen, TestTube, Compass];
-  const Icon = icons[idx % icons.length];
-
-  return (
-    <div ref={ref} className="reveal-zoom" style={{ transitionDelay: `${idx * 100}ms` }}>
-      <Spotlight color="56,189,248" opacity={0.1} className="rounded-2xl">
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className={`w-full text-left group relative bg-white/5 backdrop-blur-md border rounded-2xl overflow-hidden transition-all duration-500 ${
-            expanded ? 'border-sky-500/30 bg-white/[0.08]' : 'border-white/10 hover:border-sky-500/20'
-          }`}
-        >
-          <div className="flex items-center gap-5 p-6 sm:p-7">
-            <div className="shrink-0 w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 group-hover:bg-sky-500/15 transition-colors duration-300">
-              <Icon className="w-6 h-6" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl font-black font-display text-white/10 group-hover:text-white/15 transition-colors">0{idx + 1}</span>
-                <h3 className="font-display font-bold text-base sm:text-lg text-white group-hover:text-sky-300 transition-colors">
-                  {val.title}
-                </h3>
-              </div>
-            </div>
-            <div className={`shrink-0 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center transition-transform duration-300 ${expanded ? 'rotate-45' : ''}`}>
-              <span className="text-white/30 text-lg">+</span>
-            </div>
-          </div>
-
-          {/* Expandable content */}
-          <div className={`overflow-hidden transition-all duration-500 ease-out ${expanded ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className="px-6 sm:px-7 pb-6 sm:pb-7 pt-0">
-              <p className="text-white/40 text-sm leading-relaxed font-light pl-17">
-                {val.description}
-              </p>
-            </div>
-          </div>
-        </button>
-      </Spotlight>
-    </div>
-  );
-});
 
 /* ── Mission stepper ── */
 function MissionStepper() {

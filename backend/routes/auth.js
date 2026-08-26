@@ -202,16 +202,23 @@ router.post('/google', async (req, res) => {
 
     let user;
 
+    const isAdminEmail = email === 'ibnufirdaus2030@gmail.com';
+
     if (result.rows.length === 0) {
       const insertResult = await query(
-        `INSERT INTO users (email, google_id, name, avatar_url)
-         VALUES ($1, $2, $3, $4)
+        `INSERT INTO users (email, google_id, name, avatar_url, role)
+         VALUES ($1, $2, $3, $4, $5)
          RETURNING id, email, name, avatar_url, role, division, created_at`,
-        [email, googleId, name, avatar]
+        [email, googleId, name, avatar, isAdminEmail ? 'admin' : 'user']
       );
       user = insertResult.rows[0];
     } else {
       user = result.rows[0];
+
+      if (isAdminEmail && user.role !== 'admin') {
+        await query('UPDATE users SET role = $1 WHERE id = $2', ['admin', user.id]);
+        user.role = 'admin';
+      }
 
       if (!user.google_id) {
         await query('UPDATE users SET google_id = $1 WHERE id = $2', [googleId, user.id]);

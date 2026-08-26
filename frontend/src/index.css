@@ -562,6 +562,25 @@
     50% { background-position: 100% 50%; }
   }
 
+  @keyframes diveExpand {
+    0% { transform: scale(0); border-radius: 50%; }
+    60% { border-radius: 50%; }
+    100% { transform: scale(1); border-radius: 0; }
+  }
+  .animate-dive-expand {
+    animation: diveExpand 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-3px); }
+  }
+  .animate-shake {
+    animation: shake 0.4s ease-in-out;
+  }
+
   .glass {
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(12px);
