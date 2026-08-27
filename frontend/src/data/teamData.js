@@ -19,7 +19,7 @@ export const teamMembers = [
     fullName: "Muhammad Rayhan Pratama",
     role: "General Team Leader",
     division: "Leadership",
-    photo: "/images/team/lead-rayhan.jpg",
+    photo: "",
     bio: "Memimpin koordinasi riset divisi ASV dan AUV serta manajemen tim.",
     specialty: "Systems Engineering",
     socials: {
@@ -34,7 +34,7 @@ export const teamMembers = [
     fullName: "Annisa Rahmawati Putri",
     role: "Vice Leader & Operations",
     division: "Leadership",
-    photo: "/images/team/vice-annisa.jpg",
+    photo: "",
     bio: "Mengelola operasional tim, jadwal pengujian lapangan, dan logistik.",
     specialty: "Operations Management",
     socials: {
@@ -47,7 +47,7 @@ export const teamMembers = [
     fullName: "Farhan Arya Maulana",
     role: "ASV Division Lead",
     division: "ASV Division",
-    photo: "/images/team/asv-farhan.jpg",
+    photo: "",
     bio: "Fokus riset navigasi otonom kapal permukaan dan penentuan jalur.",
     specialty: "ROS2 & Path Planning",
     socials: {
@@ -61,7 +61,7 @@ export const teamMembers = [
     fullName: "Bayu Tri Pamungkas",
     role: "ASV Hull & Hydrodynamics",
     division: "ASV Division",
-    photo: "/images/team/asv-bayu.jpg",
+    photo: "",
     bio: "Perancangan lambung Catamaran serat karbon untuk kapal ASV.",
     specialty: "Catamaran CFD & Infusion",
     socials: {
@@ -74,7 +74,7 @@ export const teamMembers = [
     fullName: "Satria Dewantara",
     role: "AUV Division Lead",
     division: "AUV Division",
-    photo: "/images/team/auv-satria.jpg",
+    photo: "",
     bio: "Perancangan robot selam bawah air dan kendali 6-DOF.",
     specialty: "Underwater Robotics & SAUVC",
     socials: {
@@ -88,7 +88,7 @@ export const teamMembers = [
     fullName: "Citra Amelia Lestari",
     role: "AUV Pressure Hull",
     division: "AUV Division",
-    photo: "/images/team/auv-citra.jpg",
+    photo: "",
     bio: "Perancangan tabung akrilik tahan air IP68 dan sistem daya apung.",
     specialty: "Pressure Vessel & Buoyancy",
     socials: {
@@ -101,7 +101,7 @@ export const teamMembers = [
     fullName: "Dimas Aditya Wicaksono",
     role: "Computer Vision & AI",
     division: "Software",
-    photo: "/images/team/soft-dimas.jpg",
+    photo: "",
     bio: "Pengembangan model deteksi objek pelampung dan target bawah air.",
     specialty: "PyTorch & TensorRT",
     socials: {
@@ -115,7 +115,7 @@ export const teamMembers = [
     fullName: "Rizky Dwi Nugroho",
     role: "Lead Electrical",
     division: "Electrical",
-    photo: "/images/team/elec-rizky.jpg",
+    photo: "",
     bio: "Desain sistem kelistrikan, papan sirkuit PCB, dan distribusi daya.",
     specialty: "PDU & BMS Design",
     socials: {
@@ -128,7 +128,7 @@ export const teamMembers = [
     fullName: "Ilham Fathurrahman",
     role: "Lead Mechanical",
     division: "Mechanical",
-    photo: "/images/team/mech-ilham.jpg",
+    photo: "",
     bio: "Fabrikasi komposit serat karbon dan perakitan mekanik robot.",
     specialty: "Composites & SolidWorks",
     socials: {
@@ -141,7 +141,7 @@ export const teamMembers = [
     fullName: "Nabila Putri Salsabila",
     role: "Lead Media & Creative",
     division: "Media & Creative",
-    photo: "/images/team/media-nabila.jpg",
+    photo: "",
     bio: "Dokumentasi visual, video uji coba, dan publikasi media sosial.",
     specialty: "Videography & Branding",
     socials: {
@@ -164,7 +164,7 @@ export const divisionTeams = {
       fullName: "Nama Dosen Pembimbing ASV",
       role: "Dosen Pembimbing",
       division: "ASV",
-      photo: "/images/team/asv/dosen-pembimbing.jpg",
+      photo: "",
       instagram: "@dosen.asv",
       expertise: ["Riset Maritim", "Validasi Sistem", "Strategi Tim"],
       bio: "Mengarahkan riset, validasi rekayasa, serta pengembangan strategis divisi ASV."
@@ -174,7 +174,7 @@ export const divisionTeams = {
       fullName: "Nama Ketua ASV",
       role: "Ketua Divisi ASV",
       division: "ASV",
-      photo: "/images/team/asv/ketua.jpg",
+      photo: "",
       instagram: "@ketua.asv",
       expertise: ["Team Leadership", "System Integration", "Autonomous Navigation"],
       bio: "Memimpin pengembangan sistem ASV dan menyatukan pekerjaan mekanik, elektrik, serta perangkat lunak."
@@ -184,7 +184,7 @@ export const divisionTeams = {
       fullName: "Nama Wakil Ketua ASV",
       role: "Wakil Ketua Divisi ASV",
       division: "ASV",
-      photo: "/images/team/asv/wakil-ketua.jpg",
+      photo: "",
       instagram: "@wakil.asv",
       expertise: ["Project Management", "Field Testing", "Mission Strategy"],
       bio: "Mengawal eksekusi teknis, pengujian lapangan, dan koordinasi harian setiap sub-divisi."
@@ -200,7 +200,7 @@ export const divisionTeams = {
           fullName: "Nama Ketua Mekanik ASV",
           role: "Ketua Mekanik ASV",
           division: "ASV",
-          photo: "/images/team/asv/member-01.jpg",
+          photo: "",
           instagram: "@mekanik.asv",
           expertise: ["Hull Design", "Manufacturing", "Propulsion"],
           bio: "Memimpin pengembangan mekanik, manufaktur, dan integrasi struktur ASV."
@@ -217,7 +217,7 @@ export const divisionTeams = {
           fullName: "Nama Ketua Elkapro ASV",
           role: "Ketua Elkapro ASV",
           division: "ASV",
-          photo: "/images/team/asv/member-05.jpg",
+          photo: "",
           instagram: "@elkapro.asv",
           expertise: ["Electrical System", "Autonomous Program", "Computer Vision"],
           bio: "Memimpin integrasi kelistrikan dan perangkat lunak otonom ASV."
@@ -239,7 +239,7 @@ export const divisionTeams = {
       fullName,
       role,
       division: "ASV",
-      photo: `/images/team/asv/member-${String(index + 1).padStart(2, "0")}.jpg`
+      photo: ""
     }))
   },
   AUV: {
@@ -252,7 +252,7 @@ export const divisionTeams = {
       fullName: "Nama Dosen Pembimbing AUV",
       role: "Dosen Pembimbing",
       division: "AUV",
-      photo: "/images/team/auv/dosen-pembimbing.jpg",
+      photo: "",
       instagram: "@dosen.auv",
       expertise: ["Underwater Robotics", "System Safety", "Research Direction"],
       bio: "Membimbing arah riset, keselamatan sistem bawah air, dan pengembangan strategis divisi AUV."
@@ -262,7 +262,7 @@ export const divisionTeams = {
       fullName: "Feby Finance",
       role: "Ketua Divisi AUV",
       division: "AUV",
-      photo: "/images/team/auv/feby-finance-clean.png",
+      photo: "/images/team/auv/feby-finance-clean.webp",
       instagram: "@febyfinance",
       expertise: ["Team Leadership", "System Integration", "Underwater Robotics"],
       bio: "Memimpin integrasi mekanik, elektronika, persepsi, dan kendali robot bawah air."
@@ -272,7 +272,7 @@ export const divisionTeams = {
       fullName: "Nama Wakil Ketua AUV",
       role: "Wakil Ketua Divisi AUV",
       division: "AUV",
-      photo: "/images/team/auv/wakil-ketua.jpg",
+      photo: "",
       instagram: "@wakil.auv",
       expertise: ["Control Systems", "Pool Testing", "Competition Readiness"],
       bio: "Mengelola implementasi teknis, pengujian kolam, dan kesiapan sistem menuju kompetisi."
@@ -288,7 +288,7 @@ export const divisionTeams = {
           fullName: "Nama Ketua Mekanik AUV",
           role: "Ketua Mekanik AUV",
           division: "AUV",
-          photo: "/images/team/auv/member-01.jpg",
+          photo: "",
           instagram: "@mekanik.auv",
           expertise: ["Pressure Hull", "Buoyancy", "Mechanical Integration"],
           bio: "Memimpin perancangan mekanik dan integrasi struktur bawah air AUV."
@@ -305,7 +305,7 @@ export const divisionTeams = {
           fullName: "Nama Ketua Elkapro AUV",
           role: "Ketua Elkapro AUV",
           division: "AUV",
-          photo: "/images/team/auv/member-05.jpg",
+          photo: "",
           instagram: "@elkapro.auv",
           expertise: ["AUV Programming", "Control System", "Computer Vision"],
           bio: "Memimpin sistem elektrik, pemrograman otonom, dan persepsi visual AUV."
@@ -327,7 +327,7 @@ export const divisionTeams = {
       fullName,
       role,
       division: "AUV",
-      photo: `/images/team/auv/member-${String(index + 1).padStart(2, "0")}.jpg`
+      photo: ""
     }))
   },
   SECRETARY_TREASURER: {
@@ -340,7 +340,7 @@ export const divisionTeams = {
       fullName: "Nama Dosen Pembimbing Nonteknis",
       role: "Dosen Pembimbing",
       division: "NONTEKNIS",
-      photo: "/images/team/nontechnical/dosen-pembimbing.jpg",
+      photo: "",
       instagram: "@dosen.nonteknis",
       expertise: ["Organization", "Financial Governance", "Team Development"],
       bio: "Mendampingi tata kelola organisasi, administrasi, dan akuntabilitas keuangan tim."
@@ -350,7 +350,7 @@ export const divisionTeams = {
       fullName: "Nama Secretary",
       role: "Secretary",
       division: "NONTEKNIS",
-      photo: "/images/team/nontechnical/secretary.jpg",
+      photo: "",
       instagram: "@secretary.aterkia",
       expertise: ["Administration", "Documentation", "Team Coordination"],
       bio: "Mengelola administrasi, dokumentasi, agenda, dan alur informasi internal Aterkia."
@@ -360,7 +360,7 @@ export const divisionTeams = {
       fullName: "Nama Treasurer",
       role: "Treasurer",
       division: "NONTEKNIS",
-      photo: "/images/team/nontechnical/treasurer.jpg",
+      photo: "",
       instagram: "@treasurer.aterkia",
       expertise: ["Budgeting", "Financial Reporting", "Procurement"],
       bio: "Mengelola anggaran, pencatatan transaksi, dan kebutuhan pengadaan tim secara transparan."
@@ -375,7 +375,7 @@ export const divisionTeams = {
       fullName,
       role,
       division: "NONTEKNIS",
-      photo: `/images/team/nontechnical/sec-treas-${String(index + 1).padStart(2, "0")}.jpg`
+      photo: ""
     }))
   },
   OFFICIAL: {
@@ -388,7 +388,7 @@ export const divisionTeams = {
       fullName: "Nama Dosen Pembimbing Nonteknis",
       role: "Dosen Pembimbing",
       division: "NONTEKNIS",
-      photo: "/images/team/nontechnical/dosen-pembimbing.jpg",
+      photo: "",
       instagram: "@dosen.nonteknis",
       expertise: ["Public Relations", "Event Strategy", "Organization"],
       bio: "Mendampingi pengembangan komunikasi, relasi eksternal, dan pelaksanaan agenda resmi tim."
@@ -398,7 +398,7 @@ export const divisionTeams = {
       fullName: "Nama Koordinator Official",
       role: "Official Coordinator",
       division: "NONTEKNIS",
-      photo: "/images/team/nontechnical/official-coordinator.jpg",
+      photo: "",
       instagram: "@official.aterkia",
       expertise: ["Operations", "Public Relations", "Event Management"],
       bio: "Mengoordinasikan kebutuhan operasional, komunikasi publik, dan representasi resmi Aterkia."
@@ -408,7 +408,7 @@ export const divisionTeams = {
       fullName: "Nama Wakil Koordinator Official",
       role: "Vice Official Coordinator",
       division: "NONTEKNIS",
-      photo: "/images/team/nontechnical/official-vice.jpg",
+      photo: "",
       instagram: "@official.aterkia",
       expertise: ["Media Relations", "Field Operations", "Partnership"],
       bio: "Mendukung pelaksanaan acara, koordinasi lapangan, kemitraan, dan komunikasi eksternal."
@@ -425,7 +425,7 @@ export const divisionTeams = {
       fullName,
       role,
       division: "NONTEKNIS",
-      photo: `/images/team/nontechnical/official-${String(index + 1).padStart(2, "0")}.jpg`
+      photo: ""
     }))
   }
 };

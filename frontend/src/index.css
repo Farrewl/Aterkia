@@ -10951,15 +10951,294 @@
 
 /* Unified water-current treatment for every organizational flow. */
 .water-flow-line {
-  animation: water-flow-breathe 2.8s ease-in-out infinite;
+  animation: none;
+}
+
+/* Team performance pass: keep entrance/hover motion, but stop decorative
+   animations from repainting for the entire lifetime of this long page. */
+.team-page .team-track-card__surface,
+.team-page .division-choice__surface,
+.team-page .team-track-card::before,
+.team-page .team-track-card::after,
+.team-page .team-track-card__eyebrow i,
+.team-page .division-choice__eyebrow i,
+.team-page .team-president__signal,
+.team-page .team-president__eyebrow i,
+.team-page .team-president__emblem,
+.team-page .team-president__orbit,
+.team-page .team-structure__cue svg,
+.team-page .team-structure__bridge-node > svg,
+.team-page .team-leader-flow__line i,
+.team-page .division-path__back::before,
+.team-page .division-path__back::after {
+  animation: none;
+}
+
+/* Large blurred layers are particularly costly while scrolling on mobile.
+   The static gradients retain the aura without allocating animated blur layers. */
+.team-page .org-person__portrait::after,
+.team-page .org-person__portrait-frame::before,
+.team-page .org-person__portrait-glow {
+  animation: none;
+  filter: none;
+}
+
+.team-page .org-person__portrait::after,
+.team-page .org-person__portrait-frame::before {
+  opacity: 0.42;
+}
+
+.team-page .team-track-card,
+.team-page .division-choice,
+.team-page .humaan-member-card {
+  contain: layout paint;
+}
+
+@media (max-width: 767px) {
+  .team-page .org-scroll-reveal {
+    transform: translateY(2rem);
+    transition-duration: 520ms, 620ms;
+  }
+
+  .team-page .team-president,
+  .team-page .org-person,
+  .team-page .division-members {
+    box-shadow: 0 1.25rem 3rem rgba(6, 31, 55, 0.16);
+  }
+}
+
+/* Mechanical / Elkapro stay static while idle. Decorative circles and inner
+   elements never animate; only the shared selected-card state is allowed. */
+.team-page .subdivision-options,
+.team-page .subdivision-options:not(.has-selection) {
+  gap: clamp(1rem, 2vw, 2rem);
+}
+
+.team-page .subdivision-options .subdivision-option,
+.team-page .subdivision-options:not(.has-selection) .subdivision-option,
+.team-page .subdivision-options:not(.has-selection) .subdivision-option:hover,
+.team-page .subdivision-flow.is-visible .subdivision-option {
+  flex: 1 1 50%;
+  width: auto;
+  min-width: 0;
+  opacity: 1;
+  filter: none;
+  transform: none;
+  transition: none;
+  will-change: auto;
+}
+
+.team-page .subdivision-option::before,
+.team-page .subdivision-option::after,
+.team-page .subdivision-option:hover::before,
+.team-page .subdivision-option:hover::after,
+.team-page .subdivision-option.is-active-lite::before,
+.team-page .subdivision-option.is-active-lite::after {
+  transform: none;
+  transition: none;
+}
+
+.team-page .subdivision-option__action,
+.team-page .subdivision-option__action svg,
+.team-page .subdivision-option:hover .subdivision-option__action,
+.team-page .subdivision-option:hover .subdivision-option__action svg {
+  transform: none;
+  transition: none;
+}
+
+@media (max-width: 767px) {
+  .team-page .subdivision-options .subdivision-option,
+  .team-page .subdivision-options:not(.has-selection) .subdivision-option,
+  .team-page .subdivision-options:not(.has-selection) .subdivision-option:hover {
+    flex-basis: auto;
+    width: 100%;
+  }
+}
+
+/* Lightweight Team interactions. Selection changes are immediate; only cheap
+   compositor properties animate, so cards do not trigger layout every frame. */
+.team-page .team-track-card,
+.team-page .division-choice,
+.team-page .subdivision-option {
+  filter: none;
+  transition:
+    opacity 160ms ease-out,
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 180ms ease-out;
+  will-change: auto;
+}
+
+.team-page .track-chapter-card,
+.team-page .track-chapter-card__copy,
+.team-page .track-chapter-card__surface,
+.team-page .track-chapter-card__rail {
+  animation: none;
+}
+
+.team-page .animate-pulse,
+.team-page .animate-spin {
+  animation: none;
+}
+
+.team-page .division-choice.is-active-lite,
+.team-page .subdivision-option.is-active-lite {
+  border-color: rgba(112, 224, 246, 0.82);
+  box-shadow:
+    0 1rem 2.4rem rgba(4, 38, 72, 0.18),
+    inset 0 0 0 2px rgba(112, 224, 246, 0.3);
+  transform: translateY(-0.2rem);
+}
+
+.team-page .division-choice__action.is-back-lite,
+.team-page .subdivision-option__action.is-back-lite {
+  border-color: rgba(255, 255, 255, 0.72);
+  background: #ffffff;
+  color: #073a60;
+}
+
+/* Immediate selection state; only the brief press feedback is animated. */
+.team-page .team-selection-card {
+  transform-origin: center;
+}
+
+.team-page .team-selection-card:active {
+  transform: translateY(0) scale(0.985);
+  transition-duration: 80ms;
+}
+
+.team-page .team-selection-group {
+  position: relative;
+  isolation: isolate;
+}
+
+.team-page .team-selection-group.has-selection-lite > .team-selection-card.is-active-lite {
+  flex: 1 1 100% !important;
+  width: 100% !important;
+}
+
+.team-page .team-selection-group.has-selection-lite > .team-selection-card.is-inactive-lite {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-page .team-selection-card {
+    transition: none;
+  }
+}
+
+.team-page .subdivision-result.team-selection-panel {
+  contain: layout paint style;
+}
+
+.team-page .subdivision-result__story {
+  --sub-result-upper: 1;
+  --sub-result-title: 1;
+  --sub-result-lower: 1;
+}
+
+@media (hover: hover) and (min-width: 768px) {
+  .team-page .team-track-grid:not(.is-transitioning) .team-track-card,
+  .team-page .team-track-grid:not(.is-transitioning):has(.team-track-card:hover) .team-track-card,
+  .team-page .team-track-grid:not(.is-transitioning) .team-track-card:hover,
+  .team-page .division-path .division-split:not(.has-selection) .division-choice,
+  .team-page .division-path .division-split:not(.has-selection):has(.division-choice:hover) .division-choice,
+  .team-page .division-path .division-split:not(.has-selection) .division-choice:hover {
+    flex-basis: 50%;
+    width: 50%;
+    filter: none;
+  }
+
+  .team-page .team-track-grid:not(.is-transitioning) .team-track-card:hover,
+  .team-page .division-path .division-split:not(.has-selection) .division-choice:hover {
+    transform: translateY(-0.25rem);
+  }
+}
+
+/* Selected ASV/AUV uses the same rounded chapter container as Technical. */
+.team-page .division-path .division-split.has-selection-lite {
+  display: flex;
+  width: 100%;
+  max-width: none;
+  min-height: clamp(31rem, 42vw, 44rem);
+  padding: 0 0 clamp(4rem, 7vw, 7rem);
+  gap: 0;
+  overflow: visible;
+}
+
+.team-page .division-path .division-split.has-selection-lite > .division-choice.is-active-lite {
+  flex: 0 1 112.5rem !important;
+  width: min(calc(100% - clamp(2rem, 7vw, 9rem)), 112.5rem) !important;
+  min-width: 0;
+  min-height: clamp(31rem, 42vw, 44rem);
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: clamp(2rem, 3.2vw, 3.75rem);
+  box-shadow:
+    0 2.4rem 5.5rem rgba(8, 42, 74, 0.23),
+    0 0.6rem 1.4rem rgba(8, 42, 74, 0.09);
+}
+
+@media (max-width: 767px) {
+  .team-page .division-path .division-split.has-selection-lite {
+    min-height: 31rem;
+    padding-bottom: 4rem;
+  }
+
+  .team-page .division-path .division-split.has-selection-lite > .division-choice.is-active-lite {
+    flex-basis: auto !important;
+    width: min(calc(100% - 1.5rem), 34rem) !important;
+    min-height: 31rem;
+    border-radius: 2rem;
+  }
 }
 
 /* Keep the complete route chromatic even before the scroll-filled current arrives. */
 .water-flow-base {
   opacity: 0.46;
-  filter:
-    drop-shadow(0 0 0.24rem rgba(18, 198, 228, 0.16))
-    drop-shadow(0 0 0.32rem rgba(255, 134, 103, 0.1));
+  filter: none;
+}
+
+/* Team flow animations run once on entry.  Avoid animated SVG filters and
+   scroll-time layout work, which are especially expensive on long team pages. */
+.team-leader-flow > svg,
+.division-route-story__line,
+.division-profile-story__line,
+.division-leadership-story__line,
+.subdivision-result__line {
+  filter: none;
+}
+
+.team-leader-flow path,
+.division-route-story__line,
+.division-profile-story__line,
+.division-leadership-story__line,
+.subdivision-flow__line,
+.subdivision-result__line {
+  transition: stroke-dashoffset 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: auto;
+}
+
+.team-structure__heading-copy,
+.team-leader-flow > .team-leader-flow__vision,
+.division-route-story__heading,
+.division-profile-story__intro,
+.division-profile-story__advisor-title,
+.division-leadership-story__title,
+.subdivision-flow__heading,
+.subdivision-result__story-title {
+  transition: opacity 380ms ease-out, transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: auto;
+}
+
+.subdivision-option {
+  transition:
+    flex-basis 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 380ms ease-out,
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 350ms ease,
+    box-shadow 350ms ease;
+  will-change: auto;
 }
 
 .division-profile-story::before,
@@ -11077,5 +11356,246 @@
       transform: translateY(-600px) scale(1.3);
       opacity: 0;
     }
+  }
+}
+
+/* Team performance: selection has no animation gate. Only short hover/press
+   feedback remains, and long detail sections render near the viewport. */
+.team-page .team-selection-card,
+.team-page .team-track-card,
+.team-page .division-choice,
+.team-page .subdivision-option {
+  transition:
+    transform 120ms ease-out,
+    border-color 120ms ease-out,
+    box-shadow 120ms ease-out;
+  will-change: auto;
+}
+
+.team-page .team-selection-card.is-active-lite,
+.team-page .division-choice.is-active-lite,
+.team-page .subdivision-option.is-active-lite,
+.team-page .team-selection-panel,
+.team-page .subdivision-result.team-selection-panel {
+  animation: none;
+}
+
+.team-page .division-choice.is-active-lite,
+.team-page .subdivision-option.is-active-lite {
+  transform: none;
+}
+
+.team-page .org-scroll-reveal,
+.team-page .humaan-card-reveal,
+.team-page .water-flow-line,
+.team-page .team-leader-flow path,
+.team-page .division-route-story__line,
+.team-page .division-profile-story__line,
+.team-page .division-leadership-story__line,
+.team-page .subdivision-flow__line,
+.team-page .subdivision-result__line,
+.team-page .team-structure__heading-copy,
+.team-page .team-leader-flow > .team-leader-flow__vision,
+.team-page .division-route-story__heading,
+.team-page .division-profile-story__intro,
+.team-page .division-profile-story__advisor-title,
+.team-page .division-leadership-story__title,
+.team-page .subdivision-flow__heading,
+.team-page .subdivision-result__story-title {
+  animation: none;
+  transition: none;
+  will-change: auto;
+}
+
+.team-page .division-detail > .org-feature-wrap,
+.team-page .division-detail > .division-leadership-story,
+.team-page .division-detail > .division-members,
+.team-page .subdivision-result > .org-feature-wrap,
+.team-page .subdivision-result > .division-members {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+
+@media (max-width: 767px) {
+  .team-page .team-selection-card,
+  .team-page .team-track-card,
+  .team-page .division-choice,
+  .team-page .subdivision-option {
+    transition-duration: 80ms;
+  }
+
+  .team-page .team-selection-card:hover,
+  .team-page .team-track-card:hover,
+  .team-page .division-choice:hover,
+  .team-page .subdivision-option:hover {
+    transform: none;
+  }
+}
+
+/* Video-reference selection pattern: the chosen card becomes the single
+   full-width chapter. Inner decorations remain static to keep it smooth. */
+.team-page .subdivision-options.has-selection-lite {
+  gap: 0;
+}
+
+.team-page .track-chapter-card,
+.team-page .division-choice.is-active-lite,
+.team-page .subdivision-option.is-active-lite {
+  animation: team-choice-focus 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.team-page .division-path.team-selection-panel,
+.team-page .division-detail.team-selection-panel,
+.team-page .subdivision-result.team-selection-panel {
+  animation: team-choice-content-enter 200ms ease-out both;
+}
+
+@keyframes team-choice-focus {
+  from {
+    opacity: 0.9;
+    transform: scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes team-choice-content-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-page .track-chapter-card,
+  .team-page .division-choice.is-active-lite,
+  .team-page .subdivision-option.is-active-lite,
+  .team-page .division-path.team-selection-panel,
+  .team-page .division-detail.team-selection-panel,
+  .team-page .subdivision-result.team-selection-panel {
+    animation: none;
+  }
+}
+
+/* ASV/AUV hover ownership: old parent :has() and left/right entrance
+   animations could keep ASV moving while AUV was under the pointer. */
+.team-page .division-path .division-split:not(.has-selection-lite) .division-choice,
+.team-page .division-path .division-split:not(.has-selection-lite) .division-choice:first-child,
+.team-page .division-path .division-split:not(.has-selection-lite) .division-choice:last-child {
+  animation: none;
+  opacity: 1;
+}
+
+@media (hover: hover) and (min-width: 768px) {
+  .team-page .division-path .division-split:not(.has-selection-lite):has(.division-choice:hover) .division-choice,
+  .team-page .division-path .division-split:not(.has-selection-lite) .division-choice,
+  .team-page .division-path .division-split:not(.has-selection-lite) .division-choice:hover {
+    flex: 1 1 50%;
+    width: 50%;
+    filter: none;
+    transform: none;
+  }
+
+  .team-page .division-path .division-split:not(.has-selection-lite) .division-choice {
+    box-shadow: none;
+    transition: border-color 140ms ease-out, box-shadow 140ms ease-out;
+  }
+
+  .team-page .division-path .division-split:not(.has-selection-lite) .division-choice:hover {
+    z-index: 2;
+    border-color: rgba(255, 255, 255, 0.55);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.22);
+  }
+}
+
+/* Remove the yellow ASV pulse/accent shown in the hover recording. */
+.team-page .division-choice--asv .division-choice__surface {
+  background:
+    radial-gradient(circle at 79% 12%, rgba(89, 217, 255, 0.72), transparent 28%),
+    radial-gradient(circle at 17% 90%, rgba(82, 184, 255, 0.28), transparent 34%),
+    linear-gradient(145deg, #071d4d 0%, #075fc6 48%, #00a8dc 118%);
+}
+
+.team-page .division-choice--asv .division-choice__surface::after {
+  border-color: rgba(164, 232, 255, 0.55);
+  box-shadow: inset 0 0 0 1.1rem rgba(101, 205, 255, 0.09);
+}
+
+.team-page .division-choice--asv .division-choice__action,
+.team-page .division-choice--asv:hover .division-choice__action {
+  background: #ffffff;
+  color: #004c97;
+}
+
+.team-page .division-choice--asv::before,
+.team-page .division-choice--asv::after,
+.team-page .division-choice--asv .division-choice__surface,
+.team-page .division-choice--asv .division-choice__surface::before,
+.team-page .division-choice--asv .division-choice__surface::after,
+.team-page .division-choice--asv .division-choice__action,
+.team-page .division-choice--asv .division-choice__action svg {
+  animation: none;
+  transition: none;
+}
+
+/* Match the lightweight Technical/Nontechnical card motion. ASV/AUV animate
+   only as one outer card; large gradients and decorative layers stay still. */
+.team-page .division-choice--asv,
+.team-page .division-choice--auv {
+  transition:
+    transform 140ms ease-out,
+    border-color 140ms ease-out,
+    box-shadow 140ms ease-out;
+  will-change: auto;
+}
+
+.team-page .division-choice--asv::before,
+.team-page .division-choice--asv::after,
+.team-page .division-choice--auv::before,
+.team-page .division-choice--auv::after,
+.team-page .division-choice--asv .division-choice__surface,
+.team-page .division-choice--auv .division-choice__surface,
+.team-page .division-choice--asv .division-choice__surface::before,
+.team-page .division-choice--asv .division-choice__surface::after,
+.team-page .division-choice--auv .division-choice__surface::before,
+.team-page .division-choice--auv .division-choice__surface::after,
+.team-page .division-choice--asv .division-choice__action,
+.team-page .division-choice--auv .division-choice__action,
+.team-page .division-choice--asv .division-choice__action svg,
+.team-page .division-choice--auv .division-choice__action svg {
+  animation: none;
+  transition: none;
+  filter: none;
+}
+
+.team-page .division-choice--asv:hover::before,
+.team-page .division-choice--asv:hover::after,
+.team-page .division-choice--auv:hover::before,
+.team-page .division-choice--auv:hover::after,
+.team-page .division-choice--asv:hover .division-choice__surface,
+.team-page .division-choice--auv:hover .division-choice__surface,
+.team-page .division-choice--asv:hover .division-choice__surface::after,
+.team-page .division-choice--auv:hover .division-choice__surface::after,
+.team-page .division-choice--asv:hover .division-choice__action,
+.team-page .division-choice--auv:hover .division-choice__action,
+.team-page .division-choice--asv:hover .division-choice__action svg,
+.team-page .division-choice--auv:hover .division-choice__action svg {
+  transform: none;
+  filter: none;
+}
+
+@media (hover: hover) and (min-width: 768px) {
+  .team-page .division-path .division-split:not(.has-selection-lite) .division-choice--asv:hover,
+  .team-page .division-path .division-split:not(.has-selection-lite) .division-choice--auv:hover {
+    transform: translateY(-0.25rem);
+    box-shadow:
+      0 1.5rem 3rem rgba(8, 42, 74, 0.18),
+      inset 0 0 0 2px rgba(255, 255, 255, 0.2);
   }
 }
