@@ -110,10 +110,18 @@ export const AuthProvider = ({ children }) => {
   const completeGoogleRedirectLogin = useCallback(async (token) => {
     localStorage.setItem('accessToken', token);
     setAccessToken(token);
-    const response = await authApi.me();
-    const userData = response.data.data.user;
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
+    try {
+      const response = await authApi.me();
+      const userData = response.data.data.user;
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+    } catch (error) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('user');
+      setAccessToken(null);
+      setUser(null);
+      throw error;
+    }
   }, []);
 
   const logout = async () => {

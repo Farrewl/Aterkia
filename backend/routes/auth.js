@@ -160,7 +160,14 @@ router.get('/google/callback', async (req, res) => {
     return res.redirect(`${frontendUrl()}/login#access_token=${encodeURIComponent(accessToken)}&return_to=${encodeURIComponent(returnTo)}`);
   } catch (err) {
     console.error('[Auth] Google callback error:', err);
-    return res.redirect(`${frontendUrl()}/login?error=google_login_failed`);
+    const errorCode = err.message === 'Account deactivated'
+      ? 'account_deactivated'
+      : err.message.includes('redirect')
+        ? 'redirect_uri_mismatch'
+        : err.message.includes('credentials') || err.message.includes('ID token')
+          ? 'google_credentials_invalid'
+          : 'google_login_failed';
+    return res.redirect(`${frontendUrl()}/login?error=${errorCode}`);
   }
 });
 

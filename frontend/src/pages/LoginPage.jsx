@@ -38,7 +38,14 @@ export default function LoginPage() {
       });
       return () => { active = false; };
     } else if (params.has('error')) {
-      setError('Google login could not be completed. Please try again.');
+      const errorMessages = {
+        google_cancelled: 'Google login was cancelled.',
+        invalid_oauth_state: 'Login session expired. Please try again.',
+        redirect_uri_mismatch: 'Google OAuth redirect URI is not configured correctly.',
+        google_credentials_invalid: 'Google OAuth credentials are invalid or incomplete.',
+        account_deactivated: 'This account has been deactivated.',
+      };
+      setError(errorMessages[params.get('error')] || 'Google login could not be completed. Please try again.');
       window.history.replaceState({}, document.title, '/login');
     }
   }, [completeGoogleRedirectLogin]);

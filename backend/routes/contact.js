@@ -34,6 +34,9 @@ const getTransporter = () => {
     port: Number(process.env.SMTP_PORT || 587),
     secure: process.env.SMTP_SECURE === 'true',
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   });
 };
 
@@ -106,10 +109,10 @@ router.post('/', (req, res) => upload.single('attachment')(req, res, async (uplo
       message: 'Message received. The Aterkia team will follow up shortly.',
     });
   } catch (err) {
-    console.error('[Contact] Failed to store message:', err.message);
+    console.error('[Contact] Failed to send message:', err.message);
     return res.status(503).json({
       success: false,
-      message: 'Our inbox is temporarily unreachable. Please email us directly.',
+      message: 'Email delivery failed. Please try again or email us directly.',
     });
   }
 }));
