@@ -42,8 +42,23 @@ const revokeAllUserTokens = async (userId) => {
 
 const frontendUrl = () => process.env.FRONTEND_URL || 'http://localhost:5173';
 
+const safeReturnTo = (value) => {
+  if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) return '/';
+  return value;
+};
+
 const setOAuthStateCookie = (res, state) => {
   res.cookie('google_oauth_state', state, {
+    httpOnly: true,
+    secure: process.env.COOKIE_SECURE === 'true',
+    sameSite: 'lax',
+    maxAge: 10 * 60 * 1000,
+    path: '/api/auth/google',
+  });
+};
+
+const setOAuthReturnCookie = (res, returnTo) => {
+  res.cookie('google_oauth_return', safeReturnTo(returnTo), {
     httpOnly: true,
     secure: process.env.COOKIE_SECURE === 'true',
     sameSite: 'lax',
@@ -100,7 +115,7 @@ const upsertGoogleUser = async (payload) => {
 // Verify Turnstile before starting the Google OAuth redirect flow.
 router.post('/google/start', async (req, res) => {
   try {
-    const { turnstileToken } = req.body;
+    const { turnstileToken, returnTo } = req.body;
     const turnstileSecret = process.env.TURNSTILE_SECRET_KEY || (
       process.env.NODE_ENV !== 'production' ? '1x0000000000000000000000000000000AA' : ''
     );
@@ -119,6 +134,7 @@ router.post('/google/start', async (req, res) => {
 
     const state = crypto.randomBytes(32).toString('hex');
     setOAuthStateCookie(res, state);
+    setOAuthReturnCookie(res, returnTo);
     return res.json({ success: true, authUrl: getGoogleAuthUrl(state) });
   } catch (err) {
     console.error('[Auth] Google start error:', err);
@@ -131,7 +147,9 @@ router.get('/google/callback', async (req, res) => {
   try {
     const { code, state, error } = req.query;
     const expectedState = req.cookies?.google_oauth_state;
+    const returnTo = safeReturnTo(req.cookies?.google_oauth_return);
     res.clearCookie('google_oauth_state', { path: '/api/auth/google' });
+    res.clearCookie('google_oauth_return', { path: '/api/auth/google' });
     if (error) return res.redirect(`${frontendUrl()}/login?error=google_cancelled`);
     if (!code || !state || !expectedState || state !== expectedState) {
       return res.redirect(`${frontendUrl()}/login?error=invalid_oauth_state`);
@@ -139,7 +157,7 @@ router.get('/google/callback', async (req, res) => {
 
     const { user, accessToken, refreshToken } = await upsertGoogleUser(await exchangeGoogleCode(code));
     setRefreshTokenCookie(res, refreshToken);
-    return res.redirect(`${frontendUrl()}/login#access_token=${encodeURIComponent(accessToken)}`);
+    return res.redirect(`${frontendUrl()}/login#access_token=${encodeURIComponent(accessToken)}&return_to=${encodeURIComponent(returnTo)}`);
   } catch (err) {
     console.error('[Auth] Google callback error:', err);
     return res.redirect(`${frontendUrl()}/login?error=google_login_failed`);

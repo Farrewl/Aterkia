@@ -167,6 +167,7 @@ export default function Navbar() {
             ) : (
               <NavLink
                 to="/login"
+                state={{ from: location }}
                 className={({ isActive }) =>
                   `px-5 py-2.5 rounded-2xl text-[13px] font-bold transition-all duration-300 border-2 ${
                     isActive
@@ -261,6 +262,7 @@ export default function Navbar() {
               ) : (
                 <NavLink
                   to="/login"
+                  state={{ from: location }}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border-2 border-olympic-500 text-olympic-500 font-bold text-sm tracking-wider hover:bg-olympic-50 transition-all"
                 >

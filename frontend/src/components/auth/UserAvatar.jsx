@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, User, Settings, ChevronDown } from 'lucide-react';
+import { LogOut, User, Settings, ChevronDown, Monitor } from 'lucide-react';
 import { useAuth } from '../../hooks';
 
 export default function UserAvatar() {
@@ -59,6 +59,15 @@ export default function UserAvatar() {
           >
             <User className="w-4 h-4 text-slate-400" />
             Profil
+          </Link>
+
+          <Link
+            to="/dashboard"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            <Monitor className="w-4 h-4 text-slate-400" />
+            Monitor {isAdmin ? '(Admin)' : '(View Only)'}
           </Link>
 
           {isAdmin && (

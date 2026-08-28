@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
 import { robotsData } from '../data/robotsData';
-import { Mail, MapPin, Send, CheckCircle2, ArrowUpRight, Anchor, MessageCircle, Users, Rocket, AlertCircle } from 'lucide-react';
+import { Mail, MapPin, Send, CheckCircle2, ArrowUpRight, Anchor, MessageCircle, Users, Rocket, AlertCircle, Paperclip, Bold, Italic, Underline } from 'lucide-react';
 import { sponsorsData } from '../data/sponsorsData';
 import ImageWithFallback from '../components/ImageWithFallback';
 import { contactApi } from '../services/api';
@@ -72,8 +72,10 @@ export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [attachment, setAttachment] = useState(null);
   const [visibleCards, setVisibleCards] = useState(false);
   const cardsRef = useRef(null);
+  const messageRef = useRef(null);
 
   useEffect(() => {
     const el = cardsRef.current;
@@ -91,15 +93,34 @@ export default function ContactPage() {
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      await contactApi.submit(formState);
+      const payload = new FormData();
+      Object.entries(formState).forEach(([key, value]) => payload.append(key, value));
+      if (attachment) payload.append('attachment', attachment);
+      await contactApi.submit(payload);
       setIsSubmitted(true);
       setFormState({ name: '', email: '', category: initialCategory, message: '' });
+      setAttachment(null);
     } catch (err) {
       const msg = err.response?.data?.message || 'Failed to send message. Please try again or email us directly.';
       setSubmitError(msg);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const applyFormat = (marker) => {
+    const textarea = messageRef.current;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = formState.message.slice(start, end) || 'text';
+    const replacement = `${marker}${selected}${marker}`;
+    const message = `${formState.message.slice(0, start)}${replacement}${formState.message.slice(end)}`;
+    setFormState((prev) => ({ ...prev, message }));
+    requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + marker.length, start + marker.length + selected.length);
+    });
   };
 
   const contactCards = [
@@ -310,17 +331,32 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label htmlFor="contact-message" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Message</label>
+                      <div className="flex items-center justify-between gap-3 mb-2">
+                        <label htmlFor="contact-message" className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Message</label>
+                        <span className="text-[11px] text-slate-400">{formState.message.length}/2000</span>
+                      </div>
+                      <div className="flex items-center gap-1 px-2 py-1.5 rounded-t-xl bg-slate-100 border border-slate-200 border-b-0">
+                        <button type="button" onClick={() => applyFormat('**')} className="p-1.5 rounded-md text-slate-500 hover:bg-white hover:text-slate-800" aria-label="Bold"><Bold className="w-4 h-4" /></button>
+                        <button type="button" onClick={() => applyFormat('*')} className="p-1.5 rounded-md text-slate-500 hover:bg-white hover:text-slate-800" aria-label="Italic"><Italic className="w-4 h-4" /></button>
+                        <button type="button" onClick={() => applyFormat('__')} className="p-1.5 rounded-md text-slate-500 hover:bg-white hover:text-slate-800" aria-label="Underline"><Underline className="w-4 h-4" /></button>
+                        <span className="ml-2 text-[11px] text-slate-400">Formatting is applied in the email</span>
+                      </div>
                       <textarea
                         id="contact-message"
+                        ref={messageRef}
                         required
                         rows={5}
                         maxLength={2000}
                         placeholder="Write your message, collaboration proposal, or question..."
                         value={formState.message}
                         onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all resize-none"
+                        className="w-full px-4 py-3 rounded-b-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all resize-none"
                       ></textarea>
+                      <label htmlFor="contact-attachment" className="mt-3 flex items-center gap-2 text-xs font-semibold text-slate-500 cursor-pointer hover:text-olympic-600">
+                        <Paperclip className="w-4 h-4" />
+                        <span>{attachment ? attachment.name : 'Attach document (PDF, DOC, DOCX, PNG, JPG, ZIP; max 5 MB)'}</span>
+                      </label>
+                      <input id="contact-attachment" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.zip" className="sr-only" onChange={(e) => setAttachment(e.target.files?.[0] || null)} />
                     </div>
 
                     <button

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AlertCircle, ShieldCheck } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { useAuth } from '../hooks';
@@ -10,18 +10,24 @@ const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || (
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { completeGoogleRedirectLogin, isAuthenticated } = useAuth();
 
   const [phase, setPhase] = useState('form');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const redirectStarted = useRef(false);
+  const returnToRef = useRef('/');
+  const requestedReturnTo = location.state?.from
+    ? `${location.state.from.pathname || '/'}${location.state.from.search || ''}`
+    : '/';
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const hash = new URLSearchParams(window.location.hash.slice(1));
     const token = hash.get('access_token');
     if (token) {
+      returnToRef.current = hash.get('return_to') || '/';
       let active = true;
       completeGoogleRedirectLogin(token).then(() => {
         if (!active) return;
@@ -38,13 +44,13 @@ export default function LoginPage() {
   }, [completeGoogleRedirectLogin]);
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/');
-  }, [isAuthenticated, navigate]);
+    if (isAuthenticated && phase === 'form') navigate('/');
+  }, [isAuthenticated, navigate, phase]);
 
   useEffect(() => {
     if (phase === 'diving') {
       const t1 = setTimeout(() => setPhase('ocean'), 800);
-      const t2 = setTimeout(() => navigate('/'), 3400);
+       const t2 = setTimeout(() => navigate(returnToRef.current), 3400);
       return () => { clearTimeout(t1); clearTimeout(t2); };
     }
   }, [phase, navigate]);
@@ -59,7 +65,10 @@ export default function LoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ turnstileToken: token }),
+        body: JSON.stringify({
+          turnstileToken: token,
+          returnTo: requestedReturnTo,
+        }),
       });
       const result = await response.json();
       if (!response.ok || !result.authUrl) throw new Error(result.error || 'Unable to start Google login');

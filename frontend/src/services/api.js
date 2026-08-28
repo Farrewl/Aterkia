@@ -96,7 +96,7 @@ export const authApi = {
 };
 
 export const contactApi = {
-  submit: (data) => api.post('/api/contact', data),
+  submit: (data) => api.post('/api/contact', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };
 
 export default api;
