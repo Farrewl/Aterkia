@@ -1,22 +1,34 @@
-import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowRight, Calendar, ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowRight, Calendar, ChevronRight, ChevronLeft, ExternalLink, Trophy, Flag, Users, Anchor, Handshake } from 'lucide-react';
 import { robotsData } from '../data/robotsData';
 import { newsData } from '../data/newsData';
 import { sponsorsData } from '../data/sponsorsData';
+import { aboutData } from '../data/aboutData';
 import ImageWithFallback from '../components/ImageWithFallback';
-import RobotModal from '../components/RobotModal';
-import NewsDrawer from '../components/NewsDrawer';
 
 export default function HomePage() {
-  const [selectedRobot, setSelectedRobot] = useState(null);
-  const [selectedNews, setSelectedNews] = useState(null);
+  const navigate = useNavigate();
   const newsScrollRef = useRef(null);
 
   const [newsCanLeft, setNewsCanLeft] = useState(false);
   const [newsCanRight, setNewsCanRight] = useState(true);
 
   const marqueeSponsors = [...sponsorsData, ...sponsorsData];
+
+  useEffect(() => {
+    const el = newsScrollRef.current;
+    if (!el) return;
+    const timer = setInterval(() => {
+      if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 5) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        const cardWidth = el.firstChild?.offsetWidth || 320;
+        el.scrollBy({ left: cardWidth + 24, behavior: 'smooth' });
+      }
+    }, 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   const checkScroll = (ref, setLeft, setRight) => {
     const el = ref.current;
@@ -37,7 +49,7 @@ export default function HomePage() {
     <div>
 
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-screen flex items-start overflow-hidden pt-20">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute top-20 right-[15%] w-80 h-80 bg-olympic-100/60 rounded-full blur-3xl animate-pulse-glow" />
         <div className="absolute bottom-20 left-[10%] w-64 h-64 bg-olympic-200/40 blob-1 blur-2xl animate-float" />
         <div className="absolute inset-0 dot-pattern opacity-40" />
@@ -50,20 +62,24 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-transparent to-transparent" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 w-full">
-          <div className="max-w-3xl">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-display text-balance drop-shadow-lg leading-tight">
               <span className="text-white block">Aterkia</span>
               <span className="bg-gradient-to-r from-white via-blue-400 to-white bg-clip-text text-transparent drop-shadow-lg block mt-2">RoboBoat</span>
             </h1>
 
-            <div className="flex flex-wrap items-center gap-4 mt-20">
+            <p className="text-white text-lg sm:text-xl md:text-xl mt-6 max-w-xl mx-auto font-semibold leading-relaxed drop-shadow-md">
+              An autonomous maritime robotics team from Universitas Diponegoro. Designing, building, and testing ocean robots for international competition.
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 mt-10">
               <a href="#robots" className="btn-primary text-sm px-8 py-3.5">
-                Lihat Robot Kami
+                View Our Robots
                 <ArrowRight className="w-4 h-4" />
               </a>
               <Link to="/about" className="btn-secondary text-sm px-8 py-3.5">
-                Tentang Aterkia
+                About Aterkia
               </Link>
             </div>
           </div>
@@ -71,7 +87,7 @@ export default function HomePage() {
       </section>
 
       {/* 2. WAVE DIVIDER + SPONSORS */}
-      <div className="relative bg-olympic-900">
+      <div className="relative bg-olympic-900 overflow-hidden">
         <div className="relative w-full">
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full block" style={{ height: '80px', marginBottom: '-1px' }}>
             <path d="M0,0 L1440,0 L1440,40 C1320,40 1260,90 1140,80 C1020,70 960,20 840,30 C720,40 660,95 540,85 C420,75 360,25 240,35 C120,45 60,90 0,80 Z" fill="#ffffff" />
@@ -104,166 +120,64 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-        {/* Bottom wave — dark sponsors into ocean sky */}
+        {/* Stats strip — proof of track record for sponsors */}
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { icon: Trophy, value: `${aboutData.achievements.length}+`, label: 'Awards Won', color: 'text-amber-500' },
+              { icon: Flag, value: '5+', label: 'Competitions Entered', color: 'text-olympic-500' },
+              { icon: Users, value: '30+', label: 'Team Members', color: 'text-sky-600' },
+              { icon: Anchor, value: '2023', label: 'Since', color: 'text-blue-700' },
+            ].map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <div key={i} className="flex flex-col items-center text-center rounded-2xl bg-slate-50 border border-slate-100 py-5 px-3">
+                  <Icon className={`w-6 h-6 mb-2 ${stat.color}`} />
+                  <span className="text-2xl sm:text-3xl font-black font-display text-olympic-900 leading-none">{stat.value}</span>
+                  <span className="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1.5">{stat.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Sponsor CTA */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-4 text-center">
+          <p className="text-sm text-slate-500 font-light mb-4">
+            Interested in supporting Aterkia Roboboat Team?
+          </p>
+          <Link
+            to="/contact?category=Sponsorship"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-olympic-500 hover:bg-olympic-600 text-white text-sm font-bold shadow-lg shadow-olympic-500/25 hover:shadow-xl hover:shadow-olympic-500/30 transition-all duration-300 hover:-translate-y-0.5"
+          >
+            <Handshake className="w-4.5 h-4.5" />
+            Become a Sponsor
+          </Link>
+        </div>
+
+        {/* Bottom wave — sponsors into robots deep ocean */}
         <div className="relative w-full">
           <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full block" style={{ height: '80px', marginTop: '-1px' }}>
-            <path d="M0,80 C120,80 180,30 300,35 C420,40 480,95 600,90 C720,85 780,30 900,25 C1020,20 1080,80 1200,85 C1320,90 1380,50 1440,40 L1440,120 L0,120 Z" fill="#e0f2fe" />
+            <path d="M0,80 C120,80 180,30 300,35 C420,40 480,95 600,90 C720,85 780,30 900,25 C1020,20 1080,80 1200,85 C1320,90 1380,50 1440,40 L1440,120 L0,120 Z" fill="#060d1a" />
           </svg>
         </div>
       </div>
 
-      {/* 3. ROBOTS — Ocean Scene, Asymmetric Placement */}
-      <section id="robots" className="relative overflow-hidden">
-        <div className="relative w-full" style={{ minHeight: '900px' }}>
+      {/* 3. ROBOTS — Interactive Cockpit */}
+      <RobotsCockpit />
 
-          {/* Sky */}
-          <div className="absolute inset-0 bg-gradient-to-b from-sky-100 via-sky-200 to-sky-300" />
-
-          {/* Sun glow */}
-          <div className="absolute top-16 right-[15%] w-40 h-40 bg-yellow-100/60 rounded-full blur-3xl" />
-
-          {/* Water surface waves */}
-          <div className="absolute left-0 right-0" style={{ top: '32%' }}>
-            <svg viewBox="0 0 1440 100" preserveAspectRatio="none" className="w-full" style={{ height: '50px' }}>
-              <path d="M0,50 C180,20 360,80 540,50 C720,20 900,80 1080,50 C1260,20 1380,60 1440,50 L1440,100 L0,100 Z" fill="rgba(14,116,144,0.25)" />
-            </svg>
-            <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="w-full" style={{ height: '40px', marginTop: '-25px' }}>
-              <path d="M0,60 C240,30 480,70 720,40 C960,10 1200,70 1440,40 L1440,80 L0,80 Z" fill="rgba(14,116,144,0.15)" />
-            </svg>
-          </div>
-
-          {/* Underwater gradient */}
-          <div className="absolute left-0 right-0 bottom-0 bg-gradient-to-b from-sky-400/50 via-blue-800 to-blue-950" style={{ top: '36%' }} />
-
-          {/* Light rays */}
-          <div className="absolute left-[18%] top-[38%] w-28 h-80 bg-gradient-to-b from-sky-200/20 to-transparent rotate-12 blur-xl" />
-          <div className="absolute right-[25%] top-[40%] w-20 h-64 bg-gradient-to-b from-sky-200/15 to-transparent -rotate-6 blur-xl" />
-
-          {/* Bubbles */}
-          <div className="absolute left-[12%] top-[55%] w-3 h-3 rounded-full bg-white/30 animate-bubble-rise" />
-          <div className="absolute left-[22%] top-[65%] w-2 h-2 rounded-full bg-white/25 animate-bubble-rise" style={{ animationDelay: '1.5s' }} />
-          <div className="absolute right-[18%] top-[58%] w-4 h-4 rounded-full bg-white/20 animate-bubble-rise" style={{ animationDelay: '3s' }} />
-          <div className="absolute right-[32%] top-[72%] w-2 h-2 rounded-full bg-white/25 animate-bubble-rise" style={{ animationDelay: '2s' }} />
-          <div className="absolute left-[42%] top-[60%] w-3 h-3 rounded-full bg-white/20 animate-bubble-rise" style={{ animationDelay: '4s' }} />
-
-          {/* Title */}
-          <div className="absolute top-8 left-0 right-0 z-20 text-center px-4">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black font-display text-olympic-900 tracking-tight leading-tight drop-shadow-sm">
-              <span className="bg-gradient-to-r from-olympic-600 to-sky-500 bg-clip-text text-transparent">Aterkia</span>
-              Robots{' '}
-            </h2>
-            <p className="text-sky-800/60 text-base mt-2 font-light max-w-lg mx-auto">
-              
-            </p>
-          </div>
-
-          {/* ── Baruna (ASV) — kiri atas, di permukaan ── */}
-          <div
-            onClick={() => setSelectedRobot(robotsData[0])}
-            className="absolute z-10 group cursor-pointer"
-            style={{ left: '2%', top: '16%', width: 'clamp(220px, 22vw, 320px)' }}
-          >
-            <div className="relative animate-bob">
-              <svg viewBox="0 0 300 20" preserveAspectRatio="none" className="absolute -bottom-3 left-0 w-full" style={{ height: '14px' }}>
-                <path d="M0,10 Q60,2 120,10 Q180,18 240,10 Q270,6 300,10" fill="none" stroke="rgba(14,116,144,0.35)" strokeWidth="2" className="animate-sway" />
-              </svg>
-              <div className="rounded-2xl overflow-hidden shadow-2xl shadow-sky-900/20 border border-white/40 group-hover:scale-105 transition-transform duration-500">
-                <ImageWithFallback src={robotsData[0].image} alt={robotsData[0].name} name={robotsData[0].name} category={robotsData[0].category} type="robot" className="w-full aspect-video object-cover" containerClassName="w-full" />
-              </div>
-            </div>
-            <div className="mt-2 bg-white/90 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg border border-white/60">
-              <span className="text-[10px] font-bold text-sky-600 uppercase tracking-wider">ASV</span>
-              <h3 className="font-display font-bold text-sm sm:text-base text-olympic-900 leading-tight">{robotsData[0].name}</h3>
-              <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">{robotsData[0].tagline}</p>
-            </div>
-          </div>
-
-          {/* ── Nala-01 (ASV) — kanan atas, di permukaan ── */}
-          <div
-            onClick={() => setSelectedRobot(robotsData[2])}
-            className="absolute z-10 group cursor-pointer"
-            style={{ right: '4%', top: '12%', width: 'clamp(200px, 20vw, 280px)' }}
-          >
-            <div className="relative animate-bob" style={{ animationDelay: '1.2s' }}>
-              <svg viewBox="0 0 260 18" preserveAspectRatio="none" className="absolute -bottom-2 left-0 w-full" style={{ height: '12px' }}>
-                <path d="M0,9 Q50,2 100,9 Q150,16 200,9 Q230,5 260,9" fill="none" stroke="rgba(14,116,144,0.3)" strokeWidth="2" className="animate-sway" style={{ animationDelay: '0.5s' }} />
-              </svg>
-              <div className="rounded-2xl overflow-hidden shadow-2xl shadow-sky-900/20 border border-white/40 group-hover:scale-105 transition-transform duration-500">
-                <ImageWithFallback src={robotsData[2].image} alt={robotsData[2].name} name={robotsData[2].name} category={robotsData[2].category} type="robot" className="w-full aspect-video object-cover" containerClassName="w-full" />
-              </div>
-            </div>
-            <div className="mt-2 bg-white/90 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg border border-white/60 text-right">
-              <span className="text-[10px] font-bold text-sky-600 uppercase tracking-wider">ASV &middot; Legacy</span>
-              <h3 className="font-display font-bold text-sm sm:text-base text-olympic-900 leading-tight">{robotsData[2].name}</h3>
-              <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">{robotsData[2].tagline}</p>
-            </div>
-          </div>
-
-          {/* ── Cakra Subsea (AUV) — kiri tengah, bawah air ── */}
-          <div
-            onClick={() => setSelectedRobot(robotsData[1])}
-            className="absolute z-10 group cursor-pointer"
-            style={{ left: '25%', top: '52%', width: 'clamp(220px, 22vw, 310px)' }}
-          >
-            <div className="relative animate-float">
-              <div className="absolute -top-5 left-8 w-2 h-2 rounded-full bg-white/40 animate-bubble-rise" style={{ animationDelay: '0.5s' }} />
-              <div className="absolute -top-8 right-12 w-1.5 h-1.5 rounded-full bg-white/30 animate-bubble-rise" style={{ animationDelay: '2s' }} />
-              <div className="rounded-2xl overflow-hidden shadow-2xl shadow-blue-950/50 border border-white/20 group-hover:scale-105 transition-transform duration-500">
-                <ImageWithFallback src={robotsData[1].image} alt={robotsData[1].name} name={robotsData[1].name} category={robotsData[1].category} type="robot" className="w-full aspect-video object-cover" containerClassName="w-full" />
-              </div>
-            </div>
-            <div className="mt-2 bg-blue-900/80 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg border border-blue-400/20">
-              <span className="text-[10px] font-bold text-blue-300 uppercase tracking-wider">AUV</span>
-              <h3 className="font-display font-bold text-sm sm:text-base text-white leading-tight">{robotsData[1].name}</h3>
-              <p className="text-[11px] text-blue-200/70 mt-0.5 line-clamp-1">{robotsData[1].tagline}</p>
-            </div>
-          </div>
-
-          {/* ── Makara-X (AUV) — kanan bawah, dalam ── */}
-          <div
-            onClick={() => setSelectedRobot(robotsData[3])}
-            className="absolute z-10 group cursor-pointer"
-            style={{ right: '6%', top: '60%', width: 'clamp(200px, 20vw, 280px)' }}
-          >
-            <div className="relative animate-float" style={{ animationDelay: '2s' }}>
-              <div className="absolute -top-6 left-6 w-2 h-2 rounded-full bg-white/30 animate-bubble-rise" style={{ animationDelay: '1s' }} />
-              <div className="absolute -top-10 right-10 w-1.5 h-1.5 rounded-full bg-white/25 animate-bubble-rise" style={{ animationDelay: '3.5s' }} />
-              <div className="rounded-2xl overflow-hidden shadow-2xl shadow-blue-950/50 border border-white/15 group-hover:scale-105 transition-transform duration-500">
-                <ImageWithFallback src={robotsData[3].image} alt={robotsData[3].name} name={robotsData[3].name} category={robotsData[3].category} type="robot" className="w-full aspect-video object-cover" containerClassName="w-full" />
-              </div>
-            </div>
-            <div className="mt-2 bg-blue-950/80 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg border border-blue-400/15 text-right">
-              <span className="text-[10px] font-bold text-blue-300/70 uppercase tracking-wider">AUV &middot; R&D</span>
-              <h3 className="font-display font-bold text-sm sm:text-base text-white/90 leading-tight">{robotsData[3].name}</h3>
-              <p className="text-[11px] text-blue-300/50 mt-0.5 line-clamp-1">{robotsData[3].tagline}</p>
-            </div>
-          </div>
-
-        </div>
-
-        {/* View All — bottom of ocean */}
-        <div className="relative z-20 text-center pb-0 pt-6 bg-gradient-to-b from-blue-950 to-slate-900">
-          <Link to="/robots" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm tracking-wide border border-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-white/10">
-            Lihat Semua Robot
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {/* Seamless wave into news */}
-        <div className="relative w-full -mt-px">
-          <svg viewBox="0 0 1440 140" preserveAspectRatio="none" className="w-full block" style={{ height: '100px' }}>
-            <path d="M0,0 L1440,0 L1440,140 L0,140 Z" fill="#0f172a" />
-            <path d="M0,40 C180,80 360,10 540,50 C720,90 900,20 1080,60 C1200,80 1320,30 1440,50 L1440,140 L0,140 Z" fill="#1e293b" />
-            <path d="M0,60 C200,90 400,30 600,60 C800,90 1000,20 1200,50 C1320,65 1380,40 1440,55 L1440,140 L0,140 Z" fill="#334155" />
-            <path d="M0,85 C160,110 320,70 480,90 C640,110 800,65 960,85 C1120,105 1280,75 1440,90 L1440,140 L0,140 Z" fill="#475569" />
-            <path d="M0,110 C240,90 480,120 720,100 C960,80 1200,110 1440,95 L1440,140 L0,140 Z" fill="#94a3b8" />
-            <path d="M0,125 C180,115 360,130 540,120 C720,110 900,130 1080,120 C1260,110 1380,125 1440,118 L1440,140 L0,140 Z" fill="#cbd5e1" />
-            <path d="M0,133 C200,128 400,136 600,132 C800,128 1000,136 1200,132 C1320,130 1380,134 1440,132 L1440,140 L0,140 Z" fill="#e2e8f0" />
-            <path d="M0,138 C240,135 480,140 720,137 C960,134 1200,139 1440,136 L1440,140 L0,140 Z" fill="#f1f5f9" />
-            <path d="M0,140 L1440,140 L1440,140 L0,140 Z" fill="#f8fafc" />
-          </svg>
-        </div>
-      </section>
+      {/* Seamless wave: deep ocean robots → light news */}
+      <div className="relative">
+        <svg viewBox="0 0 1440 200" preserveAspectRatio="none" className="w-full block" style={{ height: '120px' }}>
+          <path d="M0,0 L1440,0 L1440,60 C1320,80 1200,20 1080,50 C960,80 840,10 720,40 C600,70 480,15 360,45 C240,75 120,25 0,55 Z" fill="#0c1e38" />
+          <path d="M0,55 C120,25 240,75 360,45 C480,15 600,70 720,40 C840,10 960,80 1080,50 C1200,20 1320,80 1440,60 L1440,100 L0,100 Z" fill="#1e3a5f" />
+          <path d="M0,80 C180,50 360,110 540,75 C720,40 900,100 1080,70 C1260,40 1380,85 1440,65 L1440,120 L0,120 Z" fill="#3b6a8f" />
+          <path d="M0,100 C240,75 480,130 720,95 C960,60 1200,110 1440,80 L1440,140 L0,140 Z" fill="#7baac4" />
+          <path d="M0,120 C360,95 720,145 1080,110 C1260,95 1380,125 1440,105 L1440,160 L0,160 Z" fill="#b8d4e4" />
+          <path d="M0,140 C240,120 480,155 720,135 C960,115 1200,150 1440,130 L1440,180 L0,180 Z" fill="#dfe9f0" />
+          <path d="M0,160 C180,145 360,170 540,155 C720,140 900,165 1080,150 C1260,135 1380,160 1440,148 L1440,200 L0,200 Z" fill="#f8fafc" />
+        </svg>
+      </div>
 
       {/* 4. NEWS SECTION — Robot News */}
       <section className="bg-[#f8fafc]">
@@ -272,11 +186,11 @@ export default function HomePage() {
             <div className="mb-12">
               <div className="max-w-xl">
                 <h2 className="text-4xl sm:text-5xl font-black font-display text-olympic-900 tracking-tight leading-tight">
-                  <span className="gradient-text">Aterkia</span>
+                  <span className="gradient-text">Aterkia</span>{' '}
                   News{' '}
                 </h2>
                 <p className="text-slate-500 text-base sm:text-lg mt-2 font-light max-w-xl">
-                  
+                  The latest updates about our activities.
                 </p>
               </div>
             </div>
@@ -287,7 +201,7 @@ export default function HomePage() {
               <button
                 onClick={() => scroll(newsScrollRef, -1, setNewsCanLeft, setNewsCanRight)}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white border border-slate-200 shadow-lg shadow-slate-300/40 flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 hover:bg-olympic-50 hover:border-olympic-300 hover:scale-110 -ml-1"
-                aria-label="Scroll kiri"
+                aria-label="Scroll left"
               >
                 <ChevronLeft className="w-5 h-5 text-slate-700" />
               </button>
@@ -296,7 +210,7 @@ export default function HomePage() {
               <button
                 onClick={() => scroll(newsScrollRef, 1, setNewsCanLeft, setNewsCanRight)}
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white border border-slate-200 shadow-lg shadow-slate-300/40 flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 hover:bg-olympic-50 hover:border-olympic-300 hover:scale-110 -mr-1"
-                aria-label="Scroll kanan"
+                aria-label="Scroll right"
               >
                 <ChevronRight className="w-5 h-5 text-slate-700" />
               </button>
@@ -308,9 +222,12 @@ export default function HomePage() {
               className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-1"
             >
               {newsData.map((news) => (
-                <article
+                <a
                   key={news.id}
-                  className="snap-start shrink-0 w-[calc(25%-18px)] min-w-[260px] group relative bg-white rounded-3xl overflow-hidden border border-slate-200/80 shadow-md shadow-slate-200/60 hover:shadow-xl hover:shadow-olympic-200/60 transition-all duration-500 hover:-translate-y-2"
+                  href={news.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="snap-start shrink-0 w-[calc(25%-18px)] min-w-[260px] group relative bg-white rounded-3xl overflow-hidden border border-slate-200/80 shadow-md shadow-slate-200/60 hover:shadow-xl hover:shadow-olympic-200/60 transition-all duration-500 hover:-translate-y-2 cursor-pointer block"
                 >
                   <div className="relative h-44 w-full bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden">
                     <ImageWithFallback
@@ -321,31 +238,26 @@ export default function HomePage() {
                       containerClassName="w-full h-full"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                    <span className="absolute top-4 left-4 text-[11px] font-bold px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur-sm text-olympic-600 shadow-sm">
-                      {news.category}
-                    </span>
+                    <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <ExternalLink className="w-3.5 h-3.5 text-olympic-600" />
+                    </div>
                   </div>
 
                   <div className="p-6">
                     <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
                       <Calendar className="w-3.5 h-3.5 text-olympic-400" />
                       <span className="font-medium">{news.date}</span>
+                      <span className="w-1 h-1 rounded-full bg-slate-300" />
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-olympic-50 text-olympic-600 font-semibold text-[10px] uppercase tracking-wide border border-olympic-100">{news.publisher}</span>
                     </div>
-                    <h3 className="font-display font-bold text-lg text-olympic-900 mb-2 leading-snug group-hover:text-olympic-600 transition-colors line-clamp-2">
+                    <h3 className="font-display font-bold text-lg text-olympic-900 leading-snug group-hover:text-olympic-600 transition-colors line-clamp-2 mb-2">
                       {news.title}
                     </h3>
-                    <p className="text-slate-500 text-sm leading-relaxed font-light line-clamp-2 mb-5">
+                    <p className="text-slate-500 text-sm leading-relaxed font-light line-clamp-2">
                       {news.snippet}
                     </p>
-                    <button
-                      onClick={() => setSelectedNews(news)}
-                      className="text-sm font-semibold text-olympic-500 hover:text-olympic-700 flex items-center gap-1 transition-colors group/link"
-                    >
-                      <span>Baca Selengkapnya</span>
-                      <ChevronRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-                    </button>
                   </div>
-                </article>
+                </a>
               ))}
             </div>
           </div>
@@ -367,12 +279,165 @@ export default function HomePage() {
       </section>
 
       {/* Modals */}
-      {selectedRobot && (
-        <RobotModal robot={selectedRobot} onClose={() => setSelectedRobot(null)} />
-      )}
-      {selectedNews && (
-        <NewsDrawer article={selectedNews} onClose={() => setSelectedNews(null)} />
-      )}
     </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROBOTS COCKPIT — Centered layout with hover-to-reveal snippet.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function RobotsCockpit() {
+  const navigate = useNavigate();
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [imageKey, setImageKey] = useState(0);
+  const pausedRef = useRef(false);
+  const resumeTimer = useRef(null);
+
+  const robot = robotsData[activeIdx] || robotsData[0];
+
+  const pauseRotation = () => {
+    clearTimeout(resumeTimer.current);
+    pausedRef.current = true;
+  };
+
+  const scheduleResume = () => {
+    clearTimeout(resumeTimer.current);
+    resumeTimer.current = setTimeout(() => {
+      pausedRef.current = false;
+    }, 500);
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!pausedRef.current) {
+        setActiveIdx(prev => (prev + 1) % robotsData.length);
+        setImageKey(k => k + 1);
+      }
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const selectRobot = useCallback((idx) => {
+    if (idx === activeIdx) return;
+    setActiveIdx(idx);
+    setImageKey(k => k + 1);
+  }, [activeIdx]);
+
+  if (!robot) return null;
+
+  const isASV = robot.category === 'ASV';
+
+  return (
+    <section id="robots" className="relative overflow-hidden bg-gradient-to-b from-[#060d1a] via-[#0a1628] to-[#0c1e38]">
+     
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+
+        {/* ── Heading ── */}
+        <div className="flex items-end justify-between mb-12">
+          <div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-display tracking-tight">
+              <span className="text-white">Aterkia</span>{' '}
+              <span className="gradient-text">Robots</span>
+            </h2>
+            <p className="text-sky-300/50 mt-3 text-sm sm:text-base max-w-md">
+              Our Competition Robots
+            </p>
+          </div>
+          <Link
+            to="/robots"
+            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-sky-400 hover:text-sky-300 transition-colors group shrink-0 ml-4"
+          >
+            More
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        </div>
+
+        {/* ── Main Content: Image + Side Panel ── */}
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+
+          {/* Left: Main robot image + thumbnails */}
+          <div className="w-full lg:w-[60%]" onMouseEnter={pauseRotation} onMouseLeave={scheduleResume}>
+            <div
+              className="relative cursor-pointer group"
+              onClick={() => navigate('/robots', { state: { selectedRobotId: robot.id } })}
+            >
+              {/* Glow behind image */}
+              <div
+                className={`absolute -inset-4 rounded-3xl blur-2xl opacity-20 transition-colors duration-700 ${
+                  isASV ? 'bg-sky-400' : 'bg-emerald-400'
+                } animate-cockpit-glow`}
+              />
+
+              {/* Image container */}
+              <div className="relative rounded-2xl overflow-hidden bg-sky-900/30 backdrop-blur-sm border border-sky-400/10 shadow-lg shadow-black/30 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-sky-500/10">
+                <div className="relative w-full aspect-[16/10]">
+                  <ImageWithFallback
+                    key={imageKey}
+                    src={robot.image}
+                    alt={robot.name}
+                    name={robot.name}
+                    category={robot.category}
+                    type="robot"
+                    className="w-full h-full object-contain p-4 sm:p-6 transition-opacity duration-300"
+                    containerClassName="w-full h-full"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ── Thumbnail Selector ── */}
+            <div className="mt-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {robotsData.map((r, i) => (
+                  <button
+                    key={r.id}
+                    onClick={() => selectRobot(i)}
+                    className={`
+                      group/thumb relative aspect-[3/2] rounded-xl overflow-hidden
+                      transition-all duration-300 border
+                      ${i === activeIdx
+                        ? 'border-sky-400/60 shadow-md shadow-sky-400/20 scale-[1.02] ring-2 ring-sky-400/20'
+                        : 'border-sky-400/10 opacity-40 hover:opacity-70 hover:border-sky-400/30 hover:shadow-sm'
+                      }
+                    `}
+                    aria-label={r.name}
+                  >
+                    <ImageWithFallback
+                      src={r.image}
+                      alt={r.name}
+                      name={r.name}
+                      category={r.category}
+                      type="robot"
+                      className="w-full h-full object-contain p-3"
+                      containerClassName="w-full h-full bg-sky-900/20"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Robot info panel */}
+          <div className="w-full lg:w-[40%] lg:sticky lg:top-28">
+            <div key={imageKey} className="animate-fade-up space-y-4">
+              <div>
+                <span className={`text-xs font-bold uppercase tracking-widest ${
+                  isASV ? 'text-sky-400' : 'text-emerald-400'
+                }`}>
+                  {robot.category}
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-black font-display text-white leading-tight mt-1">
+                  {robot.name}
+                </h3>
+              </div>
+              <p className="text-sky-100/70 text-sm leading-relaxed font-light">
+                {robot.description}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

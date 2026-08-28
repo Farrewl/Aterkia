@@ -1,18 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronRight } from 'lucide-react';
+import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, ChevronRight, Monitor } from 'lucide-react';
 import { UserAvatar } from './auth';
 import { useAuth } from '../hooks';
 
 export default function Navbar() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, hasRole } = useAuth();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLoginTooltip, setShowLoginTooltip] = useState(false);
   const navRef = useRef(null);
   const [indicator, setIndicator] = useState({ left: 0, width: 0, visible: false });
   const location = useLocation();
-  const useLightTeamHeader = location.pathname === '/team';
+  // Pages with light backgrounds need dark navbar chrome; everything else is dark ocean themed
+  const isLightPage = location.pathname.startsWith('/team');
+  const showBackground = isScrolled || isHovered || isLightPage;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,7 +56,8 @@ export default function Navbar() {
     return () => window.removeEventListener('resize', updateIndicator);
   }, [location.pathname]);
 
-  const showBackground = isScrolled || isHovered || useLightTeamHeader;
+  // Chrome tone: light pages get dark text, dark ocean pages always use white text
+  const chromeLight = isLightPage && showBackground;
 
   return (
     <header
@@ -60,9 +65,9 @@ export default function Navbar() {
       onMouseLeave={() => setIsHovered(false)}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         showBackground
-          ? isScrolled
-            ? 'py-2.5 bg-white/[0.08] backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.12)]'
-            : 'py-3 bg-white/[0.15] backdrop-blur-xl border-b border-white/[0.1]'
+          ? isScrolled && !isLightPage
+            ? 'py-2.5 bg-[#060d1a]/85 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.25)]'
+            : 'py-2.5 bg-white/[0.08] backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.12)]'
           : 'py-4 bg-transparent border-b border-transparent'
       }`}
     >
@@ -77,12 +82,12 @@ export default function Navbar() {
             </div>
             <div className="hidden sm:block">
               <span className={`font-display font-extrabold text-lg tracking-tight block leading-none transition-colors duration-300 ${
-                showBackground ? 'text-olympic-900' : 'text-white drop-shadow-md'
+                chromeLight ? 'text-olympic-900' : 'text-white drop-shadow-md'
               }`}>
                 ATERKIA
               </span>
               <span className={`text-[9px] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 ${
-                showBackground ? 'text-olympic-400' : 'text-white/70 drop-shadow-sm'
+                chromeLight ? 'text-olympic-400' : 'text-white/70 drop-shadow-sm'
               }`}>
                 RoboBoat Team
               </span>
@@ -91,7 +96,7 @@ export default function Navbar() {
 
           {/* Menu Tengah — sliding indicator */}
           <nav ref={navRef} className={`hidden md:flex items-center gap-0.5 px-2 py-1.5 rounded-2xl shadow-sm relative transition-all duration-500 ${
-            showBackground
+            chromeLight
               ? 'bg-slate-50 border border-slate-100'
               : 'bg-white/10 border border-white/15 backdrop-blur-sm'
           }`}>
@@ -112,9 +117,9 @@ export default function Navbar() {
                   `relative z-10 px-4 py-1.5 text-[13px] font-semibold rounded-xl transition-colors duration-200 ${
                     isActive
                       ? 'nav-active text-white'
-                      : showBackground
+                      : chromeLight
                         ? 'text-slate-500 hover:text-olympic-600'
-                        : 'text-white/80 hover:text-white'
+                        : 'text-white/75 hover:text-white'
                   }`
                 }
               >
@@ -123,8 +128,40 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Kanan: UserAvatar (logged in) atau Login button (logged out) + Contact Us */}
+          {/* Kanan: Monitor button + UserAvatar/Login + Contact Us */}
           <div className="hidden md:flex items-center gap-2.5">
+            {/* Monitor button */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    setShowLoginTooltip(true);
+                    setTimeout(() => setShowLoginTooltip(false), 2000);
+                  } else {
+                    navigate('/dashboard');
+                  }
+                }}
+                className={`p-2.5 rounded-xl transition-all duration-300 ${
+                  isAuthenticated
+                    ? chromeLight
+                      ? 'bg-olympic-50 border border-olympic-100 text-olympic-600 hover:bg-olympic-100 hover:border-olympic-200'
+                      : 'bg-white/10 border border-white/15 text-white hover:bg-white/20'
+                    : chromeLight
+                      ? 'bg-slate-50 border border-slate-100 text-slate-300 cursor-not-allowed'
+                      : 'bg-white/5 border border-white/10 text-white/30 cursor-not-allowed'
+                }`}
+                title={!isAuthenticated ? 'Must login first' : hasRole('admin') ? 'Monitor (Admin)' : 'Monitor (View Only)'}
+              >
+                <Monitor className="w-4.5 h-4.5" />
+              </button>
+              {showLoginTooltip && (
+                <div className="absolute top-full mt-2 right-0 whitespace-nowrap px-3 py-1.5 bg-red-500 text-white text-[11px] font-semibold rounded-lg shadow-lg animate-fade-in z-50">
+                  Must login first
+                  <div className="absolute -top-1 right-3 w-2 h-2 bg-red-500 rotate-45" />
+                </div>
+              )}
+            </div>
+
             {isAuthenticated ? (
               <UserAvatar />
             ) : (
@@ -133,8 +170,8 @@ export default function Navbar() {
                 className={({ isActive }) =>
                   `px-5 py-2.5 rounded-2xl text-[13px] font-bold transition-all duration-300 border-2 ${
                     isActive
-                      ? 'border-olympic-900 text-olympic-900 bg-olympic-50'
-                      : showBackground
+                      ? 'border-olympic-900 text-olympic-900 bg-white'
+                      : chromeLight
                         ? 'border-olympic-500 text-olympic-500 hover:bg-olympic-50 hover:border-olympic-600 hover:text-olympic-600'
                         : 'border-white/50 text-white hover:bg-white/10 hover:border-white/70'
                   }`
@@ -165,7 +202,7 @@ export default function Navbar() {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={`p-2.5 rounded-xl focus:outline-none transition-all duration-300 ${
-                showBackground
+                chromeLight
                   ? 'bg-olympic-50 border border-olympic-100 text-olympic-600 hover:bg-olympic-100'
                   : 'bg-white/10 border border-white/15 text-white hover:bg-white/20'
               }`}
@@ -199,6 +236,26 @@ export default function Navbar() {
               </NavLink>
             ))}
             <div className="pt-3 border-t border-slate-100 mt-2 flex flex-col gap-2">
+              {/* Monitor button — mobile */}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  if (!isAuthenticated) {
+                    setShowLoginTooltip(true);
+                    setTimeout(() => setShowLoginTooltip(false), 2000);
+                  } else {
+                    navigate('/dashboard');
+                  }
+                }}
+                className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold tracking-wider transition-all ${
+                  isAuthenticated
+                    ? 'border-2 border-olympic-500 text-olympic-500 hover:bg-olympic-50'
+                    : 'border-2 border-slate-200 text-slate-300 cursor-not-allowed'
+                }`}
+              >
+                <Monitor className="w-4 h-4" />
+                {isAuthenticated ? (hasRole('admin') ? 'Monitor (Admin)' : 'Monitor (View)') : 'Monitor'}
+              </button>
               {isAuthenticated ? (
                 <UserAvatar />
               ) : (

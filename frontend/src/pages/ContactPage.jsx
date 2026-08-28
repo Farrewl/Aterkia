@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
-import { Mail, MapPin, Send, CheckCircle2, Clock, ArrowUpRight, Anchor, MessageCircle, Users, Rocket } from 'lucide-react';
+import { robotsData } from '../data/robotsData';
+import { Mail, MapPin, Send, CheckCircle2, ArrowUpRight, Anchor, MessageCircle, Users, Rocket, AlertCircle } from 'lucide-react';
 import { sponsorsData } from '../data/sponsorsData';
 import ImageWithFallback from '../components/ImageWithFallback';
+import { contactApi } from '../services/api';
 
 const marqueeSponsors = [...sponsorsData, ...sponsorsData];
+
+const CATEGORIES = ['Sponsorship', 'ASV Collaboration', 'AUV Collaboration', 'Media', 'General'];
 
 function Bubbles({ count = 15 }) {
   return (
@@ -42,10 +47,10 @@ function FloatingShip() {
   return (
     <div className="absolute top-16 right-8 sm:right-16 opacity-10 pointer-events-none" aria-hidden="true">
       <svg className="animate-sail" width="120" height="60" viewBox="0 0 110 50">
-        <path d="M15,35 L25,28 L85,28 L95,35 L90,38 L20,38 Z" fill="#005EB8" />
-        <rect x="42" y="18" width="26" height="10" rx="3" fill="#0050A0" />
-        <rect x="45" y="12" width="20" height="6" rx="2" fill="#003D7A" />
-        <line x1="55" y1="12" x2="55" y2="4" stroke="#003D7A" strokeWidth="1.5" />
+        <path d="M15,35 L25,28 L85,28 L95,35 L90,38 L20,38 Z" fill="#38bdf8" />
+        <rect x="42" y="18" width="26" height="10" rx="3" fill="#0ea5e9" />
+        <rect x="45" y="12" width="20" height="6" rx="2" fill="#005EB8" />
+        <line x1="55" y1="12" x2="55" y2="4" stroke="#7dd3fc" strokeWidth="1.5" />
         <circle cx="55" cy="3" r="2" fill="#FF6B35" />
       </svg>
     </div>
@@ -53,14 +58,20 @@ function FloatingShip() {
 }
 
 export default function ContactPage() {
+  const [searchParams] = useSearchParams();
+  const initialCategory = CATEGORIES.includes(searchParams.get('category'))
+    ? searchParams.get('category')
+    : 'Sponsorship';
+
   const [formState, setFormState] = useState({
     name: '',
     email: '',
-    category: 'Sponsorship',
+    category: initialCategory,
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   const [visibleCards, setVisibleCards] = useState(false);
   const cardsRef = useRef(null);
 
@@ -75,83 +86,66 @@ export default function ContactPage() {
     return () => obs.disconnect();
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmitError(null);
+    try {
+      await contactApi.submit(formState);
       setIsSubmitted(true);
-      setFormState({ name: '', email: '', category: 'Sponsorship', message: '' });
-    }, 800);
+      setFormState({ name: '', email: '', category: initialCategory, message: '' });
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Failed to send message. Please try again or email us directly.';
+      setSubmitError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactCards = [
-    { icon: Mail, label: 'Email Utama', value: siteConfig.email, href: `mailto:${siteConfig.email}`, color: 'from-sky-400 to-sky-600', bg: 'bg-sky-50' },
-    { icon: MessageCircle, label: 'Sponsorship & Kemitraan', value: siteConfig.partnershipEmail, href: `mailto:${siteConfig.partnershipEmail}`, color: 'from-blue-400 to-blue-600', bg: 'bg-blue-50' },
-    { icon: MapPin, label: 'Markas Riset', value: `Laboratorium Robotika & Sistem Maritim, ${siteConfig.affiliation}, ${siteConfig.location}`, color: 'from-slate-400 to-slate-600', bg: 'bg-slate-50' },
-  ];
-
-  const quickStats = [
-    { icon: Anchor, value: '2', label: 'Robot Aktif', color: 'text-sky-500' },
-    { icon: Users, value: '30+', label: 'Anggota Tim', color: 'text-blue-500' },
-    { icon: Rocket, value: '5+', label: 'Kompetisi', color: 'text-olympic-500' },
+    { icon: Mail, label: 'Primary Email', value: siteConfig.email, href: `mailto:${siteConfig.email}` },
+    { icon: MessageCircle, label: 'Sponsorship & Partnerships', value: siteConfig.partnershipEmail, href: `mailto:${siteConfig.partnershipEmail}` },
+    { icon: MapPin, label: 'Research HQ', value: `Student Center, ${siteConfig.affiliation}, ${siteConfig.location}`, href: null },
   ];
 
   const socialLinks = [
-    { label: 'Instagram', href: siteConfig.socials.instagram, color: 'hover:bg-pink-500 hover:border-pink-500 hover:text-white', icon: 'M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z' },
-    { label: 'LinkedIn', href: siteConfig.socials.linkedin, color: 'hover:bg-blue-600 hover:border-blue-600 hover:text-white', icon: 'M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z' },
-    { label: 'YouTube', href: siteConfig.socials.youtube, color: 'hover:bg-red-500 hover:border-red-500 hover:text-white', icon: 'M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z' },
-    { label: 'GitHub', href: siteConfig.socials.github, color: 'hover:bg-slate-800 hover:border-slate-800 hover:text-white', icon: 'M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z' },
+    { label: 'Instagram', href: siteConfig.socials.instagram, hover: 'hover:bg-pink-500 hover:border-pink-500 hover:text-white', icon: 'M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5M12 7a5 5 0 110 10 5 5 0 010-10m0 2a3 3 0 100 6 3 3 0 000-6z' },
+    { label: 'LinkedIn', href: siteConfig.socials.linkedin, hover: 'hover:bg-blue-600 hover:border-blue-600 hover:text-white', icon: 'M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z' },
+    { label: 'YouTube', href: siteConfig.socials.youtube, hover: 'hover:bg-red-500 hover:border-red-500 hover:text-white', icon: 'M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z' },
+    { label: 'GitHub', href: siteConfig.socials.github, hover: 'hover:bg-slate-800 hover:border-slate-800 hover:text-white', icon: 'M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z' },
   ];
 
   return (
     <div className="min-h-screen">
-      {/* === HERO SECTION === */}
-      <section className="relative bg-gradient-to-br from-olympic-900 via-slate-900 to-olympic-950 overflow-hidden">
-        <Bubbles count={20} />
-        <FloatingShip />
-
-        <div className="absolute inset-0">
+      {/* === HERO SECTION — dark ocean === */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-olympic-900 via-slate-900 to-olympic-950">
+          <Bubbles count={20} />
+          <FloatingShip />
           <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-sky-500/8 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-olympic-500/8 rounded-full blur-3xl animate-float-delayed" />
+          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-500/6 rounded-full blur-3xl animate-float-delayed" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
           <div className="text-center max-w-3xl mx-auto">
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-display text-white tracking-tight leading-tight animate-fade-up" style={{ animationDelay: '100ms' }}>
-              Hubungi{' '}
+              Support{' '}
               <span className="bg-gradient-to-r from-sky-400 via-blue-400 to-sky-300 bg-clip-text text-transparent">
-                Kami
+                Aterkia
               </span>
             </h1>
 
-            <p className="text-sky-200/60 text-lg sm:text-xl mt-5 font-light leading-relaxed animate-fade-up max-w-xl mx-auto" style={{ animationDelay: '200ms' }}>
-              Punya ide kolaborasi, tawaran sponsorship, atau ingin tahu lebih banyak tentang riset robotika maritim kami?
+            <p className="text-white/50 text-lg sm:text-xl mt-5 font-light leading-relaxed animate-fade-up max-w-xl mx-auto" style={{ animationDelay: '200ms' }}>
+              Have a collaboration idea, sponsorship offer, or want to learn more about our maritime robotics research?
             </p>
-
-            {/* Quick Stats */}
-            <div className="flex justify-center gap-8 sm:gap-12 mt-10 animate-fade-up" style={{ animationDelay: '300ms' }}>
-              {quickStats.map((stat, i) => {
-                const Icon = stat.icon;
-                return (
-                  <div key={i} className="text-center group">
-                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300">
-                      <Icon className={`w-5 h-5 ${stat.color}`} />
-                    </div>
-                    <div className="text-2xl font-black text-white">{stat.value}</div>
-                    <div className="text-xs text-sky-300/50 font-medium">{stat.label}</div>
-                  </div>
-                );
-              })}
-            </div>
           </div>
         </div>
 
-        <WaveDivider color="#f8fafc" from="#0A1628" className="relative -mb-1" />
+        <WaveDivider color="#f8fafc" from="#0f172a" className="relative -mb-1 z-10" />
       </section>
 
-      {/* === MAIN CONTENT === */}
+      {/* === MAIN CONTENT — light === */}
       <section className="relative bg-[#f8fafc] py-16 sm:py-20" ref={cardsRef}>
         <div className="absolute inset-0 dot-pattern opacity-20" />
 
@@ -164,24 +158,24 @@ export default function ContactPage() {
                 {contactCards.map((card, idx) => {
                   const Icon = card.icon;
                   const Wrapper = card.href ? 'a' : 'div';
-                  const wrapperProps = card.href ? { href: card.href, target: '_blank', rel: 'noreferrer' } : {};
+                  const wrapperProps = card.href ? { href: card.href } : {};
 
                   return (
                     <Wrapper
                       key={idx}
                       {...wrapperProps}
-                      className={`flex items-start gap-4 p-5 rounded-2xl border border-slate-100 bg-white transition-all duration-300 group
-                        ${card.href ? 'hover:border-sky-200 hover:shadow-lg hover:shadow-sky-100/50 cursor-pointer' : ''}
+                      className={`flex items-start gap-4 p-5 rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 group
+                        ${card.href ? 'hover:border-sky-200 hover:shadow-lg hover:shadow-sky-100/60 cursor-pointer' : ''}
                         ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}
                       `}
                       style={{ transitionDelay: `${idx * 120}ms` }}
                     >
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center shrink-0 text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center shrink-0 text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{card.label}</span>
-                        <span className={`text-sm font-semibold block leading-snug ${card.href ? 'text-olympic-700 group-hover:text-sky-600 transition-colors' : 'text-slate-600'}`}>
+                        <span className={`text-sm font-semibold block leading-snug break-words ${card.href ? 'text-olympic-700 group-hover:text-sky-600 transition-colors' : 'text-slate-600'}`}>
                           {card.value}
                         </span>
                       </div>
@@ -191,16 +185,6 @@ export default function ContactPage() {
                     </Wrapper>
                   );
                 })}
-              </div>
-
-              {/* Response time */}
-              <div className={`flex items-center gap-3 px-5 py-4 rounded-2xl bg-sky-50 border border-sky-100 transition-all duration-500 delay-400 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-                <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center shrink-0">
-                  <Clock className="w-4 h-4 text-sky-500" />
-                </div>
-                <p className="text-xs text-sky-700 font-medium">
-                  Tanggapan email resmi dalam waktu <span className="font-bold">1x24 jam</span> hari kerja.
-                </p>
               </div>
 
               {/* Sponsors */}
@@ -217,7 +201,7 @@ export default function ContactPage() {
                         aria-label={sponsor.name}
                         className="relative group"
                       >
-                        <div className="shrink-0 opacity-50 hover:opacity-90 transition-opacity duration-300 cursor-pointer">
+                        <div className="shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
                           <ImageWithFallback
                             src={sponsor.logo}
                             alt={sponsor.name}
@@ -234,7 +218,7 @@ export default function ContactPage() {
 
               {/* Social links */}
               <div className={`pt-2 transition-all duration-500 delay-[600ms] ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3 px-1">Ikuti Kami</span>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3 px-1">Follow Us</span>
                 <div className="flex gap-2">
                   {socialLinks.map((s) => (
                     <a
@@ -243,7 +227,7 @@ export default function ContactPage() {
                       target="_blank"
                       rel="noreferrer"
                       aria-label={s.label}
-                      className={`w-11 h-11 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg ${s.color}`}
+                      className={`w-11 h-11 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg ${s.hover}`}
                     >
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d={s.icon} /></svg>
                     </a>
@@ -254,50 +238,54 @@ export default function ContactPage() {
 
             {/* Right — Contact Form */}
             <div className={`lg:col-span-7 transition-all duration-700 delay-200 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-              <div className="relative bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 sm:p-10 overflow-hidden">
-                {/* Decorative corner waves */}
-                <div className="absolute -top-1 -right-1 w-32 h-32 opacity-[0.03] pointer-events-none">
-                  <svg viewBox="0 0 120 120" className="w-full h-full">
-                    <path d="M0,0 Q60,20 120,0 L120,120 Q60,100 0,120 Z" fill="#005EB8" />
-                  </svg>
-                </div>
+              <div className="relative bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-8 sm:p-10 overflow-hidden">
 
                 {isSubmitted ? (
                   <div className="text-center py-12 space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center mx-auto animate-bounce-soft">
+                    <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-500 flex items-center justify-center mx-auto animate-bounce-soft">
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
-                    <h4 className="text-xl font-black font-display text-olympic-900">Pesan Berhasil Terkirim!</h4>
+                    <h4 className="text-xl font-black font-display text-olympic-900">Message Sent Successfully!</h4>
                     <p className="text-slate-500 text-sm max-w-sm mx-auto font-light leading-relaxed">
-                      Terima kasih telah menghubungi Tim Aterkia. Koordinator divisi terkait akan segera menindaklanjuti.
+                      Thank you for contacting Team Aterkia. The relevant division coordinator will follow up shortly.
                     </p>
                     <button
                       onClick={() => setIsSubmitted(false)}
                       className="px-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-semibold text-slate-700 transition-colors mt-2"
                     >
-                      Kirim Pesan Lainnya
+                      Send Another Message
                     </button>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-5">
+                    {submitError && (
+                      <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm" role="alert">
+                        <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                        <span>{submitError}</span>
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Lengkap / Instansi</label>
+                        <label htmlFor="contact-name" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name / Organization</label>
                         <input
+                          id="contact-name"
                           type="text"
                           required
-                          placeholder="Nama Anda"
+                          maxLength={120}
+                          placeholder="Your name"
                           value={formState.name}
                           onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                           className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Email</label>
+                        <label htmlFor="contact-email" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
                         <input
+                          id="contact-email"
                           type="email"
                           required
-                          placeholder="email@instansi.com"
+                          placeholder="email@company.com"
                           value={formState.email}
                           onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                           className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
@@ -306,26 +294,29 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kategori Keperluan</label>
+                      <label htmlFor="contact-category" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Inquiry Category</label>
                       <select
+                        id="contact-category"
                         value={formState.category}
                         onChange={(e) => setFormState({ ...formState, category: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
                       >
-                        <option value="Sponsorship">Tawaran Sponsorship / Kemitraan</option>
-                        <option value="Riset ASV">Kolaborasi Divisi ASV</option>
-                        <option value="Riset AUV">Kolaborasi Divisi AUV</option>
-                        <option value="Media">Liputan Media / Wawancara</option>
-                        <option value="Lainnya">Pertanyaan Umum</option>
+                        <option value="Sponsorship">Sponsorship / Partnership Offer</option>
+                        <option value="ASV Collaboration">ASV Division Collaboration</option>
+                        <option value="AUV Collaboration">AUV Division Collaboration</option>
+                        <option value="Media">Media Coverage / Interview</option>
+                        <option value="General">General Inquiry</option>
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pesan</label>
+                      <label htmlFor="contact-message" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Message</label>
                       <textarea
+                        id="contact-message"
                         required
                         rows={5}
-                        placeholder="Tuliskan pesan, penawaran kerja sama, atau pertanyaan Anda..."
+                        maxLength={2000}
+                        placeholder="Write your message, collaboration proposal, or question..."
                         value={formState.message}
                         onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all resize-none"
@@ -338,46 +329,12 @@ export default function ContactPage() {
                       className="w-full py-3.5 rounded-xl bg-gradient-to-r from-olympic-500 to-olympic-600 hover:from-olympic-600 hover:to-olympic-700 text-white font-bold text-sm tracking-wide shadow-lg shadow-olympic-500/25 hover:shadow-xl hover:shadow-olympic-500/30 transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       <Send className="w-4 h-4" />
-                      <span>{isSubmitting ? 'Mengirim...' : 'Kirim Pesan'}</span>
+                      <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
                     </button>
                   </form>
                 )}
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* === CTA / MAP SECTION === */}
-      <section className="relative bg-white py-16 sm:py-20 overflow-hidden">
-        <div className="absolute inset-0 dot-pattern opacity-10" />
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-olympic-500 to-olympic-700 text-white shadow-xl shadow-olympic-500/20 mb-6">
-            <Anchor className="w-7 h-7" />
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-black font-display text-olympic-900 tracking-tight">
-            Siap Berkolaborasi?
-          </h2>
-          <p className="text-slate-500 text-sm mt-3 max-w-lg mx-auto font-light leading-relaxed">
-            Kami terbuka untuk kemitraan riset, sponsorship, dan kolaborasi teknologi maritim. Mari bersama membangun inovasi robotika untuk laut Indonesia.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-3 mt-8">
-            <a
-              href={`mailto:${siteConfig.partnershipEmail}`}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-olympic-500 hover:bg-olympic-600 text-white text-sm font-bold shadow-lg shadow-olympic-500/25 hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-            >
-              <Mail className="w-4 h-4" />
-              Kirim Email Sponsorship
-            </a>
-            <a
-              href={siteConfig.socials.instagram}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 text-sm font-bold hover:border-sky-200 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6" /></svg>
-              Instagram Kami
-            </a>
           </div>
         </div>
       </section>

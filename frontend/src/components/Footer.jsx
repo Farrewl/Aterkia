@@ -24,7 +24,7 @@ export default function Footer() {
                 </div>
               </div>
               <p className="text-olympic-300 text-sm leading-relaxed max-w-sm">
-                Tim robotika maritim mahasiswa Undip yang mengembangkan wahana kapal permukaan (ASV) dan robot selam (AUV) untuk kompetisi nasional & internasional.
+                An Undip student maritime robotics team developing autonomous surface vehicles (ASV) and underwater robots (AUV) for national and international competitions.
               </p>
               <div className="flex gap-2.5">
                 {[
@@ -43,7 +43,7 @@ export default function Footer() {
 
             {/* Navigasi */}
             <div className="md:col-span-3 space-y-4">
-              <h4 className="font-bold text-olympic-200 uppercase text-xs tracking-wider">Navigasi</h4>
+              <h4 className="font-bold text-olympic-200 uppercase text-xs tracking-wider">Navigation</h4>
               <ul className="space-y-2.5">
                 {[
                   { to: '/', label: 'Home' },
@@ -63,7 +63,7 @@ export default function Footer() {
 
             {/* Kontak */}
             <div className="md:col-span-4 space-y-4">
-              <h4 className="font-bold text-olympic-200 uppercase text-xs tracking-wider">Kontak</h4>
+              <h4 className="font-bold text-olympic-200 uppercase text-xs tracking-wider">Contact</h4>
               <div className="space-y-3 text-sm text-olympic-400">
                 <a href={`mailto:${siteConfig.email}`} className="block hover:text-white transition-colors">
                   {siteConfig.email}
@@ -84,7 +84,7 @@ export default function Footer() {
               © {new Date().getFullYear()} Aterkia Roboboat
             </span>
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="p-2.5 rounded-xl bg-olympic-800 border border-olympic-700 text-olympic-400 hover:text-white hover:bg-olympic-600 transition-all duration-200 hover:scale-105" aria-label="Kembali ke atas">
+              className="p-2.5 rounded-xl bg-olympic-800 border border-olympic-700 text-olympic-400 hover:text-white hover:bg-olympic-600 transition-all duration-200 hover:scale-105" aria-label="Back to top">
               <ArrowUp className="w-4 h-4" />
             </button>
           </div>

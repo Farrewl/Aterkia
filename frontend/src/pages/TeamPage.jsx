@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import './TeamPage.css';
 import {
   ArrowDown,
   ArrowLeft,
@@ -359,6 +360,8 @@ function SubdivisionExplorer({ team }) {
                 <p>{subdivision.description}</p>
                 <span className={`subdivision-option__action ${isActive ? 'is-back-lite' : ''}`}>
                   {isActive ? <><ArrowLeft /> Kembali</> : <>Explore <ArrowRight /></>}
+                <span className={`subdivision-option__action ${isActive ? 'is-back' : ''}`}>
+                  {isActive ? <><ArrowLeft /> Back</> : <>Explore <ArrowRight /></>}
                 </span>
               </button>
             );
@@ -500,12 +503,6 @@ export default function TeamPage() {
     <main className="team-page">
       <section className="team-group-section" aria-labelledby="team-title">
         <div className="team-group-stage">
-          <div className="team-hero-kicker">
-            <span className="team-hero-kicker__dot" />
-            <span>Aterkia RoboBoat Team</span>
-            <span className="team-hero-kicker__line" />
-            <span>Est. 2014</span>
-          </div>
 
           <div className="team-group-title-motion">
             <h1 id="team-title" className="team-group-title">
@@ -526,17 +523,11 @@ export default function TeamPage() {
             />
           </div>
 
-          <div className="team-hero-footer">
-            <p>Engineer muda. Satu visi.<br /></p>
-            <a href="#meet-the-team" aria-label="Lihat pilihan divisi">
+          <div className="team-hero-footer centered">
+            <a href="#meet-the-team" aria-label="View division options">
               <span>Meet the team</span>
               <ArrowDown />
             </a>
-            <div className="team-hero-footer__index">
-              <strong>TEKNIS</strong>
-              <span>/</span>
-              <strong>NONTEKNIS</strong>
-            </div>
           </div>
         </div>
 
@@ -721,7 +712,7 @@ export default function TeamPage() {
                 onClick={handleBackToTracks}
               >
                 <ArrowLeft />
-                <span>Kembali</span>
+                <span>Back</span>
               </button>
               <div className="track-chapter-card__copy">
                 <small>{selectedTrack.shortLabel}</small>
@@ -784,7 +775,7 @@ export default function TeamPage() {
                       </span>
                       <span className={`division-choice__action ${isActive ? 'is-back-lite' : ''}`}>
                         {isActive ? (
-                          <><ArrowLeft /> Kembali</>
+                          <><ArrowLeft /> Back</>
                         ) : (
                           <>Explore <ArrowRight /></>
                         )}

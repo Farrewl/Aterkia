@@ -1,52 +1,32 @@
-// Data sponsor — gambar diambil dari public/images/sponsors/
+// Sponsor data — verified real sponsors (2025 season)
+// Images in public/images/sponsors/
 export const sponsorsData = [
   {
-    id: "sp-01",
-    name: "Fakultas Teknik Undip",
-    role: "Institusi Induk",
+    id: "sp-btn",
+    name: "Bank BTN",
+    role: "Main Sponsor",
     logo: "/images/sponsors/BTN-Logo.png",
-    url: "https://undip.ac.id",
+    url: "https://www.btn.co.id",
   },
   {
-    id: "sp-02",
-    name: "Robotics & Marine Innovation Center",
-    role: "Fasilitas Riset & Kolam Uji",
-    logo: "/images/sponsors/ICA.png",
-    url: "https://undip.ac.id/rmic",
-  },
-  {
-    id: "sp-03",
-    name: "Apex Composite Technologies",
-    role: "Sponsor Material Serat Karbon",
-    logo: "/images/sponsors/470-110mm_360x.avif",
-    url: "https://apexcomposite.com",
-  },
-  {
-    id: "sp-04",
-    name: "Nvidia Edge AI Lab",
-    role: "Sponsor Hardware AI",
+    id: "sp-cuav",
+    name: "CUAV Official Store",
+    role: "Flight Controllers & Telemetry",
     logo: "/images/sponsors/CUAV-LOGO-1-e1634317826731-300x123.webp",
-    url: "https://nvidia.com",
+    url: "https://store.cuav.net",
   },
   {
-    id: "sp-05",
-    name: "HydroPropulsion Marine Systems",
-    role: "Sponsor Motor Pendorong",
-    logo: "/images/sponsors/testblow.png",
-    url: "https://hydropropulsion.com",
-  },
-  {
-    id: "sp-06",
-    name: "Precision GNSS Networks",
-    role: "Sponsor GPS & Telemetri",
-    logo: "/images/sponsors/ICA.png",
-    url: "https://gnss-networks.com",
-  },
-  {
-    id: "sp-07",
-    name: "SolidCircuit Electronics",
-    role: "Sponsor PCB & Komponen Elektronik",
+    id: "sp-apisqueen",
+    name: "Apisqueen Underwater Thruster",
+    role: "Underwater Thrusters",
     logo: "/images/sponsors/470-110mm_360x.avif",
-    url: "https://solidcircuit.com",
-  }
+    url: "https://apisqueen.com",
+  },
+  {
+    id: "sp-ica",
+    name: "ICA SafetyGO",
+    role: "Safety Equipment Partner",
+    logo: "/images/sponsors/ICA.png",
+    url: "https://safetygo.pt-ica.com/",
+  },
 ];

@@ -87,7 +87,6 @@ Aterkia/
 │   │   │   ├── teamData.js
 │   │   │   ├── newsData.js
 │   │   │   ├── sponsorsData.js
-│   │   │   └── techData.js
 │   │   ├── App.jsx                  ← React Router setup
 │   │   ├── main.jsx
 │   │   └── index.css                ← Tailwind + custom utilities
@@ -134,8 +133,7 @@ Edit `frontend/src/data/aboutData.js`
 
 - **Video hero** (`frontend/public/videos/`) tidak di-commit ke GitHub karena ukuran besar. Upload secara manual atau gunakan CDN/external hosting.
 - **Gambar belum tersedia** — semua folder gambar (`team/`, `robots/`, `news/`, `sponsors/`) masih kosong. Component `ImageWithFallback` akan menampilkan fallback (inisial/ikon) sampai foto diunggah.
-- **`techData.js`** berisi data subsystem teknologi tapi belum digunakan oleh halaman manapun (untuk pengembangan fitur mendatang).
-- **Backend** menggunakan in-memory database. Untuk production, migrasi ke PostgreSQL/Supabase menggunakan `schema.sql`.
+- **Backend** menggunakan in-memory database + PostgreSQL fallback. Untuk production, pastikan PostgreSQL tersedia.
 
 ---
 
