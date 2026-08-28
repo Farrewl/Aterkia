@@ -107,6 +107,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const completeGoogleRedirectLogin = (token, userData) => {
+    localStorage.setItem('accessToken', token);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setAccessToken(token);
+    setUser(userData);
+  };
+
   const logout = async () => {
     try {
       await authApi.logout();
@@ -168,6 +175,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     loginWithGoogle,
+    completeGoogleRedirectLogin,
     logout,
     refreshAccessToken,
     updateProfile,

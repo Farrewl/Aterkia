@@ -1,19 +1,36 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
-import ReCAPTCHA from 'react-google-recaptcha';
-import GoogleLoginButton from '../components/auth/GoogleLoginButton';
+import { AlertCircle, ShieldCheck } from 'lucide-react';
+import { Turnstile } from '@marsidev/react-turnstile';
 import { useAuth } from '../hooks';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { loginWithGoogle, isAuthenticated } = useAuth();
+  const { completeGoogleRedirectLogin, isAuthenticated } = useAuth();
 
-  const [captchaSolved, setCaptchaSolved] = useState(false);
   const [phase, setPhase] = useState('form');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const recaptchaRef = useRef(null);
+  const redirectStarted = useRef(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const token = hash.get('access_token');
+    const userData = hash.get('user');
+    if (token && userData) {
+      try {
+        completeGoogleRedirectLogin(token, JSON.parse(userData));
+        window.history.replaceState({}, document.title, '/login');
+        setPhase('diving');
+      } catch {
+        setError('Invalid Google login response');
+      }
+    } else if (params.has('error')) {
+      setError('Google login could not be completed. Please try again.');
+      window.history.replaceState({}, document.title, '/login');
+    }
+  }, [completeGoogleRedirectLogin]);
 
   useEffect(() => {
     if (isAuthenticated) navigate('/');
@@ -27,31 +44,25 @@ export default function LoginPage() {
     }
   }, [phase, navigate]);
 
-  const handleCaptchaChange = (token) => {
-    if (token) {
-      setCaptchaSolved(true);
-      setError('');
-    }
-  };
-
-  const handleCaptchaExpired = () => {
-    setCaptchaSolved(false);
-  };
-
-  const handleGoogleLogin = async (credentialResponse) => {
+  const handleTurnstileSuccess = async (token) => {
+    if (redirectStarted.current) return;
+    redirectStarted.current = true;
     setIsSubmitting(true);
     setError('');
-    if (!credentialResponse?.credential) {
-      setError('Invalid Google response');
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ turnstileToken: token }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.authUrl) throw new Error(result.error || 'Unable to start Google login');
+      window.location.assign(result.authUrl);
+    } catch (err) {
+      redirectStarted.current = false;
       setIsSubmitting(false);
-      return;
-    }
-    const result = await loginWithGoogle(credentialResponse.credential);
-    setIsSubmitting(false);
-    if (result.success) {
-      setPhase('diving');
-    } else {
-      setError(result.error);
+      setError(err.message || 'Google login failed');
     }
   };
 
@@ -100,46 +111,30 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* reCAPTCHA */}
-            {!captchaSolved ? (
-              <div className="space-y-4 animate-fade-up" style={{ animationDelay: '300ms' }}>
+            {/* Cloudflare Turnstile starts the Google redirect after verification. */}
+            <div className="space-y-4 animate-fade-up" style={{ animationDelay: '300ms' }}>
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-sky-500/10 border border-sky-500/20">
                   <ShieldCheck className="w-5 h-5 text-sky-400 shrink-0" />
-                  <span className="text-xs text-sky-300/80">Verify you're not a robot to continue</span>
+                  <span className="text-xs text-sky-300/80">Cloudflare will verify you, then continue with Google</span>
                 </div>
 
                 <div className="flex justify-center">
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'}
-                    onChange={handleCaptchaChange}
-                    onExpired={handleCaptchaExpired}
-                    theme="dark"
-                    size="normal"
+                  <Turnstile
+                    siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                    onSuccess={handleTurnstileSuccess}
+                    onExpire={() => { redirectStarted.current = false; setIsSubmitting(false); }}
+                    onError={() => { redirectStarted.current = false; setIsSubmitting(false); setError('Cloudflare verification failed'); }}
+                    options={{ theme: 'dark' }}
                   />
                 </div>
-              </div>
-            ) : (
-              <div className="space-y-4 animate-fade-up" style={{ animationDelay: '300ms' }}>
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                  <span className="text-xs text-emerald-300/80">Verification passed — continue with Google</span>
-                </div>
-
+                {isSubmitting && <p className="text-center text-xs text-sky-300/70">Redirecting to Google...</p>}
                 {error && (
                   <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 animate-shake" role="alert">
                     <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
                     <p className="text-sm text-red-300">{error}</p>
                   </div>
                 )}
-
-                <GoogleLoginButton
-                  onSuccess={handleGoogleLogin}
-                  onError={() => setError('Google login failed')}
-                  disabled={isSubmitting}
-                />
               </div>
-            )}
           </div>
         </div>
       </div>

@@ -4,8 +4,9 @@ import { query } from '../config/database.js';
 import { hashPassword, verifyPassword } from '../utils/password.js';
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt.js';
 import { setRefreshTokenCookie, clearRefreshTokenCookie, getRefreshTokenFromCookie } from '../utils/cookies.js';
-import { verifyGoogleIdToken } from '../config/google.js';
+import { verifyGoogleIdToken, getGoogleAuthUrl, exchangeGoogleCode } from '../config/google.js';
 import { authenticate } from '../middleware/auth.js';
+import { requireAdmin } from '../middleware/requireRole.js';
 
 const router = express.Router();
 
@@ -39,6 +40,113 @@ const revokeAllUserTokens = async (userId) => {
   );
 };
 
+const frontendUrl = () => process.env.FRONTEND_URL || 'http://localhost:5173';
+
+const setOAuthStateCookie = (res, state) => {
+  res.cookie('google_oauth_state', state, {
+    httpOnly: true,
+    secure: process.env.COOKIE_SECURE === 'true',
+    sameSite: 'lax',
+    maxAge: 10 * 60 * 1000,
+    path: '/api/auth/google',
+  });
+};
+
+const upsertGoogleUser = async (payload) => {
+  if (!payload?.email || !payload.sub || payload.email_verified !== true) {
+    throw new Error('Google account is not verified');
+  }
+
+  const email = payload.email.toLowerCase();
+  const googleId = payload.sub;
+  const isAdmin = email === 'ibnufirdaus2030@gmail.com';
+  const result = await query(
+    `SELECT id, email, name, avatar_url, role, division, is_active, google_id
+     FROM users WHERE email = $1 OR google_id = $2`, [email, googleId]
+  );
+  let user;
+
+  if (result.rows.length === 0) {
+    const inserted = await query(
+      `INSERT INTO users (email, google_id, name, avatar_url, role)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, email, name, avatar_url, role, division, is_active`,
+      [email, googleId, payload.name || email, payload.picture || null, isAdmin ? 'admin' : 'user']
+    );
+    user = inserted.rows[0];
+  } else {
+    user = result.rows[0];
+    if (isAdmin && user.role !== 'admin') {
+      await query('UPDATE users SET role = $1 WHERE id = $2', ['admin', user.id]);
+      user.role = 'admin';
+    }
+    if (!user.google_id) await query('UPDATE users SET google_id = $1 WHERE id = $2', [googleId, user.id]);
+    if (payload.picture && payload.picture !== user.avatar_url) {
+      await query('UPDATE users SET avatar_url = $1 WHERE id = $2', [payload.picture, user.id]);
+      user.avatar_url = payload.picture;
+    }
+  }
+
+  if (user.is_active === false) {
+    const error = new Error('Account deactivated');
+    error.statusCode = 403;
+    throw error;
+  }
+  await query('UPDATE users SET last_login = NOW() WHERE id = $1', [user.id]);
+  const session = await createUserSession(user.id);
+  return { user, ...session };
+};
+
+// Verify Turnstile before starting the Google OAuth redirect flow.
+router.post('/google/start', async (req, res) => {
+  try {
+    const { turnstileToken } = req.body;
+    if (!turnstileToken || !process.env.TURNSTILE_SECRET_KEY) {
+      return res.status(400).json({ success: false, error: 'Cloudflare verification required' });
+    }
+
+    const form = new URLSearchParams({ secret: process.env.TURNSTILE_SECRET_KEY, response: turnstileToken });
+    const verification = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: form,
+    });
+    const result = await verification.json();
+    if (!result.success) return res.status(403).json({ success: false, error: 'Cloudflare verification failed' });
+
+    const state = crypto.randomBytes(32).toString('hex');
+    setOAuthStateCookie(res, state);
+    return res.json({ success: true, authUrl: getGoogleAuthUrl(state) });
+  } catch (err) {
+    console.error('[Auth] Google start error:', err);
+    return res.status(500).json({ success: false, error: 'Unable to start Google login' });
+  }
+});
+
+// Exchange the OAuth code and return the app session to the frontend.
+router.get('/google/callback', async (req, res) => {
+  try {
+    const { code, state, error } = req.query;
+    const expectedState = req.cookies?.google_oauth_state;
+    res.clearCookie('google_oauth_state', { path: '/api/auth/google' });
+    if (error) return res.redirect(`${frontendUrl()}/login?error=google_cancelled`);
+    if (!code || !state || !expectedState || state !== expectedState) {
+      return res.redirect(`${frontendUrl()}/login?error=invalid_oauth_state`);
+    }
+
+    const { user, accessToken, refreshToken } = await upsertGoogleUser(await exchangeGoogleCode(code));
+    setRefreshTokenCookie(res, refreshToken);
+    const userData = encodeURIComponent(JSON.stringify({
+      id: user.id, email: user.email, name: user.name, avatar: user.avatar_url,
+      role: user.role, division: user.division,
+    }));
+    return res.redirect(`${frontendUrl()}/login#access_token=${encodeURIComponent(accessToken)}&user=${userData}`);
+  } catch (err) {
+    console.error('[Auth] Google callback error:', err);
+    return res.redirect(`${frontendUrl()}/login?error=google_login_failed`);
+  }
+});
+
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
@@ -70,7 +178,7 @@ router.post('/register', async (req, res) => {
 
     const result = await query(
       `INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3)
-       RETURNING id, email, name, avatar_url, role, division, created_at`,
+       RETURNING id, email, name, avatar_url, role, division, is_active, created_at`,
       [email.toLowerCase(), passwordHash, name]
     );
 
@@ -208,16 +316,17 @@ router.post('/google', async (req, res) => {
       const insertResult = await query(
         `INSERT INTO users (email, google_id, name, avatar_url, role)
          VALUES ($1, $2, $3, $4, $5)
-         RETURNING id, email, name, avatar_url, role, division, created_at`,
+          RETURNING id, email, name, avatar_url, role, division, is_active, created_at`,
         [email, googleId, name, avatar, isAdminEmail ? 'admin' : 'user']
       );
       user = insertResult.rows[0];
     } else {
       user = result.rows[0];
 
-      if (isAdminEmail && user.role !== 'admin') {
-        await query('UPDATE users SET role = $1 WHERE id = $2', ['admin', user.id]);
-        user.role = 'admin';
+      const expectedRole = isAdminEmail ? 'admin' : 'user';
+      if (user.role !== expectedRole) {
+        await query('UPDATE users SET role = $1 WHERE id = $2', [expectedRole, user.id]);
+        user.role = expectedRole;
       }
 
       if (!user.google_id) {
@@ -377,7 +486,7 @@ router.get('/me', authenticate, async (req, res) => {
 });
 
 // PUT /api/auth/me
-router.put('/me', authenticate, async (req, res) => {
+router.put('/me', authenticate, requireAdmin, async (req, res) => {
   try {
     const { name, division } = req.body;
     const updates = [];

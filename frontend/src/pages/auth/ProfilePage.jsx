@@ -102,19 +102,21 @@ export default function ProfilePage() {
                   Profile
                 </span>
               </button>
-              <button
-                onClick={() => setActiveTab('security')}
-                className={`flex-1 px-6 py-4 text-sm font-semibold transition-colors border-b-2 ${
-                  activeTab === 'security'
-                    ? 'border-sky-400 text-sky-300'
-                    : 'border-transparent text-white/35 hover:text-white/60'
-                }`}
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <Shield className="w-4 h-4" />
-                  Security
-                </span>
-              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => setActiveTab('security')}
+                  className={`flex-1 px-6 py-4 text-sm font-semibold transition-colors border-b-2 ${
+                    activeTab === 'security'
+                      ? 'border-sky-400 text-sky-300'
+                      : 'border-transparent text-white/35 hover:text-white/60'
+                  }`}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    Security
+                  </span>
+                </button>
+              )}
             </nav>
           </div>
 
@@ -149,6 +151,7 @@ export default function ProfilePage() {
                         onChange={handleChange}
                         className={inputClass}
                         placeholder="Your full name"
+                        disabled={!isAdmin}
                         required
                       />
                     </div>
@@ -180,7 +183,8 @@ export default function ProfilePage() {
                       name="division"
                       value={formData.division}
                       onChange={handleChange}
-                      className={`${inputClass} pl-4 [&>option]:bg-olympic-900`}
+                      className={`${inputClass} pl-4 [&>option]:bg-olympic-900 ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
+                      disabled={!isAdmin}
                     >
                       <option value="">Select division</option>
                       <option value="ASV">ASV Division</option>
@@ -209,7 +213,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/10 flex justify-end">
+                {isAdmin && <div className="pt-4 border-t border-white/10 flex justify-end">
                   <button
                     type="submit"
                     disabled={isSaving}
@@ -219,7 +223,7 @@ export default function ProfilePage() {
                     <Save className="w-4 h-4" />
                     <span>Save Changes</span>
                   </button>
-                </div>
+                </div>}
               </form>
             )}
 
