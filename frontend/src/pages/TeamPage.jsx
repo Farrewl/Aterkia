@@ -11,8 +11,8 @@ import { divisionTeams } from '../data/teamData';
 import { siteConfig } from '../data/siteConfig';
 import ImageWithFallback from '../components/ImageWithFallback';
 
-const TEAM_GROUP_PHOTO = '/images/team/aterkia-team-group.png';
-const PRESIDENT_PHOTO = '/images/team/president/muhammad-bintang-tri-surya.png';
+const TEAM_GROUP_PHOTO = '/images/team/aterkia-team-group.webp';
+const PRESIDENT_PHOTO = '/images/team/president/muhammad-bintang-tri-surya.webp';
 
 const teamTracks = {
   TECHNICAL: {
@@ -112,8 +112,7 @@ function LinkedinIcon(props) {
   );
 }
 
-function MemberCard({ member, order }) {
-  const cardRef = useRef(null);
+function MemberCard({ member }) {
   const firstName = member.fullName.split(' ')[0];
   const divisionName = member.division?.toLowerCase() || '';
   const divisionKey = divisionName.includes('auv')
@@ -122,33 +121,9 @@ function MemberCard({ member, order }) {
       ? 'nontek'
       : 'asv';
 
-  useEffect(() => {
-    const element = cardRef.current;
-    if (!element) return undefined;
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      element.classList.add('is-visible');
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        element.classList.add('is-visible');
-        observer.unobserve(element);
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -4% 0px' }
-    );
-
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <article
-      ref={cardRef}
-      className="humaan-card-reveal"
-      style={{ '--card-delay': `${(order % 4) * 80}ms` }}
+      className="humaan-card-reveal is-visible"
     >
       <div className={`humaan-member-card humaan-member-card--${divisionKey} group`}>
         <ImageWithFallback
@@ -171,35 +146,22 @@ function MemberCard({ member, order }) {
 }
 
 function ScrollReveal({ children, className = '' }) {
-  const revealRef = useRef(null);
-
-  useEffect(() => {
-    const element = revealRef.current;
-    if (!element) return undefined;
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      element.classList.add('is-visible');
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        element.classList.add('is-visible');
-        observer.unobserve(element);
-      },
-      { threshold: 0.14, rootMargin: '0px 0px -8% 0px' }
-    );
-
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <div ref={revealRef} className={`org-scroll-reveal ${className}`}>
+    <div className={`org-scroll-reveal is-visible ${className}`}>
       {children}
     </div>
   );
+}
+
+// Flow illustrations are shown immediately. This avoids observers and delayed
+// transitions when a large division tree is mounted after a selection.
+function useFlowReveal(flowRef, variableNames, dependencyKey) {
+  useEffect(() => {
+    const flow = flowRef.current;
+    if (!flow) return undefined;
+    variableNames.forEach((name) => flow.style.setProperty(name, '1'));
+    return undefined;
+  }, [flowRef, dependencyKey]);
 }
 
 function ProfileContact({ icon: Icon, label, value, href }) {
@@ -333,7 +295,6 @@ function FeaturedPerson({ person, division, kind, imageSide = 'right' }) {
 function SubdivisionExplorer({ team }) {
   const [activeSubdivision, setActiveSubdivision] = useState(null);
   const flowRef = useRef(null);
-  const resultFlowRef = useRef(null);
   const subdivisions = Object.values(team.subdivisions || {});
   const selectedSubdivision = subdivisions.find((item) => item.id === activeSubdivision) || null;
   const selectedMembers = selectedSubdivision
@@ -344,134 +305,14 @@ function SubdivisionExplorer({ team }) {
     setActiveSubdivision(null);
   }, [team.id]);
 
-  useEffect(() => {
-    const flow = flowRef.current;
-    if (!flow) return undefined;
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
-      flow.style.setProperty('--sub-heading', '1');
-      flow.style.setProperty('--sub-trunk', '1');
-      flow.style.setProperty('--sub-branches', '1');
-      flow.style.setProperty('--sub-cards', '1');
-      return undefined;
-    }
-
-    let frameId;
-    let currentProgress = 0;
-    let targetProgress = 0;
-
-    const applyProgress = (progress) => {
-      flow.style.setProperty('--sub-heading', Math.min(1, progress / 0.25).toFixed(3));
-      flow.style.setProperty('--sub-trunk', Math.max(0, Math.min(1, (progress - 0.12) / 0.34)).toFixed(3));
-      flow.style.setProperty('--sub-branches', Math.max(0, Math.min(1, (progress - 0.38) / 0.38)).toFixed(3));
-      flow.style.setProperty('--sub-cards', Math.max(0, Math.min(1, (progress - 0.62) / 0.38)).toFixed(3));
-    };
-
-    const updateTarget = () => {
-      const bounds = flow.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const distance = Math.max(viewportHeight * 0.52, bounds.height - viewportHeight * 0.04);
-      targetProgress = Math.max(0, Math.min(1, (viewportHeight * 0.96 - bounds.top) / distance));
-    };
-
-    const render = () => {
-      currentProgress += (targetProgress - currentProgress) * 0.1;
-      applyProgress(currentProgress);
-      if (Math.abs(targetProgress - currentProgress) < 0.001) {
-        currentProgress = targetProgress;
-        applyProgress(currentProgress);
-        frameId = undefined;
-        return;
-      }
-      frameId = window.requestAnimationFrame(render);
-    };
-
-    const requestUpdate = () => {
-      updateTarget();
-      if (frameId === undefined) frameId = window.requestAnimationFrame(render);
-    };
-
-    updateTarget();
-    currentProgress = targetProgress;
-    applyProgress(currentProgress);
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-
-    return () => {
-      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
-      window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('resize', requestUpdate);
-    };
-  }, [team.id]);
-
-  useEffect(() => {
-    const flow = resultFlowRef.current;
-    if (!flow || !selectedSubdivision) return undefined;
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
-      flow.style.setProperty('--sub-result-upper', '1');
-      flow.style.setProperty('--sub-result-title', '1');
-      flow.style.setProperty('--sub-result-lower', '1');
-      return undefined;
-    }
-
-    let frameId;
-    let currentProgress = 0;
-    let targetProgress = 0;
-
-    const applyProgress = (progress) => {
-      flow.style.setProperty('--sub-result-upper', Math.min(1, progress / 0.46).toFixed(3));
-      flow.style.setProperty('--sub-result-title', Math.max(0, Math.min(1, (progress - 0.27) / 0.34)).toFixed(3));
-      flow.style.setProperty('--sub-result-lower', Math.max(0, Math.min(1, (progress - 0.44) / 0.56)).toFixed(3));
-    };
-
-    const updateTarget = () => {
-      const bounds = flow.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const distance = Math.max(viewportHeight * 0.54, bounds.height - viewportHeight * 0.06);
-      targetProgress = Math.max(0, Math.min(1, (viewportHeight * 0.95 - bounds.top) / distance));
-    };
-
-    const render = () => {
-      currentProgress += (targetProgress - currentProgress) * 0.1;
-      applyProgress(currentProgress);
-      if (Math.abs(targetProgress - currentProgress) < 0.001) {
-        currentProgress = targetProgress;
-        applyProgress(currentProgress);
-        frameId = undefined;
-        return;
-      }
-      frameId = window.requestAnimationFrame(render);
-    };
-
-    const requestUpdate = () => {
-      updateTarget();
-      if (frameId === undefined) frameId = window.requestAnimationFrame(render);
-    };
-
-    updateTarget();
-    currentProgress = targetProgress;
-    applyProgress(currentProgress);
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-
-    return () => {
-      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
-      window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('resize', requestUpdate);
-    };
-  }, [selectedSubdivision]);
+  useFlowReveal(
+    flowRef,
+    ['--sub-heading', '--sub-trunk', '--sub-branches', '--sub-cards'],
+    team.id
+  );
 
   const selectSubdivision = (subdivisionId) => {
     setActiveSubdivision(subdivisionId);
-    window.setTimeout(() => {
-      document.getElementById(`${team.id.toLowerCase()}-subdivision-detail`)?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }, 360);
   };
 
   return (
@@ -500,15 +341,15 @@ function SubdivisionExplorer({ team }) {
           <path className="subdivision-flow__line subdivision-flow__line--elkapro water-flow-line" style={{ stroke: 'url(#subdivision-water-gradient)' }} pathLength="1" d="M500 78 C532 118 610 126 750 146 C780 151 790 176 790 210" />
         </svg>
 
-        <div className={`subdivision-options ${activeSubdivision ? 'has-selection' : ''}`}>
+        <div className={`team-selection-group subdivision-options ${activeSubdivision ? 'has-selection-lite' : ''}`}>
           {subdivisions.map((subdivision) => {
             const isActive = activeSubdivision === subdivision.id;
-            const isCollapsed = activeSubdivision && !isActive;
+            const isInactive = activeSubdivision && !isActive;
             return (
               <button
                 key={subdivision.id}
                 type="button"
-                className={`subdivision-option subdivision-option--${subdivision.id.toLowerCase()} ${isActive ? 'is-active' : ''} ${isCollapsed ? 'is-collapsed' : ''}`}
+                className={`team-selection-card subdivision-option subdivision-option--${subdivision.id.toLowerCase()} ${isActive ? 'is-active-lite' : ''} ${isInactive ? 'is-inactive-lite' : ''}`}
                 onClick={() => (isActive ? setActiveSubdivision(null) : selectSubdivision(subdivision.id))}
                 aria-expanded={isActive}
                 aria-controls={`${team.id.toLowerCase()}-subdivision-detail`}
@@ -517,6 +358,8 @@ function SubdivisionExplorer({ team }) {
                 <strong>{subdivision.name}</strong>
                 <small>{subdivision.fullName}</small>
                 <p>{subdivision.description}</p>
+                <span className={`subdivision-option__action ${isActive ? 'is-back-lite' : ''}`}>
+                  {isActive ? <><ArrowLeft /> Kembali</> : <>Explore <ArrowRight /></>}
                 <span className={`subdivision-option__action ${isActive ? 'is-back' : ''}`}>
                   {isActive ? <><ArrowLeft /> Back</> : <>Explore <ArrowRight /></>}
                 </span>
@@ -530,9 +373,9 @@ function SubdivisionExplorer({ team }) {
         <div
           key={`${team.id}-${selectedSubdivision.id}`}
           id={`${team.id.toLowerCase()}-subdivision-detail`}
-          className={`subdivision-result subdivision-result--${selectedSubdivision.id.toLowerCase()}`}
+          className={`team-selection-panel subdivision-result subdivision-result--${selectedSubdivision.id.toLowerCase()}`}
         >
-          <header ref={resultFlowRef} className="subdivision-result__story">
+          <header className="subdivision-result__story">
             <div className="subdivision-result__story-stage">
               <svg viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true">
                 <defs>
@@ -584,8 +427,8 @@ function SubdivisionExplorer({ team }) {
               <p>Tim yang bekerja langsung bersama ketua sub-divisi dalam satu alur pengembangan.</p>
             </div>
             <div className="humaan-team-grid">
-              {selectedMembers.map((member, index) => (
-                <MemberCard key={member.id} member={member} order={index} />
+              {selectedMembers.map((member) => (
+                <MemberCard key={member.id} member={member} />
               ))}
             </div>
           </ScrollReveal>
@@ -597,20 +440,14 @@ function SubdivisionExplorer({ team }) {
 
 export default function TeamPage() {
   const [activeTrack, setActiveTrack] = useState(null);
-  const [pendingTrack, setPendingTrack] = useState(null);
-  const [isReturningToTracks, setIsReturningToTracks] = useState(false);
   const [activeDivision, setActiveDivision] = useState(null);
-  const groupSectionRef = useRef(null);
-  const groupPhotoRef = useRef(null);
-  const groupTitleRef = useRef(null);
   const leaderStoryRef = useRef(null);
-  const structureBridgeRef = useRef(null);
   const divisionStoryRef = useRef(null);
   const divisionProfileStoryRef = useRef(null);
   const divisionLeadershipStoryRef = useRef(null);
-  const trackTransitionTimerRef = useRef(null);
   const selectedTeam = activeDivision ? divisionTeams[activeDivision] : null;
   const selectedTrack = activeTrack ? teamTracks[activeTrack] : null;
+  const showFacultyAdvisor = selectedTeam ? ['ASV', 'AUV'].includes(selectedTeam.id) : false;
   const visibleDivisions = selectedTrack
     ? selectedTrack.divisions.map((divisionId) => divisionTeams[divisionId])
     : [];
@@ -621,391 +458,67 @@ export default function TeamPage() {
   ];
 
   const handleBackToDivisions = () => {
-    const selector = document.querySelector('.division-selector');
     setActiveDivision(null);
-    window.requestAnimationFrame(() => {
-      selector?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
   };
 
   const handleBackToTracks = () => {
-    if (isReturningToTracks) return;
-
-    const transitionDelay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 560;
-    setIsReturningToTracks(true);
-    trackTransitionTimerRef.current = window.setTimeout(() => {
-      setActiveDivision(null);
-      setActiveTrack(null);
-      setIsReturningToTracks(false);
-      trackTransitionTimerRef.current = null;
-      window.requestAnimationFrame(() => {
-        document.querySelector('.team-track-grid')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      });
-    }, transitionDelay);
+    setActiveDivision(null);
+    setActiveTrack(null);
   };
 
   const handleSelectTrack = (trackId) => {
-    if (pendingTrack) return;
-
-    const transitionDelay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620;
-    setPendingTrack(trackId);
-    trackTransitionTimerRef.current = window.setTimeout(() => {
-      setActiveDivision(null);
-      setActiveTrack(trackId);
-      setPendingTrack(null);
-      trackTransitionTimerRef.current = null;
-    }, transitionDelay);
+    setActiveDivision(null);
+    setActiveTrack(trackId);
   };
 
-  useEffect(() => () => {
-    if (trackTransitionTimerRef.current) {
-      window.clearTimeout(trackTransitionTimerRef.current);
-    }
-  }, []);
+  const handleSelectDivision = (divisionId) => {
+    setActiveDivision(divisionId);
+  };
 
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+  useFlowReveal(
+    leaderStoryRef,
+    ['--leader-scroll', '--leader-upper', '--leader-vision', '--leader-lower'],
+    'leader-story'
+  );
 
-    let frameId;
-    let isHeroVisible = true;
-    const updateGroupHero = () => {
-      frameId = undefined;
-      const section = groupSectionRef.current;
-      if (!section || !isHeroVisible) return;
+  useFlowReveal(
+    divisionStoryRef,
+    ['--division-story-title', '--division-story-trunk', '--division-story-branches'],
+    activeTrack || 'no-track'
+  );
 
-      const bounds = section.getBoundingClientRect();
-      const progress = Math.max(0, Math.min(1, -bounds.top / window.innerHeight));
+  useFlowReveal(
+    divisionProfileStoryRef,
+    ['--profile-intro', '--profile-upper', '--profile-advisor', '--profile-lower'],
+    activeDivision || 'no-division'
+  );
 
-      if (groupPhotoRef.current) {
-        groupPhotoRef.current.style.transform = `translate3d(0, ${progress * -42}px, 0)`;
-      }
-      if (groupTitleRef.current) {
-        groupTitleRef.current.style.transform = `translate3d(0, ${progress * -68}px, 0)`;
-      }
-    };
-
-    const onScroll = () => {
-      if (!isHeroVisible) return;
-      if (frameId === undefined) frameId = window.requestAnimationFrame(updateGroupHero);
-    };
-
-    const visibilityObserver = new IntersectionObserver(
-      ([entry]) => {
-        isHeroVisible = entry.isIntersecting;
-        entry.target.classList.toggle('is-parallax-active', isHeroVisible);
-        if (isHeroVisible) onScroll();
-      },
-      { rootMargin: '120px 0px' }
-    );
-
-    updateGroupHero();
-    if (groupSectionRef.current) visibilityObserver.observe(groupSectionRef.current);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-
-    return () => {
-      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
-      visibilityObserver.disconnect();
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    const story = leaderStoryRef.current;
-    if (!story) return undefined;
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
-      story.style.setProperty('--leader-scroll', '1');
-      story.style.setProperty('--leader-upper', '1');
-      story.style.setProperty('--leader-vision', '1');
-      story.style.setProperty('--leader-lower', '1');
-      return undefined;
-    }
-
-    let frameId;
-    let currentProgress = 0;
-    let targetProgress = 0;
-
-    const applyLeaderProgress = (progress) => {
-      story.style.setProperty('--leader-scroll', progress.toFixed(3));
-      story.style.setProperty('--leader-upper', Math.min(1, progress / 0.56).toFixed(3));
-      story.style.setProperty('--leader-vision', Math.max(0, Math.min(1, (progress - 0.24) / 0.34)).toFixed(3));
-      story.style.setProperty('--leader-lower', Math.max(0, Math.min(1, (progress - 0.44) / 0.56)).toFixed(3));
-    };
-
-    const updateTargetProgress = () => {
-      const bounds = story.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const start = viewportHeight * 0.94;
-      const scrollDistance = Math.max(viewportHeight * 0.72, bounds.height - (viewportHeight * 0.1));
-      targetProgress = Math.max(0, Math.min(1, (start - bounds.top) / scrollDistance));
-    };
-
-    const renderLeaderStory = () => {
-      currentProgress += (targetProgress - currentProgress) * 0.11;
-
-      if (Math.abs(targetProgress - currentProgress) < 0.001) {
-        currentProgress = targetProgress;
-        applyLeaderProgress(currentProgress);
-        frameId = undefined;
-        return;
-      }
-
-      applyLeaderProgress(currentProgress);
-      frameId = window.requestAnimationFrame(renderLeaderStory);
-    };
-
-    const requestUpdate = () => {
-      updateTargetProgress();
-      if (frameId === undefined) frameId = window.requestAnimationFrame(renderLeaderStory);
-    };
-
-    updateTargetProgress();
-    currentProgress = targetProgress;
-    applyLeaderProgress(currentProgress);
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-
-    return () => {
-      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
-      window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('resize', requestUpdate);
-    };
-  }, []);
-
-  useEffect(() => {
-    const bridge = structureBridgeRef.current;
-    if (!bridge) return undefined;
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      bridge.classList.add('is-visible');
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        bridge.classList.toggle('is-visible', entry.isIntersecting);
-      },
-      { threshold: 0.04, rootMargin: '0px 0px 28% 0px' }
-    );
-
-    observer.observe(bridge);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const story = divisionStoryRef.current;
-    if (!story || !activeTrack) return undefined;
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
-      story.style.setProperty('--division-story-title', '1');
-      story.style.setProperty('--division-story-trunk', '1');
-      story.style.setProperty('--division-story-branches', '1');
-      return undefined;
-    }
-
-    let frameId;
-    let currentProgress = 0;
-    let targetProgress = 0;
-
-    const applyProgress = (progress) => {
-      story.style.setProperty('--division-story-title', '1');
-      story.style.setProperty('--division-story-trunk', Math.max(0, Math.min(1, (progress - 0.02) / 0.3)).toFixed(3));
-      story.style.setProperty('--division-story-branches', Math.max(0, Math.min(1, (progress - 0.25) / 0.65)).toFixed(3));
-    };
-
-    const updateTarget = () => {
-      const bounds = story.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const start = viewportHeight * 0.96;
-      const distance = Math.max(viewportHeight * 0.56, bounds.height - viewportHeight * 0.06);
-      targetProgress = Math.max(0, Math.min(1, (start - bounds.top) / distance));
-    };
-
-    const render = () => {
-      currentProgress += (targetProgress - currentProgress) * 0.1;
-      applyProgress(currentProgress);
-
-      if (Math.abs(targetProgress - currentProgress) < 0.001) {
-        currentProgress = targetProgress;
-        applyProgress(currentProgress);
-        frameId = undefined;
-        return;
-      }
-
-      frameId = window.requestAnimationFrame(render);
-    };
-
-    const requestUpdate = () => {
-      updateTarget();
-      if (frameId === undefined) frameId = window.requestAnimationFrame(render);
-    };
-
-    updateTarget();
-    currentProgress = targetProgress;
-    applyProgress(currentProgress);
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-
-    const scrollTimer = window.setTimeout(() => {
-      document.getElementById('division-options')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      requestUpdate();
-    }, 80);
-
-    return () => {
-      window.clearTimeout(scrollTimer);
-      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
-      window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('resize', requestUpdate);
-    };
-  }, [activeTrack]);
-
-  useEffect(() => {
-    const story = divisionProfileStoryRef.current;
-    if (!story || !activeDivision) return undefined;
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
-      story.style.setProperty('--profile-intro', '1');
-      story.style.setProperty('--profile-upper', '1');
-      story.style.setProperty('--profile-advisor', '1');
-      story.style.setProperty('--profile-lower', '1');
-      return undefined;
-    }
-
-    let frameId;
-    let currentProgress = 0;
-    let targetProgress = 0;
-
-    const applyProgress = (progress) => {
-      story.style.setProperty('--profile-intro', Math.min(1, progress / 0.24).toFixed(3));
-      story.style.setProperty('--profile-upper', Math.max(0, Math.min(1, (progress - 0.1) / 0.4)).toFixed(3));
-      story.style.setProperty('--profile-advisor', Math.max(0, Math.min(1, (progress - 0.34) / 0.32)).toFixed(3));
-      story.style.setProperty('--profile-lower', Math.max(0, Math.min(1, (progress - 0.46) / 0.54)).toFixed(3));
-    };
-
-    const updateTarget = () => {
-      const bounds = story.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const entryLine = viewportHeight * 0.95;
-      const distance = Math.max(viewportHeight * 0.6, bounds.height - viewportHeight * 0.08);
-
-      // Start as soon as the story enters the viewport, then reveal every
-      // segment in the same top-to-bottom direction as the reading flow.
-      targetProgress = Math.max(0, Math.min(1, (entryLine - bounds.top) / distance));
-    };
-
-    const render = () => {
-      currentProgress += (targetProgress - currentProgress) * 0.1;
-      applyProgress(currentProgress);
-      if (Math.abs(targetProgress - currentProgress) < 0.001) {
-        currentProgress = targetProgress;
-        applyProgress(currentProgress);
-        frameId = undefined;
-        return;
-      }
-      frameId = window.requestAnimationFrame(render);
-    };
-
-    const requestUpdate = () => {
-      updateTarget();
-      if (frameId === undefined) frameId = window.requestAnimationFrame(render);
-    };
-
-    updateTarget();
-    currentProgress = targetProgress;
-    applyProgress(currentProgress);
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-
-    return () => {
-      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
-      window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('resize', requestUpdate);
-    };
-  }, [activeDivision]);
-
-  useEffect(() => {
-    const story = divisionLeadershipStoryRef.current;
-    if (!story || !activeDivision) return undefined;
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
-      story.style.setProperty('--lead-upper', '1');
-      story.style.setProperty('--lead-title', '1');
-      story.style.setProperty('--lead-lower', '1');
-      return undefined;
-    }
-
-    let frameId;
-    let currentProgress = 0;
-    let targetProgress = 0;
-
-    const applyProgress = (progress) => {
-      story.style.setProperty('--lead-upper', Math.min(1, progress / 0.46).toFixed(3));
-      story.style.setProperty('--lead-title', Math.max(0, Math.min(1, (progress - 0.28) / 0.34)).toFixed(3));
-      story.style.setProperty('--lead-lower', Math.max(0, Math.min(1, (progress - 0.44) / 0.56)).toFixed(3));
-    };
-
-    const updateTarget = () => {
-      const bounds = story.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const entryLine = viewportHeight * 0.95;
-      const distance = Math.max(viewportHeight * 0.56, bounds.height - viewportHeight * 0.06);
-      targetProgress = Math.max(0, Math.min(1, (entryLine - bounds.top) / distance));
-    };
-
-    const render = () => {
-      currentProgress += (targetProgress - currentProgress) * 0.095;
-      applyProgress(currentProgress);
-      if (Math.abs(targetProgress - currentProgress) < 0.001) {
-        currentProgress = targetProgress;
-        applyProgress(currentProgress);
-        frameId = undefined;
-        return;
-      }
-      frameId = window.requestAnimationFrame(render);
-    };
-
-    const requestUpdate = () => {
-      updateTarget();
-      if (frameId === undefined) frameId = window.requestAnimationFrame(render);
-    };
-
-    updateTarget();
-    currentProgress = targetProgress;
-    applyProgress(currentProgress);
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-
-    return () => {
-      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
-      window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('resize', requestUpdate);
-    };
-  }, [activeDivision]);
+  useFlowReveal(
+    divisionLeadershipStoryRef,
+    ['--lead-upper', '--lead-title', '--lead-lower'],
+    activeDivision || 'no-division'
+  );
 
   return (
     <main className="team-page">
-      <section ref={groupSectionRef} className="team-group-section" aria-labelledby="team-title">
+      <section className="team-group-section" aria-labelledby="team-title">
         <div className="team-group-stage">
 
-          <div ref={groupTitleRef} className="team-group-title-motion">
+          <div className="team-group-title-motion">
             <h1 id="team-title" className="team-group-title">
               <span className="team-group-title__lead">We are</span>
               <span className="team-group-title__brand">Aterkia</span>
             </h1>
           </div>
 
-          <div ref={groupPhotoRef} className="team-group-photo-motion">
+          <div className="team-group-photo-motion">
             <img
               src={TEAM_GROUP_PHOTO}
               alt="Tim Aterkia bersama setelah meraih penghargaan"
               decoding="async"
               fetchPriority="high"
+              width="1619"
+              height="971"
               className="team-group-photo"
             />
           </div>
@@ -1072,6 +585,8 @@ export default function TeamPage() {
                 alt="Muhammad Bintang Tri Surya, President Aterkia"
                 loading="lazy"
                 decoding="async"
+                width="720"
+                height="1080"
               />
               <span className="team-president__portrait-shade" aria-hidden="true" />
               <figcaption>
@@ -1120,8 +635,7 @@ export default function TeamPage() {
           </article>
 
           <div
-            ref={structureBridgeRef}
-            className={`team-structure__bridge ${selectedTrack ? 'is-selected' : ''}`}
+            className={`team-structure__bridge is-visible ${selectedTrack ? 'is-selected' : ''}`}
             aria-hidden="true"
           >
             <svg className="team-structure__bridge-lines" viewBox="0 0 1000 500" preserveAspectRatio="none">
@@ -1157,36 +671,37 @@ export default function TeamPage() {
 
         {!activeTrack ? (
           <div
-            className={`team-track-grid ${pendingTrack ? 'is-transitioning' : ''}`}
+            className="team-selection-group team-track-grid"
             aria-label="Pilih jalur tim"
-            aria-busy={Boolean(pendingTrack)}
           >
-            {Object.entries(teamTracks).map(([trackId, track]) => (
-              <button
-                key={trackId}
-                type="button"
-                className={`team-track-card team-track-card--${trackId.toLowerCase()} ${pendingTrack === trackId ? 'is-entering' : pendingTrack ? 'is-leaving' : ''}`}
-                onClick={() => handleSelectTrack(trackId)}
-                aria-controls="division-options"
-              >
-                <span className="team-track-card__surface" aria-hidden="true" />
-                <span className="team-track-card__rail" aria-hidden="true" />
-                <span className="team-track-card__copy">
-                  <small>{track.shortLabel}</small>
-                  <strong>{track.label}</strong>
-                  <span>{track.description}</span>
-                  <span className="team-track-card__tags">
-                    {track.tags.map((tag) => <i key={tag}>{tag}</i>)}
+            {Object.entries(teamTracks).map(([trackId, track]) => {
+              return (
+                <button
+                  key={trackId}
+                  type="button"
+                  className={`team-selection-card team-track-card team-track-card--${trackId.toLowerCase()}`}
+                  onClick={() => handleSelectTrack(trackId)}
+                  aria-controls="division-options"
+                >
+                  <span className="team-track-card__surface" aria-hidden="true" />
+                  <span className="team-track-card__rail" aria-hidden="true" />
+                  <span className="team-track-card__copy">
+                    <small>{track.shortLabel}</small>
+                    <strong>{track.label}</strong>
+                    <span>{track.description}</span>
+                    <span className="team-track-card__tags">
+                      {track.tags.map((tag) => <i key={tag}>{tag}</i>)}
+                    </span>
                   </span>
-                </span>
-                <span className="team-track-card__action">Explore <ArrowRight /></span>
-              </button>
-            ))}
+                  <span className="team-track-card__action">Explore <ArrowRight /></span>
+                </button>
+              );
+            })}
           </div>
         ) : (
           <div
             id="division-options"
-            className={`division-path division-path--${activeTrack.toLowerCase()} ${isReturningToTracks ? 'is-returning' : ''}`}
+            className={`team-selection-panel division-path division-path--${activeTrack.toLowerCase()}`}
           >
             <article className={`track-chapter-card track-chapter-card--${activeTrack.toLowerCase()}`}>
               <span className="track-chapter-card__surface" aria-hidden="true" />
@@ -1195,7 +710,6 @@ export default function TeamPage() {
                 type="button"
                 className="track-chapter-card__back"
                 onClick={handleBackToTracks}
-                disabled={isReturningToTracks}
               >
                 <ArrowLeft />
                 <span>Back</span>
@@ -1235,20 +749,20 @@ export default function TeamPage() {
               </div>
             </header>
 
-            <div className={`division-split ${activeDivision ? 'has-selection' : ''}`}>
+            <div className={`team-selection-group division-split ${activeDivision ? 'has-selection has-selection-lite' : ''}`}>
               {visibleDivisions.map((division) => {
                 const isActive = activeDivision === division.id;
-                const isCollapsed = activeDivision && !isActive;
+                const isInactive = activeDivision && !isActive;
                 const presentation = divisionPresentation[division.id];
 
                 return (
-                  <React.Fragment key={division.id}>
                     <button
+                      key={division.id}
                       type="button"
-                      onClick={() => (isActive ? handleBackToDivisions() : setActiveDivision(division.id))}
+                      onClick={() => (isActive ? handleBackToDivisions() : handleSelectDivision(division.id))}
                       aria-pressed={isActive}
                       aria-controls="division-detail"
-                      className={`division-choice division-choice--${division.id.toLowerCase()} ${isActive ? 'is-active' : ''} ${isCollapsed ? 'is-collapsed' : ''}`}
+                      className={`team-selection-card division-choice division-choice--${division.id.toLowerCase()} ${isActive ? 'is-active-lite' : ''} ${isInactive ? 'is-inactive-lite' : ''}`}
                     >
                       <span className="division-choice__surface" aria-hidden="true" />
                       <span className="division-choice__icon">
@@ -1259,7 +773,7 @@ export default function TeamPage() {
                         <span>{presentation.shortLabel}</span>
                         <small>{presentation.description}</small>
                       </span>
-                      <span className={`division-choice__action ${isActive ? 'is-back' : ''}`}>
+                      <span className={`division-choice__action ${isActive ? 'is-back-lite' : ''}`}>
                         {isActive ? (
                           <><ArrowLeft /> Back</>
                         ) : (
@@ -1267,8 +781,6 @@ export default function TeamPage() {
                         )}
                       </span>
                     </button>
-
-                  </React.Fragment>
                 );
               })}
             </div>
@@ -1277,40 +789,44 @@ export default function TeamPage() {
       </section>
 
       {selectedTeam && (
-        <section key={selectedTeam.id} id="division-detail" className={`division-detail division-detail--${selectedTeam.id.toLowerCase()}`}>
-          <header ref={divisionProfileStoryRef} className="division-profile-story">
-            <div className="division-profile-story__stage">
-              <div className="division-profile-story__intro">
-                <h2>Discover <em>{selectedTeam.name}</em></h2>
-                <p>{selectedTeam.tagline}</p>
-              </div>
+        <section key={selectedTeam.id} id="division-detail" className={`team-selection-panel division-detail division-detail--${selectedTeam.id.toLowerCase()}`}>
+          {showFacultyAdvisor && (
+            <>
+              <header ref={divisionProfileStoryRef} className="division-profile-story">
+                <div className="division-profile-story__stage">
+                  <div className="division-profile-story__intro">
+                    <h2>Discover <em>{selectedTeam.name}</em></h2>
+                    <p>{selectedTeam.tagline}</p>
+                  </div>
 
-              <div className="division-profile-story__flow">
-                <svg viewBox="0 0 180 640" preserveAspectRatio="none" aria-hidden="true">
-                  <defs>
-                    <linearGradient id="division-profile-water-gradient" gradientUnits="userSpaceOnUse" x1="90" y1="0" x2="90" y2="640">
-                      <stop offset="0" stopColor="#12c6e4" />
-                      <stop offset="0.52" stopColor="#557fe9" />
-                      <stop offset="1" stopColor="#ff8667" />
-                    </linearGradient>
-                  </defs>
-                  <path className="division-profile-story__line-base water-flow-base" style={{ stroke: 'url(#division-profile-water-gradient)' }} d="M90 0 C90 72 108 104 108 164 C108 204 96 224 90 244" />
-                  <path className="division-profile-story__line-base water-flow-base" style={{ stroke: 'url(#division-profile-water-gradient)' }} d="M90 396 C84 430 72 452 72 514 C72 578 88 604 90 640" />
-                  <path className="division-profile-story__line division-profile-story__line--upper water-flow-line" style={{ stroke: 'url(#division-profile-water-gradient)' }} pathLength="1" d="M90 0 C90 72 108 104 108 164 C108 204 96 224 90 244" />
-                  <path className="division-profile-story__line division-profile-story__line--lower water-flow-line" style={{ stroke: 'url(#division-profile-water-gradient)' }} pathLength="1" d="M90 396 C84 430 72 452 72 514 C72 578 88 604 90 640" />
-                </svg>
+                  <div className="division-profile-story__flow">
+                    <svg viewBox="0 0 180 640" preserveAspectRatio="none" aria-hidden="true">
+                      <defs>
+                        <linearGradient id="division-profile-water-gradient" gradientUnits="userSpaceOnUse" x1="90" y1="0" x2="90" y2="640">
+                          <stop offset="0" stopColor="#12c6e4" />
+                          <stop offset="0.52" stopColor="#557fe9" />
+                          <stop offset="1" stopColor="#ff8667" />
+                        </linearGradient>
+                      </defs>
+                      <path className="division-profile-story__line-base water-flow-base" style={{ stroke: 'url(#division-profile-water-gradient)' }} d="M90 0 C90 72 108 104 108 164 C108 204 96 224 90 244" />
+                      <path className="division-profile-story__line-base water-flow-base" style={{ stroke: 'url(#division-profile-water-gradient)' }} d="M90 396 C84 430 72 452 72 514 C72 578 88 604 90 640" />
+                      <path className="division-profile-story__line division-profile-story__line--upper water-flow-line" style={{ stroke: 'url(#division-profile-water-gradient)' }} pathLength="1" d="M90 0 C90 72 108 104 108 164 C108 204 96 224 90 244" />
+                      <path className="division-profile-story__line division-profile-story__line--lower water-flow-line" style={{ stroke: 'url(#division-profile-water-gradient)' }} pathLength="1" d="M90 396 C84 430 72 452 72 514 C72 578 88 604 90 640" />
+                    </svg>
 
-                <div className="division-profile-story__advisor-title">
-                  <h2>Meet the <em>faculty advisor</em></h2>
-                  <p>The guiding mind behind {selectedTeam.name} research, safety, and engineering direction.</p>
+                    <div className="division-profile-story__advisor-title">
+                      <h2>Meet the <em>faculty advisor</em></h2>
+                      <p>The guiding mind behind {selectedTeam.name} research, safety, and engineering direction.</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </header>
+              </header>
 
-          <ScrollReveal className="org-feature-wrap org-feature-wrap--advisor">
-            <FeaturedPerson person={selectedTeam.advisor} division={selectedTeam} kind="advisor" imageSide="right" />
-          </ScrollReveal>
+              <ScrollReveal className="org-feature-wrap org-feature-wrap--advisor">
+                <FeaturedPerson person={selectedTeam.advisor} division={selectedTeam} kind="advisor" imageSide="right" />
+              </ScrollReveal>
+            </>
+          )}
 
           <header ref={divisionLeadershipStoryRef} className="division-leadership-story">
             <div className="division-leadership-story__stage">
@@ -1348,8 +864,8 @@ export default function TeamPage() {
                 <p>Tim lintas disiplin yang bekerja sebagai satu kesatuan.</p>
               </div>
               <div className="humaan-team-grid">
-                {selectedTeam.members.map((member, index) => (
-                  <MemberCard key={member.id} member={member} order={index} />
+                {selectedTeam.members.map((member) => (
+                  <MemberCard key={member.id} member={member} />
                 ))}
               </div>
             </ScrollReveal>
