@@ -80,10 +80,6 @@ export default function RobotsPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <div className="flex items-center gap-2 mb-5">
-              <Cpu className="w-5 h-5 text-sky-400" />
-              <span className="text-xs font-bold text-sky-400 uppercase tracking-widest">Robot Fleet</span>
-            </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black font-display text-white tracking-tight leading-tight mb-5 animate-fade-up">
               Aterkia{' '}
               <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">Robots</span>

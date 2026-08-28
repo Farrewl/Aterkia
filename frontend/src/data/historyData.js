@@ -7,7 +7,7 @@ export const historyData = [
     description: "Aterkia expands reach to international competitions like SAUVC Singapore and RoboBoat, while preparing the next generation of team members.",
     photos: [
       "/images/team/aterkia-team-group.png",
-      "/images/robots/testblow.png",
+      "/images/news/images.png",
       "/images/news/Pelepasan-Kontingen-KKI-Undip-2025-1536x862.webp",
     ],
     milestones: [
@@ -36,7 +36,7 @@ export const historyData = [
     photos: [
       "/images/robots/robot-asv-1.png",
       "/images/news/foto1-768x496.webp",
-      "/images/robots/testblow.png",
+      "/images/news/images.png",
     ],
     milestones: [
       "ASV Nala-01 launch",
