@@ -101,11 +101,14 @@ const upsertGoogleUser = async (payload) => {
 router.post('/google/start', async (req, res) => {
   try {
     const { turnstileToken } = req.body;
-    if (!turnstileToken || !process.env.TURNSTILE_SECRET_KEY) {
+    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY || (
+      process.env.NODE_ENV !== 'production' ? '1x0000000000000000000000000000000AA' : ''
+    );
+    if (!turnstileToken || !turnstileSecret) {
       return res.status(400).json({ success: false, error: 'Cloudflare verification required' });
     }
 
-    const form = new URLSearchParams({ secret: process.env.TURNSTILE_SECRET_KEY, response: turnstileToken });
+    const form = new URLSearchParams({ secret: turnstileSecret, response: turnstileToken });
     const verification = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

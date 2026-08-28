@@ -4,6 +4,10 @@ import { AlertCircle, ShieldCheck } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { useAuth } from '../hooks';
 
+const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || (
+  import.meta.env.DEV ? '1x00000000000000000000AA' : ''
+);
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const { completeGoogleRedirectLogin, isAuthenticated } = useAuth();
@@ -121,7 +125,7 @@ export default function LoginPage() {
 
                 <div className="flex justify-center">
                   <Turnstile
-                    siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                    siteKey={turnstileSiteKey}
                     onSuccess={handleTurnstileSuccess}
                     onExpire={() => { redirectStarted.current = false; setIsSubmitting(false); }}
                     onError={() => { redirectStarted.current = false; setIsSubmitting(false); setError('Cloudflare verification failed'); }}
