@@ -17,15 +17,16 @@ export default function LoginPage() {
     const params = new URLSearchParams(window.location.search);
     const hash = new URLSearchParams(window.location.hash.slice(1));
     const token = hash.get('access_token');
-    const userData = hash.get('user');
-    if (token && userData) {
-      try {
-        completeGoogleRedirectLogin(token, JSON.parse(userData));
+    if (token) {
+      let active = true;
+      completeGoogleRedirectLogin(token).then(() => {
+        if (!active) return;
         window.history.replaceState({}, document.title, '/login');
         setPhase('diving');
-      } catch {
-        setError('Invalid Google login response');
-      }
+      }).catch(() => {
+        if (active) setError('Invalid Google login response');
+      });
+      return () => { active = false; };
     } else if (params.has('error')) {
       setError('Google login could not be completed. Please try again.');
       window.history.replaceState({}, document.title, '/login');

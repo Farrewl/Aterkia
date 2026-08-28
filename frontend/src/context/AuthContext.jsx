@@ -107,12 +107,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const completeGoogleRedirectLogin = (token, userData) => {
+  const completeGoogleRedirectLogin = useCallback(async (token) => {
     localStorage.setItem('accessToken', token);
-    localStorage.setItem('user', JSON.stringify(userData));
     setAccessToken(token);
+    const response = await authApi.me();
+    const userData = response.data.data.user;
+    localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
-  };
+  }, []);
 
   const logout = async () => {
     try {

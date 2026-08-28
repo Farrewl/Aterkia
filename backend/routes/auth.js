@@ -136,11 +136,7 @@ router.get('/google/callback', async (req, res) => {
 
     const { user, accessToken, refreshToken } = await upsertGoogleUser(await exchangeGoogleCode(code));
     setRefreshTokenCookie(res, refreshToken);
-    const userData = encodeURIComponent(JSON.stringify({
-      id: user.id, email: user.email, name: user.name, avatar: user.avatar_url,
-      role: user.role, division: user.division,
-    }));
-    return res.redirect(`${frontendUrl()}/login#access_token=${encodeURIComponent(accessToken)}&user=${userData}`);
+    return res.redirect(`${frontendUrl()}/login#access_token=${encodeURIComponent(accessToken)}`);
   } catch (err) {
     console.error('[Auth] Google callback error:', err);
     return res.redirect(`${frontendUrl()}/login?error=google_login_failed`);
