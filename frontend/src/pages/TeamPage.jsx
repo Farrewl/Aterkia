@@ -358,8 +358,6 @@ function SubdivisionExplorer({ team }) {
                 <strong>{subdivision.name}</strong>
                 <small>{subdivision.fullName}</small>
                 <p>{subdivision.description}</p>
-                <span className={`subdivision-option__action ${isActive ? 'is-back-lite' : ''}`}>
-                  {isActive ? <><ArrowLeft /> Kembali</> : <>Explore <ArrowRight /></>}
                 <span className={`subdivision-option__action ${isActive ? 'is-back' : ''}`}>
                   {isActive ? <><ArrowLeft /> Back</> : <>Explore <ArrowRight /></>}
                 </span>
