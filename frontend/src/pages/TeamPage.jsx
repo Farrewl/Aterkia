@@ -502,9 +502,16 @@ export default function TeamPage() {
       <section className="team-group-section" aria-labelledby="team-title">
         <div className="team-group-stage">
 
+          <div className="team-hero-meta" aria-label="Aterkia team profile">
+            <span className="team-hero-meta__dot" aria-hidden="true" />
+            <span>Team Profile</span>
+            <span className="team-hero-meta__divider" aria-hidden="true" />
+            <span>2025 / 2026</span>
+          </div>
+
           <div className="team-group-title-motion">
             <h1 id="team-title" className="team-group-title">
-              <span className="team-group-title__lead">We are</span>
+              <span className="team-group-title__lead">Built by many. Moving as one.</span>
               <span className="team-group-title__brand">Aterkia</span>
             </h1>
           </div>
@@ -512,18 +519,18 @@ export default function TeamPage() {
           <div className="team-group-photo-motion">
             <img
               src={TEAM_GROUP_PHOTO}
-              alt="Tim Aterkia bersama setelah meraih penghargaan"
+              alt="Foto bersama seluruh anggota tim Aterkia"
               decoding="async"
               fetchPriority="high"
-              width="1619"
-              height="971"
+              width="3000"
+              height="893"
               className="team-group-photo"
             />
           </div>
 
           <div className="team-hero-footer centered">
             <a href="#meet-the-team" aria-label="View division options">
-              <span>Meet the team</span>
+              <span>Explore the team</span>
               <ArrowDown />
             </a>
           </div>

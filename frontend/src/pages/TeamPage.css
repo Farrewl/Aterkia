@@ -10786,3 +10786,302 @@
     }
   }
 }
+
+/* Editorial team hero: the title stays in its own band and the portrait sits
+   above every decorative overlay, keeping every team member unobstructed. */
+.team-page .team-group-stage {
+  height: clamp(38rem, 48vw, 48rem);
+  min-height: 38rem;
+  max-height: 48rem;
+}
+
+.team-page .team-group-stage::after {
+  z-index: 1;
+  height: 58%;
+  background: linear-gradient(to top, rgba(3, 15, 32, 0.34), transparent 76%);
+}
+
+.team-page .team-group-title-motion {
+  top: 5rem;
+  bottom: auto;
+  height: clamp(9rem, 13vw, 12rem);
+}
+
+.team-page .team-group-title-motion::before {
+  top: 50%;
+  width: min(62vw, 58rem);
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(3, 16, 36, 0.48), transparent 72%);
+}
+
+.team-page .team-group-title {
+  flex-direction: row;
+  gap: clamp(1.15rem, 2.4vw, 2.5rem);
+  justify-content: center;
+  padding: 0 clamp(1.5rem, 5vw, 5rem);
+  font-size: clamp(4rem, 7vw, 7.5rem);
+  line-height: 0.86;
+}
+
+.team-page .team-group-title__lead {
+  margin: 0 0 0.35rem;
+  flex: 0 0 auto;
+  font-size: 0.14em;
+}
+
+.team-page .team-group-photo {
+  width: min(92vw, 108rem);
+}
+
+.team-page .team-group-photo-motion {
+  z-index: 4;
+}
+
+.team-page .team-hero-footer.centered {
+  display: flex;
+  top: 6.5rem;
+  right: clamp(1.25rem, 4vw, 4.5rem);
+  bottom: auto;
+  left: auto;
+  justify-content: flex-end;
+}
+
+.team-page .team-hero-footer.centered > a {
+  flex-direction: row;
+}
+
+@media (max-width: 1023px) {
+  .team-page .team-group-stage {
+    height: clamp(30rem, 66vw, 38rem);
+    min-height: 30rem;
+  }
+
+  .team-page .team-group-title-motion {
+    height: clamp(8rem, 18vw, 10rem);
+  }
+
+  .team-page .team-group-photo {
+    width: 100vw;
+  }
+
+  .team-page .team-hero-footer.centered {
+    top: 6rem;
+    right: 1rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .team-page .team-group-stage {
+    height: clamp(24rem, 94vw, 27rem);
+    min-height: 24rem;
+  }
+
+  .team-page .team-group-title-motion {
+    top: 5rem;
+    height: 9rem;
+  }
+
+  .team-page .team-group-title {
+    flex-direction: column;
+    gap: 0.75rem;
+    justify-content: center;
+    padding: 0 1rem;
+    font-size: clamp(3.1rem, 14vw, 4rem);
+  }
+
+  .team-page .team-group-title__lead {
+    margin: 0;
+    font-size: 0.18em;
+  }
+
+  .team-page .team-group-photo {
+    width: 100vw;
+  }
+
+  .team-page .team-hero-footer.centered {
+    display: none;
+  }
+}
+
+/* Final mobile profile sizing guard.
+   This file is loaded by the Team route after the global stylesheet, so the
+   contact row must be sized here to remain inside the profile surface. */
+@media (max-width: 767px) {
+  .team-page .org-feature-wrap {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    padding-bottom: 0.75rem;
+    overflow: visible;
+    content-visibility: visible;
+    contain: none;
+  }
+
+  .team-page .org-person,
+  .team-page .org-person--advisor,
+  .team-page .org-person--vice,
+  .team-page .org-person--image-left,
+  .team-page .org-person[data-person='auv-vice-chair'] {
+    grid-template-rows: clamp(11.5rem, 49vw, 14rem) max-content;
+    height: max-content;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    contain: none;
+  }
+
+  .team-page .org-person__portrait,
+  .team-page .org-person--advisor .org-person__portrait,
+  .team-page .org-person--image-left .org-person__portrait,
+  .team-page .division-detail--auv .org-person--chair .org-person__portrait {
+    overflow: hidden;
+    border-radius: clamp(1.3rem, 5.5vw, 1.75rem) clamp(1.3rem, 5.5vw, 1.75rem) 0 0;
+  }
+
+  .team-page .org-person__copy,
+  .team-page .org-person--advisor .org-person__copy {
+    display: block;
+    box-sizing: content-box;
+    height: max-content;
+    min-height: 0;
+    max-height: none;
+    padding-bottom: 2rem;
+    overflow: visible;
+    border-radius: 0 0 clamp(1.3rem, 5.5vw, 1.75rem) clamp(1.3rem, 5.5vw, 1.75rem);
+  }
+
+  .team-page .org-person__identity {
+    display: grid;
+    height: max-content;
+    min-height: 0;
+    max-height: none;
+    flex: none;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: max-content;
+    overflow: visible;
+  }
+
+  .team-page .org-person__contact-area {
+    position: static;
+    height: auto;
+    min-height: 0;
+    margin: 0 0 0.75rem;
+    overflow: visible;
+  }
+
+  .team-page .org-person__contact-area .org-person__contacts {
+    position: static;
+    height: auto;
+    min-height: 3rem;
+    margin: 0 0 0.5rem;
+    overflow: visible;
+  }
+
+  .team-page .org-person__contact-area .org-contact {
+    min-height: 3rem;
+    transform: none;
+  }
+}
+
+@media (max-width: 359px) {
+  .team-page .org-person,
+  .team-page .org-person--advisor,
+  .team-page .org-person--vice,
+  .team-page .org-person--image-left,
+  .team-page .org-person[data-person='auv-vice-chair'] {
+    grid-template-rows: 10.75rem max-content;
+  }
+}
+
+/* Team hero depth and separation -------------------------------------------
+   A soft cyan aura and alpha-aware rim light separate the navy uniforms from
+   the background. The wordmark stays in the clear upper band. */
+.team-page .team-group-stage {
+  background:
+    radial-gradient(ellipse at 50% 72%, rgba(38, 198, 238, 0.18), transparent 48%),
+    radial-gradient(circle at 12% 22%, rgba(0, 174, 236, 0.2), transparent 31%),
+    radial-gradient(circle at 88% 18%, rgba(85, 172, 255, 0.16), transparent 30%),
+    linear-gradient(118deg, #03172e 0%, #062849 48%, #075783 100%);
+}
+
+.team-page .team-group-photo-motion::before {
+  position: absolute;
+  right: 5%;
+  bottom: 1.5%;
+  left: 5%;
+  z-index: -1;
+  height: 76%;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 58%, rgba(88, 225, 255, 0.28) 0%, rgba(25, 159, 215, 0.15) 38%, transparent 72%),
+    radial-gradient(ellipse at 50% 100%, rgba(29, 199, 232, 0.23), transparent 62%);
+  content: '';
+  filter: blur(1.65rem);
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+.team-page .team-group-photo-motion::after {
+  position: absolute;
+  right: 10%;
+  bottom: -1rem;
+  left: 10%;
+  z-index: -1;
+  height: 5rem;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(74, 220, 250, 0.25), transparent 70%);
+  content: '';
+  filter: blur(1.2rem);
+  pointer-events: none;
+}
+
+.team-page .team-group-photo {
+  filter:
+    brightness(1.04)
+    saturate(1.08)
+    drop-shadow(0 1.8rem 2.6rem rgba(0, 8, 23, 0.34))
+    drop-shadow(0 0 0.72rem rgba(91, 222, 255, 0.3));
+}
+
+@media (min-width: 768px) {
+  .team-page .team-group-title-motion {
+    top: 3.75rem;
+    height: clamp(8rem, 10vw, 9.75rem);
+  }
+
+  .team-page .team-group-title {
+    flex-direction: column;
+    gap: clamp(0.5rem, 0.8vw, 0.8rem);
+    font-size: clamp(3.65rem, 5.75vw, 6.25rem);
+    line-height: 0.82;
+  }
+
+  .team-page .team-group-title__lead {
+    margin: 0;
+    font-size: clamp(0.58rem, 0.11em, 0.76rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .team-page .team-group-photo-motion::before {
+    right: -8%;
+    left: -8%;
+    height: 68%;
+    opacity: 0.78;
+    filter: blur(1.15rem);
+  }
+
+  .team-page .team-group-photo-motion::after {
+    right: 0;
+    left: 0;
+    opacity: 0.72;
+  }
+
+  .team-page .team-group-photo {
+    filter:
+      brightness(1.035)
+      saturate(1.06)
+      drop-shadow(0 1rem 1.7rem rgba(0, 8, 23, 0.3))
+      drop-shadow(0 0 0.48rem rgba(91, 222, 255, 0.25));
+  }
+}
