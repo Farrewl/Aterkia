@@ -6,6 +6,7 @@ import { newsData } from '../data/newsData';
 import { sponsorsData } from '../data/sponsorsData';
 import { aboutData } from '../data/aboutData';
 import ImageWithFallback from '../components/ImageWithFallback';
+import RoadmapSection from '../components/RoadmapSection';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -165,6 +166,9 @@ export default function HomePage() {
 
       {/* 3. ROBOTS — Interactive Cockpit */}
       <RobotsCockpit />
+
+      {/* 3.5 ROADMAP — Next Mission */}
+      <RoadmapSection />
 
       {/* Seamless wave: deep ocean robots → light news */}
       <div className="relative">

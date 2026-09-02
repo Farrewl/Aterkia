@@ -1,6 +1,7 @@
 import React from 'react';
-import { X, Ship, Waves, Award, Check } from 'lucide-react';
+import { X, Ship, Waves, Award, Check, Box } from 'lucide-react';
 import ImageWithFallback from './ImageWithFallback';
+import GLBViewer from './GLBViewer';
 
 const statusColors = {
   Active: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
@@ -45,23 +46,35 @@ export default function RobotModal({ robot, onClose }) {
 
         {/* Content */}
         <div className="p-6 sm:p-8 max-h-[75vh] overflow-y-auto space-y-5">
-          {/* Image */}
+          {/* Media: 3D model bila tersedia, fallback ke gambar */}
           <div className="rounded-xl overflow-hidden border border-white/[0.06] w-full bg-[#111827]">
-            <ImageWithFallback src={robot.image} alt={robot.name} name={robot.name} category={robot.category} type="robot" className="w-full h-auto object-contain max-h-[50vh] p-4" containerClassName="w-full" />
+            {robot.model3D ? (
+              <div className="w-full aspect-[4/3]">
+                <GLBViewer src={robot.model3D} alt={`${robot.name} 3D model`} height="100%" />
+              </div>
+            ) : (
+              <ImageWithFallback src={robot.image} alt={robot.name} name={robot.name} category={robot.category} type="robot" className="w-full h-auto object-contain max-h-[50vh] p-4" containerClassName="w-full" />
+            )}
           </div>
+          {/* 3D placeholder pesan */}
+          {robot.model3D && (
+            <div className="flex items-center gap-2 text-[11px] text-sky-300/60">
+              <Box className="w-3.5 h-3.5" /> Interaktif 3D — seret untuk memutar, scroll untuk zoom
+            </div>
+          )}
 
           {/* Snippet */}
           <p className="text-sky-300/60 text-sm font-medium">{robot.snippet}</p>
 
-          {/* Description */}
+          {/* Story — extra info utama */}
           <div>
-            <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider mb-2">Description</h4>
+            <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider mb-2">The Story</h4>
             <p className="text-white/50 text-sm leading-relaxed">{robot.description}</p>
           </div>
 
-          {/* Specs grid */}
+          {/* Full specs */}
           <div>
-            <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider mb-3">Specifications</h4>
+            <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider mb-3">Full Specifications</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
               {Object.entries(robot.specs).map(([k, v]) => (
                 <div key={k} className="bg-white/[0.04] p-3 rounded-xl border border-white/[0.06]">

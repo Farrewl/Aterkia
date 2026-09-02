@@ -9,9 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@marsidev/react-turnstile": "^1.6.1",
-    "axios": "^1.7.2",
-    "jwt-decode": "^4.0.0",
+    "@google/model-viewer": "^4.3.1",
+    "@supabase/supabase-js": "^2.109.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.16.0",
     "react": "^18.3.1",

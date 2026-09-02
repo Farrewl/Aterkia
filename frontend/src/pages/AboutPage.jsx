@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { aboutData } from '../data/aboutData';
 import { Trophy, Target, Compass, ChevronLeft, ChevronRight, Waves, Users } from 'lucide-react';
 import { TiltCard, Spotlight, useReveal } from '../components/motion';
+import Divisions from '../components/Divisions';
+import ActivitiesSection from '../components/ActivitiesSection';
+import RoadmapSection from '../components/RoadmapSection';
 
 const whyIcons = { Waves, Trophy, Users };
 
@@ -53,43 +56,6 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ── Slogan ── */}
-      <section className="relative py-20 sm:py-28 bg-gradient-to-b from-olympic-950 via-[#0a1628] to-olympic-950 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
-            backgroundSize: '48px 48px'
-          }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-500/[0.04] rounded-full blur-[120px]" />
-        </div>
-
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="space-y-3 sm:space-y-4">
-            {aboutData.slogan.lines.map((line, idx) => (
-              <div key={idx} className="overflow-hidden">
-                <h2
-                  className="text-4xl sm:text-5xl md:text-6xl font-black font-display tracking-tight animate-fade-up"
-                  style={{ animationDelay: `${idx * 120}ms` }}
-                >
-                  <span className={
-                    idx === 0
-                      ? 'bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent'
-                      : idx === 1
-                      ? 'text-white/60'
-                      : 'bg-gradient-to-r from-amber-400 to-orange-300 bg-clip-text text-transparent'
-                  }>
-                    {line}
-                  </span>
-                </h2>
-              </div>
-            ))}
-          </div>
-          <p className="mt-8 text-white/25 text-sm sm:text-base font-light max-w-lg mx-auto animate-fade-up" style={{ animationDelay: '500ms' }}>
-            {aboutData.slogan.subtitle}
-          </p>
         </div>
       </section>
 
@@ -185,6 +151,15 @@ export default function AboutPage() {
         </svg>
       </div>
 
+      {/* ── Divisions ── */}
+      <Divisions />
+
+      {/* ── Kegiatan ── */}
+      <ActivitiesSection />
+
+      {/* ── Roadmap ── */}
+      <RoadmapSection />
+
       {/* ── Why Aterkia ── */}
       <section className="relative py-20 bg-gradient-to-b from-[#060d1a] to-olympic-950 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
@@ -225,6 +200,49 @@ export default function AboutPage() {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* ── Slogan ── */}
+      <section className="relative overflow-hidden border-t border-sky-400/10 bg-[#050b16] py-12 sm:py-16">
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute -left-24 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full bg-sky-500/10 blur-3xl" />
+          <div className="absolute -right-24 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full bg-orange-400/10 blur-3xl" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-400/50 to-transparent" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-sky-400">Our spirit</span>
+            <span className="hidden text-xs font-light text-white/30 sm:block">Scroll to explore the journey</span>
+          </div>
+
+          <div className="overflow-hidden pb-3">
+            <div className="flex w-full items-center justify-between gap-2 sm:gap-5">
+              {aboutData.slogan.lines.map((line, idx) => (
+                <React.Fragment key={line}>
+                  <h2
+                    className={`min-w-0 flex-1 whitespace-nowrap text-center text-[clamp(1.05rem,5.8vw,4.5rem)] font-black font-display tracking-[-0.07em] ${
+                      idx === 0
+                        ? 'bg-gradient-to-r from-sky-300 to-cyan-400 bg-clip-text text-transparent'
+                        : idx === 1
+                        ? 'text-white/75'
+                        : 'bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent'
+                    }`}
+                  >
+                    {line}
+                  </h2>
+                  {idx < aboutData.slogan.lines.length - 1 && (
+                    <span className="shrink-0 text-base font-light text-white/20 sm:text-3xl" aria-hidden="true">•</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
+          <p className="mt-6 max-w-xl text-xs font-light leading-relaxed text-white/35 sm:text-sm">
+            {aboutData.slogan.subtitle}
+          </p>
         </div>
       </section>
     </div>

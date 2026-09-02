@@ -3,60 +3,67 @@
 export const historyData = [
   {
     year: "2026 — Present",
-    title: "Heading to International Competition",
-    description: "Aterkia expands reach to international competitions like SAUVC Singapore and RoboBoat, while preparing the next generation of team members.",
+    title: "Menuju Kompetisi Internasional",
+    description:
+      "Aterkia memperluas jangkauan ke kompetisi internasional seperti SAUVC Singapura dan RoboBoat, sembari menyiapkan generasi anggota tim berikutnya agar kesinambungan ilmu tetap terjaga.",
     photos: [
       "/images/team/aterkia-team-group.png",
       "/images/news/images.png",
       "/images/news/Pelepasan-Kontingen-KKI-Undip-2025-1536x862.webp",
     ],
     milestones: [
-      "AUV Makara-X underwater robot research",
-    ]
+      "Riset robot bawah air AUV Makara-X",
+      "Persiapan tim untuk SAUVC & RoboBoat",
+      "Penguatan program pembinaan anggota baru",
+    ],
   },
   {
     year: "2025",
-    title: "AUV Expansion & National Champion",
-    description: "AUV Division formed for underwater robot research. ASV Baruna won 1st Place at KKCTBN. Team began implementing Computer Vision for object detection.",
+    title: "Ekspansi AUV & Juara Nasional",
+    description:
+      "Divisi AUV resmi dibentuk untuk riset robot bawah air. ASV Baruna meraih Juara 1 di KKCTBN, dan tim mulai mengimplementasikan Computer Vision untuk deteksi objek serta navigasi cerdas.",
     photos: [
       "/images/news/Pelepasan-Kontingen-KKI-Undip-2025-1536x862.webp",
       "/images/news/images.png",
       "/images/news/foto1-768x496.webp",
     ],
     milestones: [
-      "AUV Cakra Subsea launch",
-      "1st Place KKCTBN autonomous boat category",
-      "Computer Vision AI implementation"
-    ]
+      "Peluncuran AUV Cakra Subsea",
+      "Juara 1 KKCTBN kategori kapal otonom",
+      "Implementasi Computer Vision & AI",
+      "Dua gelar juara di KKI 2025",
+    ],
   },
   {
     year: "2024",
-    title: "KKCTBN Competition Debut",
-    description: "First participation in the National Unmanned Fast Boat Contest (KKCTBN) with ASV Nala-01. Started learning GPS-based autonomous navigation integration.",
+    title: "Debut Kompetisi KKCTBN",
+    description:
+      "Partisipasi pertama di Kontes Kapal Cepat Tak Berawak Nasional (KKCTBN) menggunakan ASV Nala-01. Tim mulai mempelajari integrasi navigasi otonom berbasis GPS dan pengujian waypoint.",
     photos: [
       "/images/robots/robot-asv-1.png",
       "/images/news/foto1-768x496.webp",
       "/images/news/images.png",
     ],
     milestones: [
-      "ASV Nala-01 launch",
-      "Waypoint navigation testing",
-      "Best Hull Design Nomination at KKCTBN"
-    ]
+      "Peluncuran ASV Nala-01",
+      "Pengujian navigasi waypoint",
+      "Nominasi Best Hull Design di KKCTBN",
+    ],
   },
   {
     year: "2023",
-    title: "Team Founded",
-    description: "Team Aterkia was formed by a group of Undip engineering students interested in maritime robotics. Started with manually designing the first boat hull prototype.",
+    title: "Tim Didirikan",
+    description:
+      "Team Aterkia dibentuk oleh sekelompok mahasiswa teknik Undip yang tertarik pada robotika maritim. Perjalanan dimulai dari perancangan manual prototipe hull kapal pertama serta pengujian propulsi dan kendali radio.",
     photos: [
       "/images/team/aterkia-team-group.png",
       "/images/robots/robot-asv-1.png",
-      "/images/robots/testblow.png",
+      "/images/sponsors/testblow.png",
     ],
     milestones: [
-      "Official team formation",
-      "First hull prototype built",
-      "Propulsion and radio control testing"
-    ]
-  }
+      "Pembentukan resmi tim",
+      "Prototipe hull pertama dibangun",
+      "Pengujian propulsi & kendali radio",
+    ],
+  },
 ];

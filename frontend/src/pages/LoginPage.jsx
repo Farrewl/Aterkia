@@ -1,54 +1,27 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AlertCircle, ShieldCheck } from 'lucide-react';
-import { Turnstile } from '@marsidev/react-turnstile';
 import { useAuth } from '../hooks';
-
-const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || (
-  import.meta.env.DEV ? '1x00000000000000000000AA' : ''
-);
+import TurnstileWidget from '../components/TurnstileWidget';
+import { verifyTurnstileToken } from '../services/supabase';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { completeGoogleRedirectLogin, isAuthenticated } = useAuth();
+  const { loginWithGoogle, isAuthenticated } = useAuth();
 
   const [phase, setPhase] = useState('form');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const redirectStarted = useRef(false);
-  const returnToRef = useRef('/');
-  const requestedReturnTo = location.state?.from
-    ? `${location.state.from.pathname || '/'}${location.state.from.search || ''}`
-    : '/';
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileFailed, setTurnstileFailed] = useState(false);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const hash = new URLSearchParams(window.location.hash.slice(1));
-    const token = hash.get('access_token');
-    if (token) {
-      returnToRef.current = hash.get('return_to') || '/';
-      let active = true;
-      completeGoogleRedirectLogin(token).then(() => {
-        if (!active) return;
-        window.history.replaceState({}, document.title, '/login');
-        setPhase('diving');
-      }).catch(() => {
-        if (active) setError('Invalid Google login response');
-      });
-      return () => { active = false; };
-    } else if (params.has('error')) {
-      const errorMessages = {
-        google_cancelled: 'Google login was cancelled.',
-        invalid_oauth_state: 'Login session expired. Please try again.',
-        redirect_uri_mismatch: 'Google OAuth redirect URI is not configured correctly.',
-        google_credentials_invalid: 'Google OAuth credentials are invalid or incomplete.',
-        account_deactivated: 'This account has been deactivated.',
-      };
-      setError(errorMessages[params.get('error')] || 'Google login could not be completed. Please try again.');
-      window.history.replaceState({}, document.title, '/login');
-    }
-  }, [completeGoogleRedirectLogin]);
+  const siteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY || '').trim();
+  const turnstileEnabled = siteKey.length > 0;
+
+  const handleTurnstileError = useCallback((err) => {
+    setTurnstileFailed(true);
+    setError(err.message);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated && phase === 'form') navigate('/');
@@ -57,33 +30,35 @@ export default function LoginPage() {
   useEffect(() => {
     if (phase === 'diving') {
       const t1 = setTimeout(() => setPhase('ocean'), 800);
-       const t2 = setTimeout(() => navigate(returnToRef.current), 3400);
+      const t2 = setTimeout(() => navigate('/'), 3400);
       return () => { clearTimeout(t1); clearTimeout(t2); };
     }
   }, [phase, navigate]);
 
-  const handleTurnstileSuccess = async (token) => {
-    if (redirectStarted.current) return;
-    redirectStarted.current = true;
+  const handleGoogleLogin = async () => {
     setIsSubmitting(true);
     setError('');
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google/start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          turnstileToken: token,
-          returnTo: requestedReturnTo,
-        }),
-      });
-      const result = await response.json();
-      if (!response.ok || !result.authUrl) throw new Error(result.error || 'Unable to start Google login');
-      window.location.assign(result.authUrl);
-    } catch (err) {
-      redirectStarted.current = false;
+
+    // Turnstile harus diverifikasi server-side sebelum OAuth diizinkan.
+    // Jika Turnstile gagal load (ad blocker), lanjutkan tanpa verifikasi.
+    if (turnstileEnabled && !turnstileFailed) {
+      if (!turnstileToken) {
+        setError('Please complete the security check first.');
+        setIsSubmitting(false);
+        return;
+      }
+      const verification = await verifyTurnstileToken(turnstileToken);
+      if (!verification.success) {
+        setIsSubmitting(false);
+        setError(verification.error || 'Security check failed.');
+        return;
+      }
+    }
+
+    const result = await loginWithGoogle();
+    if (!result.success) {
       setIsSubmitting(false);
-      setError(err.message || 'Google login failed');
+      setError(result.error || 'Google login failed');
     }
   };
 
@@ -132,23 +107,28 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Cloudflare Turnstile starts the Google redirect after verification. */}
+                {/* Supabase manages the OAuth redirect and session. */}
             <div className="space-y-4 animate-fade-up" style={{ animationDelay: '300ms' }}>
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-sky-500/10 border border-sky-500/20">
                   <ShieldCheck className="w-5 h-5 text-sky-400 shrink-0" />
-                  <span className="text-xs text-sky-300/80">Cloudflare will verify you, then continue with Google</span>
+                  <span className="text-xs text-sky-300/80">Continue securely with Google via Supabase</span>
                 </div>
 
-                <div className="flex justify-center">
-                  <Turnstile
-                    siteKey={turnstileSiteKey}
-                    onSuccess={handleTurnstileSuccess}
-                    onExpire={() => { redirectStarted.current = false; setIsSubmitting(false); }}
-                    onError={() => { redirectStarted.current = false; setIsSubmitting(false); setError('Cloudflare verification failed'); }}
-                    options={{ theme: 'dark' }}
-                  />
-                </div>
-                {isSubmitting && <p className="text-center text-xs text-sky-300/70">Redirecting to Google...</p>}
+                {turnstileEnabled && (
+                  <div className="flex justify-center">
+                    <TurnstileWidget
+                      siteKey={siteKey}
+                      onToken={setTurnstileToken}
+                      onError={handleTurnstileError}
+                    />
+                  </div>
+                )}
+
+                <button type="button" onClick={handleGoogleLogin} disabled={isSubmitting || (turnstileEnabled && !turnstileToken && !turnstileFailed)} className="w-full py-3 rounded-xl bg-white text-slate-800 font-bold text-sm hover:bg-sky-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3">
+                  <GoogleIcon />
+                  Continue with Google
+                </button>
+                {isSubmitting && <p className="text-center text-xs text-sky-300/70">Verifying &amp; redirecting to Google...</p>}
                 {error && (
                   <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 animate-shake" role="alert">
                     <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
@@ -173,6 +153,17 @@ export default function LoginPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function GoogleIcon() {
+  return (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#4285F4" d="M21.35 12.27c0-.79-.07-1.55-.23-2.27H12v4.3h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.7 2.91-4.2 2.91-7.42Z" />
+      <path fill="#34A853" d="M12 21.7c2.63 0 4.84-.87 6.45-2.36l-3.14-2.45c-.87.58-1.98.92-3.31.92-2.54 0-4.7-1.72-5.47-4.03H3.28v2.53A9.74 9.74 0 0 0 12 21.7Z" />
+      <path fill="#FBBC05" d="M6.53 13.78A5.85 5.85 0 0 1 6.22 12c0-.62.11-1.22.31-1.78V7.69H3.28A9.72 9.72 0 0 0 2.25 12c0 1.57.38 3.06 1.03 4.31l3.25-2.53Z" />
+      <path fill="#EA4335" d="M12 6.19c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.84 3.28 14.63 2.3 12 2.3a9.74 9.74 0 0 0-8.72 5.39l3.25 2.53C7.3 7.91 9.46 6.19 12 6.19Z" />
+    </svg>
   );
 }
 
