@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Anchor, Compass } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 export default function NotFoundPage() {
+  const { t } = useTranslation();
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-[#0c4a6e] via-[#0a1628] to-[#060d1a] flex items-center justify-center overflow-hidden px-4">
       {/* Light rays */}
@@ -66,10 +68,10 @@ export default function NotFoundPage() {
         </p>
 
         <h1 className="mt-4 text-2xl sm:text-3xl font-bold font-display text-white">
-          You've Drifted into Uncharted Waters
+          {t('notFound.title')}
         </h1>
         <p className="mt-3 text-white/40 text-sm sm:text-base font-light leading-relaxed max-w-md mx-auto">
-          The page you're looking for sank below the surface, or never left the harbor. Let's get you back to safer seas.
+          {t('notFound.desc')}
         </p>
 
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -78,14 +80,14 @@ export default function NotFoundPage() {
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-sky-500/20 transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.02]"
           >
             <Home className="w-4 h-4" />
-            Back to Harbor
+            {t('notFound.backHome')}
           </Link>
           <Link
             to="/robots"
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white/70 hover:text-white font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2"
           >
             <Compass className="w-4 h-4" />
-            Explore Robots
+            {t('notFound.exploreRobots')}
           </Link>
         </div>
 

@@ -2,8 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
 import { ArrowUp, Anchor, Heart } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 export default function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className="relative bg-olympic-900 text-white overflow-hidden">
       {/* Decorative blobs */}
@@ -43,14 +45,14 @@ export default function Footer() {
 
             {/* Navigasi */}
             <div className="md:col-span-3 space-y-4">
-              <h4 className="font-bold text-olympic-200 uppercase text-xs tracking-wider">Navigation</h4>
+              <h4 className="font-bold text-olympic-200 uppercase text-xs tracking-wider">{t('footer.navigation')}</h4>
               <ul className="space-y-2.5">
                 {[
-                  { to: '/', label: 'Home' },
-                  { to: '/about', label: 'About' },
-                  { to: '/history', label: 'History' },
-                  { to: '/robots', label: 'Robots' },
-                  { to: '/team', label: 'Team' },
+                  { to: '/', label: t('nav.home') },
+                  { to: '/about', label: t('nav.about') },
+                  { to: '/history', label: t('nav.history') },
+                  { to: '/robots', label: t('nav.robots') },
+                  { to: '/team', label: t('nav.team') },
                 ].map((link) => (
                   <li key={link.to}>
                     <Link to={link.to} className="text-olympic-400 hover:text-white text-sm transition-colors duration-200 hover:translate-x-1 inline-block">
@@ -63,7 +65,7 @@ export default function Footer() {
 
             {/* Kontak */}
             <div className="md:col-span-4 space-y-4">
-              <h4 className="font-bold text-olympic-200 uppercase text-xs tracking-wider">Contact</h4>
+              <h4 className="font-bold text-olympic-200 uppercase text-xs tracking-wider">{t('footer.contact')}</h4>
               <div className="space-y-3 text-sm text-olympic-400">
                 <a href={`mailto:${siteConfig.email}`} className="block hover:text-white transition-colors">
                   {siteConfig.email}
@@ -81,10 +83,10 @@ export default function Footer() {
           {/* Bottom bar */}
           <div className="pt-8 border-t border-olympic-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-olympic-500 text-xs">
             <span className="flex items-center gap-1.5">
-              © {new Date().getFullYear()} Aterkia Roboboat
+              {t('footer.copyright').replace('{year}', String(new Date().getFullYear()))}
             </span>
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="p-2.5 rounded-xl bg-olympic-800 border border-olympic-700 text-olympic-400 hover:text-white hover:bg-olympic-600 transition-all duration-200 hover:scale-105" aria-label="Back to top">
+              className="p-2.5 rounded-xl bg-olympic-800 border border-olympic-700 text-olympic-400 hover:text-white hover:bg-olympic-600 transition-all duration-200 hover:scale-105" aria-label={t('footer.backToTop')}>
               <ArrowUp className="w-4 h-4" />
             </button>
           </div>

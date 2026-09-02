@@ -5,11 +5,13 @@ import { TiltCard, Spotlight, useReveal } from '../components/motion';
 import Divisions from '../components/Divisions';
 import ActivitiesSection from '../components/ActivitiesSection';
 import RoadmapSection from '../components/RoadmapSection';
+import { useTranslation } from '../i18n';
 
 const whyIcons = { Waves, Trophy, Users };
 
 export default function AboutPage() {
   const addSectionRef = useReveal();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen">
@@ -26,8 +28,8 @@ export default function AboutPage() {
           <div className="max-w-3xl">
             <div className="overflow-hidden mb-5">
               <h1 className="text-4xl sm:text-5xl md:text-7xl font-black font-display text-white tracking-tight leading-[1.1] animate-fade-up">
-                <span className="inline-block">About</span>{' '}
-                <span className="inline-block gradient-text">Aterkia</span>
+                <span className="inline-block">{t('about.heroTitle')}</span>{' '}
+                <span className="inline-block gradient-text">{t('about.heroGradient')}</span>
               </h1>
             </div>
 
@@ -45,9 +47,9 @@ export default function AboutPage() {
 
             <div className="flex flex-wrap gap-6 mt-10 animate-fade-up" style={{ animationDelay: '450ms' }}>
               {[
-                { value: '4+', label: 'Years Active' },
-                { value: '6+', label: 'Competitions' },
-                { value: '20+', label: 'Team Members' },
+                { value: '4+', label: t('about.yearsActive') },
+                { value: '6+', label: t('about.competitions') },
+                { value: '20+', label: t('about.teamMembers') },
               ].map((stat) => (
                 <div key={stat.label} className="text-center">
                   <div className="text-2xl sm:text-3xl font-black font-display text-white">{stat.value}</div>
@@ -84,10 +86,10 @@ export default function AboutPage() {
                   </div>
 
                   <span className="text-xs font-bold text-sky-400 uppercase tracking-widest block mb-2">
-                    Our Vision
+                    {t('about.visionTitle')}
                   </span>
                   <h2 className="text-2xl sm:text-3xl font-black font-display text-white mb-6">
-                    Where We're Heading
+                    {t('about.visionSubtitle')}
                   </h2>
 
                   <p className="text-white/50 text-base sm:text-lg leading-relaxed font-light italic border-l-2 border-sky-500/30 pl-5">
@@ -123,11 +125,11 @@ export default function AboutPage() {
             <div>
               <span className="inline-flex items-center gap-1.5 text-xs font-bold text-olympic-500 uppercase tracking-widest mb-3">
                 <Trophy className="w-4 h-4" />
-                Competition Track Record
+                {t('about.achievementsTitle')}
               </span>
               <h2 className="text-3xl sm:text-4xl font-black font-display text-olympic-900 tracking-tight">
                 Achievements{' '}
-                <span className="gradient-text">So Far</span>
+                <span className="gradient-text">{t('about.achievementsGradient')}</span>
               </h2>
             </div>
             <div className="hidden sm:flex gap-2" id="achievement-nav">
@@ -170,11 +172,11 @@ export default function AboutPage() {
           <div className="max-w-2xl mb-14 reveal" ref={addSectionRef}>
             <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 uppercase tracking-widest mb-4">
               <Compass className="w-4 h-4" />
-              Why Join Us
+              {t('about.whyJoinUs')}
             </span>
             <h2 className="text-3xl sm:text-4xl font-black font-display text-white tracking-tight">
-              Why{' '}
-              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">Aterkia</span>
+              {t('about.whyTitle')}{' '}
+              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">{t('about.whyGradient')}</span>
             </h2>
           </div>
 
@@ -213,8 +215,8 @@ export default function AboutPage() {
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex items-center justify-between gap-4">
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-sky-400">Our spirit</span>
-            <span className="hidden text-xs font-light text-white/30 sm:block">Scroll to explore the journey</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-sky-400">{t('about.sloganOurSpirit')}</span>
+            <span className="hidden text-xs font-light text-white/30 sm:block">{t('about.sloganScroll')}</span>
           </div>
 
           <div className="overflow-hidden pb-3">
@@ -339,10 +341,10 @@ function MissionStepper() {
         </div>
 
         <span className="text-xs font-bold text-blue-400 uppercase tracking-widest block mb-2">
-          Our Missions
+          {t('about.missionTitle')}
         </span>
         <h2 className="text-2xl sm:text-3xl font-black font-display text-white mb-8">
-          Aterkia Mission
+          {t('about.missionSubtitle')}
         </h2>
 
         <div ref={wrapRef} className="relative pl-2">

@@ -63,7 +63,7 @@ export function LeafletMap({ coords, zoom = 15 }) {
       maxZoom={19}
       scrollWheelZoom={false}
       dragging
-      style={{ width: '100%', height: '16rem' }}
+      style={{ width: '100%', height: '100%' }}
       attributionControl
     >
       <TileLayer

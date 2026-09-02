@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronRight } from 'lucide-react';
+import { Menu, X, ChevronRight, Globe } from 'lucide-react';
 import { UserAvatar } from './auth';
 import { useAuth } from '../hooks';
+import { useTranslation } from '../i18n';
 
 export default function Navbar() {
   const { isAuthenticated } = useAuth();
+  const { lang, setLang, t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -25,11 +27,11 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { to: '/', label: 'Home' },
-    { to: '/about', label: 'About' },
-    { to: '/history', label: 'History' },
-    { to: '/robots', label: 'Robots' },
-    { to: '/team', label: 'Team' }
+    { to: '/', label: t('nav.home') },
+    { to: '/about', label: t('nav.about') },
+    { to: '/history', label: t('nav.history') },
+    { to: '/robots', label: t('nav.robots') },
+    { to: '/team', label: t('nav.team') }
   ];
 
   const updateIndicator = () => {
@@ -126,8 +128,21 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Kanan: UserAvatar/Login + Contact Us */}
+          {/* Kanan: Language + UserAvatar/Login + Contact Us */}
           <div className="hidden md:flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setLang(lang === 'en' ? 'id' : 'en')}
+              aria-label="Toggle language"
+              className={`flex items-center gap-1.5 px-3 py-2.5 rounded-2xl text-[13px] font-bold transition-all duration-300 border-2 ${
+                chromeLight
+                  ? 'border-slate-200 text-slate-500 hover:border-olympic-500 hover:text-olympic-600 hover:bg-olympic-50'
+                  : 'border-white/30 text-white/85 hover:bg-white/10 hover:border-white/60'
+              }`}
+            >
+              <Globe className="w-4 h-4" />
+              {lang === 'en' ? 'ID' : 'EN'}
+            </button>
             {isAuthenticated ? (
               <UserAvatar />
             ) : (
@@ -144,7 +159,7 @@ export default function Navbar() {
                   }`
                 }
               >
-                Login
+                {t('nav.login')}
               </NavLink>
             )}
             <NavLink
@@ -159,7 +174,7 @@ export default function Navbar() {
                 }`
               }
             >
-              <span>Contact Us</span>
+              <span>{t('nav.contact')}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </NavLink>
           </div>
@@ -203,6 +218,14 @@ export default function Navbar() {
               </NavLink>
             ))}
             <div className="pt-3 border-t border-slate-100 mt-2 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => setLang(lang === 'en' ? 'id' : 'en')}
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm tracking-wider hover:bg-olympic-50 hover:border-olympic-500 hover:text-olympic-600 transition-all"
+              >
+                <Globe className="w-4 h-4" />
+                {lang === 'en' ? 'Bahasa Indonesia' : 'English'}
+              </button>
               {isAuthenticated ? (
                 <UserAvatar />
               ) : (
@@ -212,7 +235,7 @@ export default function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border-2 border-olympic-500 text-olympic-500 font-bold text-sm tracking-wider hover:bg-olympic-50 transition-all"
                 >
-                  Login
+                  {t('nav.login')}
                 </NavLink>
               )}
               <NavLink
@@ -220,7 +243,7 @@ export default function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-olympic-500 text-white font-bold text-sm tracking-wider shadow-md shadow-olympic-500/20"
               >
-                <span>Contact Us</span>
+                <span>{t('nav.contact')}</span>
                 <ChevronRight className="w-4 h-4" />
               </NavLink>
             </div>

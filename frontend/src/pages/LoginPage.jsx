@@ -4,9 +4,11 @@ import { AlertCircle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../hooks';
 import TurnstileWidget from '../components/TurnstileWidget';
 import { verifyTurnstileToken } from '../services/supabase';
+import { useTranslation } from '../i18n';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { loginWithGoogle, isAuthenticated } = useAuth();
 
   const [phase, setPhase] = useState('form');
@@ -111,7 +113,7 @@ export default function LoginPage() {
             <div className="space-y-4 animate-fade-up" style={{ animationDelay: '300ms' }}>
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-sky-500/10 border border-sky-500/20">
                   <ShieldCheck className="w-5 h-5 text-sky-400 shrink-0" />
-                  <span className="text-xs text-sky-300/80">Continue securely with Google via Supabase</span>
+                  <span className="text-xs text-sky-300/80">{t('login.googleSecure')}</span>
                 </div>
 
                 {turnstileEnabled && (
@@ -128,7 +130,7 @@ export default function LoginPage() {
                   <GoogleIcon />
                   Continue with Google
                 </button>
-                {isSubmitting && <p className="text-center text-xs text-sky-300/70">Verifying &amp; redirecting to Google...</p>}
+                {isSubmitting && <p className="text-center text-xs text-sky-300/70">{t('login.verifying')}</p>}
                 {error && (
                   <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 animate-shake" role="alert">
                     <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
@@ -146,8 +148,8 @@ export default function LoginPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-sky-300 via-sky-200 to-cyan-300 animate-dive-expand origin-center" />
           <div className="absolute inset-0 flex items-center justify-center z-20">
             <div className="text-center animate-fade-in">
-              <h2 className="text-5xl sm:text-6xl font-black text-white font-display drop-shadow-2xl tracking-tight">Welcome Back</h2>
-              <p className="text-white/80 text-lg mt-3 font-light drop-shadow-lg">Diving into the Aterkia world</p>
+              <h2 className="text-5xl sm:text-6xl font-black text-white font-display drop-shadow-2xl tracking-tight">{t('login.welcomeBack')}</h2>
+              <p className="text-white/80 text-lg mt-3 font-light drop-shadow-lg">{t('login.subtitle')}</p>
             </div>
           </div>
         </div>

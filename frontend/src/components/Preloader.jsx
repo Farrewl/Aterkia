@@ -8,6 +8,12 @@ export default function Preloader({ children }) {
   const [showSpinner, setShowSpinner] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
+  const ready = () => {
+    setShowSplash(false);
+    setShowSpinner(false);
+    setIsReady(true);
+  };
+
   // Splash hanya muncul SEKALI per session (sessionStorage). Setelah itu pakai spinner ringan.
   useEffect(() => {
     const splashSeen = sessionStorage.getItem(SPLASH_KEY);
@@ -20,13 +26,27 @@ export default function Preloader({ children }) {
       return () => clearTimeout(t);
     }
     setShowSplash(true);
+    // Tampilkan branding minimal, lalu sembunyikan saat hero video siap (atau timeout 8s).
     const t1 = setTimeout(() => setIsHiding(true), 2300);
-    const t2 = setTimeout(() => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(t1);
       sessionStorage.setItem(SPLASH_KEY, '1');
-      setShowSplash(false);
-      setIsReady(true);
-    }, 3000);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+      ready();
+    };
+    const t2 = setTimeout(finish, 8000);
+    const onVideoReady = () => {
+      // Beri jeda singkat agar transisi fade keluar terlihat.
+      setTimeout(finish, 400);
+    };
+    window.addEventListener('hero-video-ready', onVideoReady);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener('hero-video-ready', onVideoReady);
+    };
   }, []);
 
   return (

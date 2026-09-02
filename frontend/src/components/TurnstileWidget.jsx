@@ -48,5 +48,10 @@ export default function TurnstileWidget({ siteKey, onToken, onError, className =
     };
   }, [siteKey]);
 
-  return <div ref={containerRef} className={className} />;
+  return (
+    <div
+      ref={containerRef}
+      className={`w-full max-w-[300px] mx-auto overflow-hidden ${className}`}
+    />
+  );
 }

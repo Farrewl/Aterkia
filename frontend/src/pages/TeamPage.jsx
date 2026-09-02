@@ -8,38 +8,16 @@ import {
   Anchor,
   Waves,
   Users,
-  ChevronRight,
-  X
+  GraduationCap,
 } from 'lucide-react';
 import { divisionTeams } from '../data/teamData';
 import { siteConfig } from '../data/siteConfig';
 import ImageWithFallback from '../components/ImageWithFallback';
-import OrgChart from '../components/OrgChart';
 import { TiltCard, Spotlight, useReveal } from '../components/motion';
+import { useTranslation } from '../i18n';
 
 const TEAM_GROUP_PHOTO = '/images/team/aterkia-team-group.webp';
 const PRESIDENT_PHOTO = '/images/team/president/muhammad-bintang-tri-surya.webp';
-
-const teamTracks = {
-  TECHNICAL: {
-    label: 'TEKNIS',
-    shortLabel: 'Engineering & Robotics',
-    description: 'Tim yang merancang, membangun, memprogram, dan menguji robot maritim Aterkia.',
-    tags: ['ASV', 'AUV'],
-    divisions: ['ASV', 'AUV'],
-    accent: 'from-sky-500 to-cyan-400',
-    icon: Anchor,
-  },
-  NONTECHNICAL: {
-    label: 'NONTEKNIS',
-    shortLabel: 'Operations & Organization',
-    description: 'Tim yang menjaga administrasi, keuangan, operasional, dan representasi Aterkia.',
-    tags: ['Secretary & Treasurer', 'Official'],
-    divisions: ['SECRETARY_TREASURER', 'OFFICIAL'],
-    accent: 'from-cyan-500 to-teal-400',
-    icon: Users,
-  },
-};
 
 const DIVISION_ACCENT = {
   ASV: { label: 'Surface Robotics', grad: 'from-sky-500 to-cyan-400', ring: 'ring-sky-400/30' },
@@ -48,8 +26,15 @@ const DIVISION_ACCENT = {
   OFFICIAL: { label: 'Official Team', grad: 'from-amber-500 to-orange-400', ring: 'ring-amber-400/30' },
 };
 
-function DivisionGlyph({ division }) {
-  const className = 'w-9 h-9';
+// Placeholder alumni — ganti dengan data riil sesuai kebutuhan.
+const ALUMNI = [
+  { id: 'alumni-01', fullName: 'Alumni Aterkia 01', role: 'President — Angkatan 2023', division: 'Leadership' },
+  { id: 'alumni-02', fullName: 'Alumni Aterkia 02', role: 'Ketua ASV — Angkatan 2024', division: 'ASV' },
+  { id: 'alumni-03', fullName: 'Alumni Aterkia 03', role: 'Ketua AUV — Angkatan 2024', division: 'AUV' },
+  { id: 'alumni-04', fullName: 'Alumni Aterkia 04', role: 'Official Coordinator — Angkatan 2024', division: 'NONTEKNIS' },
+];
+
+function DivisionGlyph({ division, className = 'w-9 h-9' }) {
   if (division === 'ASV') {
     return (
       <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden="true">
@@ -178,13 +163,14 @@ function ProfileContact({ icon: Icon, label, value, href }) {
   );
 }
 
-/* Featured person — portrait right/left layout */
+/* Featured person — portrait right/left layout (president/dosen/ketua style) */
 function FeaturedPerson({ person, division, kind, imageSide = 'right' }) {
+  const { t } = useTranslation();
   const isAdvisor = kind === 'advisor';
   const isSubteam = kind === 'subteam';
   const instagramHandle = person.instagram || '@aterkia.roboboat';
   const instagramUrl = `https://instagram.com/${instagramHandle.replace('@', '')}`;
-  const email = person.email || `${division.name.toLowerCase()}@aterkia-undip.org`;
+  const email = person.email || `${divName(division)}@aterkia-undip.org`;
   const contacts = [
     { icon: Mail, label: 'Email', value: email, href: `mailto:${email}` },
     { icon: InstagramIcon, label: 'Instagram', value: instagramHandle, href: instagramUrl },
@@ -193,18 +179,28 @@ function FeaturedPerson({ person, division, kind, imageSide = 'right' }) {
   const imageLeft = imageSide === 'left';
 
   return (
-    <article className={`grid grid-cols-1 items-center gap-8 lg:grid-cols-2 ${imageLeft ? '' : ''} reveal`}>
+    <article className={`grid grid-cols-1 items-center gap-8 lg:grid-cols-2 reveal`}>
       <div className={`${imageLeft ? 'lg:order-2' : ''}`}>
         <Spotlight color="56,189,248" opacity={0.08} className="rounded-3xl">
           <div className="relative rounded-3xl border border-white/10 bg-white/[0.03] p-7 sm:p-9">
             <span className="text-xs font-bold uppercase tracking-widest text-sky-400">
-              {isAdvisor ? 'Faculty & Research' : isSubteam ? 'Sub-division Leadership' : 'Division Leadership'}
+              {isAdvisor
+                ? t('team.advisorLabel')
+                : isSubteam
+                  ? t('team.subteamLabel')
+                  : kind === 'chair'
+                    ? t('team.divisionLabel')
+                    : t('team.divisionLabel')}
             </span>
             <h3 className="mt-3 font-display text-2xl font-black text-white sm:text-3xl">{person.fullName}</h3>
             <p className="mt-1 text-sm font-medium text-sky-300/80">{person.role}</p>
 
+            {person.bio && (
+              <p className="mt-4 text-sm font-light leading-relaxed text-white/55">{person.bio}</p>
+            )}
+
             <div className="mt-6">
-              <span className="text-xs font-bold uppercase tracking-wider text-white/35">Area keahlian</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-white/35">{t('team.expertise')}</span>
               <div className="mt-2 flex flex-wrap gap-2">
                 {person.expertise?.map((skill) => (
                   <span key={skill} className="rounded-lg border border-sky-500/25 bg-sky-500/10 px-3 py-1.5 text-xs font-semibold text-sky-200">
@@ -215,7 +211,7 @@ function FeaturedPerson({ person, division, kind, imageSide = 'right' }) {
             </div>
 
             <div className="mt-6 border-t border-white/10 pt-6">
-              <span className="text-xs font-bold uppercase tracking-wider text-white/35">Connect</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-white/35">{t('team.connect')}</span>
               <div className="mt-3 space-y-2.5">
                 {contacts.map((contact) => (
                   <ProfileContact key={contact.label} {...contact} />
@@ -243,7 +239,13 @@ function FeaturedPerson({ person, division, kind, imageSide = 'right' }) {
               <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/70 to-transparent p-4">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-white/70">Aterkia / {division.name}</span>
                 <strong className="text-sm font-black text-white">
-                  {isAdvisor ? 'Faculty Advisor' : kind === 'chair' ? 'Division Lead' : isSubteam ? person.role : 'Vice Division Lead'}
+                  {isAdvisor
+                    ? t('team.facultyAdvisor')
+                    : kind === 'chair'
+                      ? t('team.divisionLead')
+                      : isSubteam
+                        ? person.role
+                        : t('team.viceLead')}
                 </strong>
               </div>
             </div>
@@ -254,8 +256,15 @@ function FeaturedPerson({ person, division, kind, imageSide = 'right' }) {
   );
 }
 
+function divName(division) {
+  if (!division) return 'aterkia';
+  if (typeof division === 'string') return division.toLowerCase();
+  return division.name.toLowerCase();
+}
+
 /* Subdivision explorer — MECH / ELKAPRO selector + panel */
 function SubdivisionExplorer({ team }) {
+  const { t } = useTranslation();
   const [activeSubdivision, setActiveSubdivision] = useState(null);
   const subdivisions = Object.values(team.subdivisions || {});
   const selectedSubdivision = subdivisions.find((item) => item.id === activeSubdivision) || null;
@@ -295,7 +304,7 @@ function SubdivisionExplorer({ team }) {
               <div className="flex items-center justify-between">
                 <strong className="font-display text-lg font-black text-white">{subdivision.name}</strong>
                 <span className="flex items-center gap-1 text-xs font-bold text-sky-400">
-                  {isActive ? (<><ArrowLeft className="h-3.5 w-3.5" /> Back</>) : (<>Explore <ArrowRight className="h-3.5 w-3.5" /></>)}
+                  {isActive ? (<><ArrowLeft className="h-3.5 w-3.5" /> {t('team.back')}</>) : (<>{t('team.explore')} <ArrowRight className="h-3.5 w-3.5" /></>)}
                 </span>
               </div>
               <span className="mt-0.5 block text-xs font-semibold text-sky-300/70">{subdivision.fullName}</span>
@@ -319,9 +328,9 @@ function SubdivisionExplorer({ team }) {
           <div className="border-t border-white/10 pt-8">
             <div className="mb-6">
               <span className="text-xs font-bold uppercase tracking-widest text-sky-400">{selectedSubdivision.fullName}</span>
-              <SectionTitle>Anggota {selectedSubdivision.name} {team.name}</SectionTitle>
+              <SectionTitle>{t('team.membersOf')} {selectedSubdivision.name} {team.name}</SectionTitle>
               <p className="mt-2 text-sm font-light text-white/40">
-                Tim yang bekerja langsung bersama ketua sub-divisi dalam satu alur pengembangan.
+                {t('team.subteamDesc')}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -336,16 +345,13 @@ function SubdivisionExplorer({ team }) {
   );
 }
 
+/* Single page (no track toggle). All divisions rendered directly. */
 export default function TeamPage() {
+  const { t } = useTranslation();
   const headerReveal = useReveal();
-  const [activeTrack, setActiveTrack] = useState(null);
   const [activeDivision, setActiveDivision] = useState(null);
   const selectedTeam = activeDivision ? divisionTeams[activeDivision] : null;
-  const selectedTrack = activeTrack ? teamTracks[activeTrack] : null;
   const showFacultyAdvisor = selectedTeam ? ['ASV', 'AUV'].includes(selectedTeam.id) : false;
-  const visibleDivisions = selectedTrack
-    ? selectedTrack.divisions.map((divisionId) => divisionTeams[divisionId])
-    : [];
 
   const presidentContacts = [
     { icon: Mail, label: 'Email', value: siteConfig.email, href: `mailto:${siteConfig.email}` },
@@ -353,45 +359,43 @@ export default function TeamPage() {
     { icon: LinkedinIcon, label: 'LinkedIn', value: 'Aterkia RoboBoat', href: siteConfig.socials.linkedin },
   ];
 
-  const handleBackToTracks = () => { setActiveDivision(null); setActiveTrack(null); };
+  const divisionIds = ['ASV', 'AUV', 'SECRETARY_TREASURER', 'OFFICIAL'];
   const handleBackToDivisions = () => { setActiveDivision(null); };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#0c4a6e] via-olympic-950 to-[#060d1a]">
-      {/* ── Hero ── */}
+      {/* ── Hero (edge-to-edge) ── */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-[15%] left-[55%] h-72 w-72 rounded-full bg-sky-500/8 blur-3xl" />
           <div className="absolute bottom-[10%] left-[10%] h-56 w-56 rounded-full bg-cyan-400/6 blur-3xl" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-5xl px-4 pt-20 pb-16 text-center sm:px-6 sm:pt-28">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 pt-20 pb-10 text-center sm:px-6 sm:pt-28">
           <h1 className="text-4xl font-black font-display text-white tracking-tight sm:text-6xl animate-fade-up">
-            <span className="block text-2xl font-light text-white/40 sm:text-3xl">We are</span>
-            <span className="gradient-text text-5xl sm:text-7xl">Aterkia</span>
+            <span className="block text-2xl font-light text-white/40 sm:text-3xl">{t('team.weAre')}</span>
+            <span className="gradient-text text-5xl sm:text-7xl">{t('team.name')}</span>
           </h1>
 
-          <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-sky-900/40 animate-fade-up" style={{ animationDelay: '150ms' }}>
-            <img
-              src={TEAM_GROUP_PHOTO}
-              alt="Tim Aterkia bersama setelah meraih penghargaan"
-              decoding="async"
-              fetchPriority="high"
-              width="1619"
-              height="971"
-              className="w-full object-cover"
-            />
-          </div>
-
-          <a href="#meet-the-team" className="mt-10 inline-flex items-center gap-2 text-sm font-semibold text-sky-300 transition-colors hover:text-sky-200">
-            Meet the team
+          <a href="#meet-the-team" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-sky-300 transition-colors hover:text-sky-200">
+            {t('team.meetTheTeam')}
             <ArrowDown className="h-4 w-4" />
           </a>
         </div>
-      </section>
 
-      {/* ── Org chart ── */}
-      <OrgChart />
+        {/* Full-bleed group photo */}
+        <div className="relative w-full">
+          <img
+            src={TEAM_GROUP_PHOTO}
+            alt="Tim Aterkia bersama setelah meraih penghargaan"
+            decoding="async"
+            fetchPriority="high"
+            width="1619"
+            height="971"
+            className="w-full object-cover"
+          />
+        </div>
+      </section>
 
       {/* ── Meet the team ── */}
       <section id="meet-the-team" className="relative bg-[#060d1a] py-20">
@@ -400,16 +404,16 @@ export default function TeamPage() {
           <div ref={headerReveal} className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-center">
             <Spotlight color="56,189,248" opacity={0.08} className="rounded-3xl">
               <div className="relative rounded-3xl border border-white/10 bg-white/[0.03] p-7 sm:p-9">
-                <span className="text-xs font-bold uppercase tracking-widest text-amber-400/90">President of Aterkia</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-amber-400/90">{t('team.presidentLabel')}</span>
                 <h2 className="mt-3 font-display text-3xl font-black text-white sm:text-4xl">
                   Muhammad Bintang Tri Surya
                 </h2>
-                <p className="mt-2 text-sm font-medium text-sky-300/80">Electrical Engineering ’23</p>
+                <p className="mt-2 text-sm font-medium text-sky-300/80">Electrical Engineering '23</p>
 
                 <div className="mt-6">
-                  <span className="text-xs font-bold uppercase tracking-wider text-white/35">Leadership focus</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-white/35">{t('team.leadershipFocus')}</span>
                   <p className="mt-2 text-sm font-light leading-relaxed text-white/55">
-                    Menyatukan tim teknis dan nonteknis agar bergerak dalam satu visi.
+                    {t('team.presidentBlurb')}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {['Technical Direction', 'Organization', 'Team Development'].map((f) => (
@@ -421,7 +425,7 @@ export default function TeamPage() {
                 </div>
 
                 <div className="mt-6 border-t border-white/10 pt-6">
-                  <span className="text-xs font-bold uppercase tracking-wider text-white/35">Connect</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-white/35">{t('team.connect')}</span>
                   <div className="mt-3 space-y-2.5">
                     {presidentContacts.map((contact) => (
                       <ProfileContact key={contact.label} {...contact} />
@@ -453,95 +457,45 @@ export default function TeamPage() {
             </div>
           </div>
 
-          {/* Show track selector OR division options */}
-          {!activeTrack ? (
-            <div className="mt-16 grid grid-cols-1 gap-5 sm:grid-cols-2" aria-label="Pilih jalur tim">
-              {Object.entries(teamTracks).map(([trackId, track]) => {
-                const Icon = track.icon;
-                const TrackLink = TiltCard;
+          {/* Division selector (no track toggle) */}
+          {!selectedTeam ? (
+            <div className="mt-16 grid grid-cols-1 gap-5 sm:grid-cols-2" aria-label="Pilih divisi tim">
+              {divisionIds.map((divisionId) => {
+                const division = divisionTeams[divisionId];
+                if (!division) return null;
+                const accent = DIVISION_ACCENT[divisionId];
                 return (
-                  <TrackLink key={trackId} maxTilt={4} className="h-full">
+                  <TiltCard key={divisionId} maxTilt={4} className="h-full">
                     <button
                       type="button"
-                      onClick={() => { setActiveDivision(null); setActiveTrack(trackId); }}
-                      aria-controls="division-options"
+                      onClick={() => setActiveDivision(divisionId)}
+                      aria-controls="division-detail"
                       className="group relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-7 text-left transition-all duration-300 hover:border-sky-400/30 hover:bg-white/[0.06]"
                     >
-                      <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${track.accent}`} />
-                      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 group-hover:scale-110 transition-transform duration-300">
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <small className="text-xs font-bold uppercase tracking-widest text-sky-400">{track.shortLabel}</small>
-                      <strong className="mt-1 block font-display text-2xl font-black text-white">{track.label}</strong>
-                      <p className="mt-2 text-sm font-light leading-relaxed text-white/50">{track.description}</p>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {track.tags.map((tag) => (
-                          <span key={tag} className="rounded-lg bg-white/5 px-3 py-1 text-xs font-semibold text-white/60">{tag}</span>
-                        ))}
-                      </div>
-                      <span className="mt-5 inline-flex items-center gap-1 text-sm font-bold text-sky-400">
-                        Explore <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </span>
-                    </button>
-                  </TrackLink>
-                );
-              })}
-            </div>
-          ) : (
-            <div id="division-options" className="mt-16 animate-fade-in">
-              {/* Track chapter header */}
-              <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={handleBackToTracks}
-                    className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-white/70 transition-colors hover:border-sky-400/30 hover:text-white"
-                  >
-                    <ArrowLeft className="h-4 w-4" /> Back
-                  </button>
-                  <div>
-                    <small className="text-xs font-bold uppercase tracking-widest text-sky-400">{selectedTrack.shortLabel}</small>
-                    <h3 className="font-display text-2xl font-black text-white">{selectedTrack.label}</h3>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {selectedTrack.tags.map((tag) => (
-                    <span key={tag} className="rounded-lg bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-200">{tag}</span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                {visibleDivisions.map((division) => {
-                  const isActive = activeDivision === division.id;
-                  const isInactive = activeDivision && !isActive;
-                  const accent = DIVISION_ACCENT[division.id];
-                  return (
-                    <button
-                      key={division.id}
-                      type="button"
-                      onClick={() => (isActive ? handleBackToDivisions() : setActiveDivision(division.id))}
-                      aria-pressed={isActive}
-                      aria-controls="division-detail"
-                      className={`group relative overflow-hidden rounded-3xl border p-6 text-left transition-all duration-300 ${
-                        isActive
-                          ? 'border-sky-400/40 bg-sky-500/10'
-                          : 'border-white/10 bg-white/[0.03] hover:border-sky-400/25 hover:bg-white/[0.06]'
-                      } ${isInactive ? 'opacity-40' : ''}`}
-                    >
-                      <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${accent.grad} text-white shadow-lg`}>
-                        <DivisionGlyph division={division.id} />
+                      <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${accent.grad}`} />
+                      <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${accent.grad} text-white shadow-lg`}>
+                        <DivisionGlyph division={divisionId} />
                       </div>
                       <strong className="font-display text-2xl font-black text-white">{division.name}</strong>
                       <span className="mt-0.5 block text-sm font-semibold text-sky-300/80">{accent.label}</span>
                       <p className="mt-2 text-sm font-light leading-relaxed text-white/50">{division.tagline}</p>
-                      <span className={`mt-4 inline-flex items-center gap-1 text-sm font-bold ${isActive ? 'text-white' : 'text-sky-400'}`}>
-                        {isActive ? (<><ArrowLeft className="h-4 w-4" /> Back</>) : (<>Explore <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></>)}
+                      <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-sky-400">
+                        {t('team.explore')} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </span>
                     </button>
-                  );
-                })}
-              </div>
+                  </TiltCard>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="mt-16 flex justify-start">
+              <button
+                type="button"
+                onClick={handleBackToDivisions}
+                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-white/70 transition-colors hover:border-sky-400/30 hover:text-white"
+              >
+                <ArrowLeft className="h-4 w-4" /> {t('team.backToDivisions')}
+              </button>
             </div>
           )}
         </div>
@@ -559,7 +513,7 @@ export default function TeamPage() {
               <p className="mt-2 max-w-2xl text-sm font-light leading-relaxed text-white/40">{selectedTeam.tagline}</p>
             </div>
 
-            {showFacultyAdvisor && (
+            {showFacultyAdvisor && selectedTeam.advisor && (
               <div className="mb-4">
                 <FeaturedPerson person={selectedTeam.advisor} division={selectedTeam} kind="advisor" imageSide="right" />
               </div>
@@ -569,6 +523,12 @@ export default function TeamPage() {
               <FeaturedPerson person={selectedTeam.chair} division={selectedTeam} kind="chair" imageSide="right" />
             </div>
 
+            {selectedTeam.viceChair && (
+              <div className="mt-12">
+                <FeaturedPerson person={selectedTeam.viceChair} division={selectedTeam} kind="chair" imageSide="left" />
+              </div>
+            )}
+
             {selectedTeam.subdivisions ? (
               <div className="mt-12">
                 <SubdivisionExplorer team={selectedTeam} />
@@ -576,9 +536,9 @@ export default function TeamPage() {
             ) : (
               <div className="mt-12 border-t border-white/10 pt-10">
                 <div className="mb-6">
-                  <span className="text-xs font-bold uppercase tracking-widest text-sky-400">Our crew</span>
-                  <SectionTitle>Anggota divisi {selectedTeam.name}</SectionTitle>
-                  <p className="mt-2 text-sm font-light text-white/40">Tim lintas disiplin yang bekerja sebagai satu kesatuan.</p>
+                  <span className="text-xs font-bold uppercase tracking-widest text-sky-400">{t('team.ourCrew')}</span>
+                  <SectionTitle>{t('team.membersOf')} {selectedTeam.name}</SectionTitle>
+                  <p className="mt-2 text-sm font-light text-white/40">{t('team.crewDesc')}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                   {selectedTeam.members.map((member) => (
@@ -587,6 +547,40 @@ export default function TeamPage() {
                 </div>
               </div>
             )}
+          </div>
+        </section>
+      )}
+
+      {/* ── Alumni ── */}
+      {!selectedTeam && (
+        <section className="border-t border-white/5 bg-[#060d1a] py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-12">
+              <SectionEyebrow>{t('team.alumniLabel')}</SectionEyebrow>
+              <SectionTitle>
+                {t('team.alumniTitle')}{' '}
+                <span className="gradient-text">{t('team.alumniGradient')}</span>
+              </SectionTitle>
+              <p className="mt-3 max-w-2xl text-sm font-light leading-relaxed text-white/40">{t('team.alumniDesc')}</p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {ALUMNI.map((alumni) => (
+                <div
+                  key={alumni.id}
+                  className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-6 text-center transition-all duration-300 hover:border-sky-400/30 hover:bg-white/[0.06]"
+                >
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-sky-500/15 to-cyan-400/15 border border-white/10 text-sky-400">
+                    <GraduationCap className="h-7 w-7" />
+                  </div>
+                  <strong className="block font-display text-base font-bold text-white">{alumni.fullName}</strong>
+                  <span className="mt-1 block text-xs font-semibold text-sky-300/70">{alumni.role}</span>
+                  <span className="mt-2 inline-block rounded-full bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white/40">
+                    {alumni.division}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       )}

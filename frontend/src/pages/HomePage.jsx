@@ -7,10 +7,12 @@ import { sponsorsData } from '../data/sponsorsData';
 import { aboutData } from '../data/aboutData';
 import ImageWithFallback from '../components/ImageWithFallback';
 import RoadmapSection from '../components/RoadmapSection';
+import { useTranslation } from '../i18n';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const newsScrollRef = useRef(null);
+  const { t } = useTranslation();
 
   const [newsCanLeft, setNewsCanLeft] = useState(false);
   const [newsCanRight, setNewsCanRight] = useState(true);
@@ -56,7 +58,7 @@ export default function HomePage() {
         <div className="absolute inset-0 dot-pattern opacity-40" />
 
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-olympic-900 via-sky-900 to-olympic-950">
-          <video autoPlay loop muted playsInline preload="auto" className="w-full h-full object-cover opacity-40">
+          <video autoPlay loop muted playsInline preload="auto" className="w-full h-full object-cover opacity-40" onLoadedData={() => window.dispatchEvent(new Event('hero-video-ready'))}>
             <source src={`/videos/Copy of Aterkia\u2019s Video.mp4`} type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-t from-white via-white/30 to-transparent" />
@@ -66,21 +68,21 @@ export default function HomePage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-display text-balance drop-shadow-lg leading-tight">
-              <span className="text-white block">Aterkia</span>
-              <span className="bg-gradient-to-r from-white via-blue-400 to-white bg-clip-text text-transparent drop-shadow-lg block mt-2">RoboBoat</span>
+              <span className="text-white block">{t('hero.title')}</span>
+              <span className="bg-gradient-to-r from-white via-blue-400 to-white bg-clip-text text-transparent drop-shadow-lg block mt-2">{t('hero.subtitle')}</span>
             </h1>
 
             <p className="text-white text-lg sm:text-xl md:text-xl mt-6 max-w-xl mx-auto font-semibold leading-relaxed drop-shadow-md">
-              An autonomous maritime robotics team from Universitas Diponegoro. Designing, building, and testing ocean robots for international competition.
+              {t('hero.description')}
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 mt-10">
               <a href="#robots" className="btn-primary text-sm px-8 py-3.5">
-                View Our Robots
+                {t('hero.viewRobots')}
                 <ArrowRight className="w-4 h-4" />
               </a>
               <Link to="/about" className="btn-secondary text-sm px-8 py-3.5">
-                About Aterkia
+                {t('hero.aboutAterkia')}
               </Link>
             </div>
           </div>
@@ -96,7 +98,7 @@ export default function HomePage() {
         </div>
         <div className="relative z-10 text-center pt-1 pb-1">
           <span className="text-xs sm:text-sm font-bold tracking-widest uppercase gradient-text">
-            Our Sponsors
+            {t('sponsors.title')}
           </span>
         </div>
         <div className="relative z-10 overflow-hidden py-4">
@@ -125,10 +127,10 @@ export default function HomePage() {
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { icon: Trophy, value: `${aboutData.achievements.length}+`, label: 'Awards Won', color: 'text-amber-500' },
-              { icon: Flag, value: '5+', label: 'Competitions Entered', color: 'text-olympic-500' },
-              { icon: Users, value: '30+', label: 'Team Members', color: 'text-sky-600' },
-              { icon: Anchor, value: '2023', label: 'Since', color: 'text-blue-700' },
+              { icon: Trophy, value: `${aboutData.achievements.length}+`, label: t('stats.awards'), color: 'text-amber-500' },
+              { icon: Flag, value: '5+', label: t('stats.competitions'), color: 'text-olympic-500' },
+              { icon: Users, value: '30+', label: t('stats.members'), color: 'text-sky-600' },
+              { icon: Anchor, value: '2023', label: t('stats.since'), color: 'text-blue-700' },
             ].map((stat, i) => {
               const Icon = stat.icon;
               return (
@@ -145,14 +147,14 @@ export default function HomePage() {
         {/* Sponsor CTA */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-4 text-center">
           <p className="text-sm text-slate-500 font-light mb-4">
-            Interested in supporting Aterkia Roboboat Team?
+            {t('sponsors.interested')}
           </p>
           <Link
             to="/contact?category=Sponsorship"
             className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-olympic-500 hover:bg-olympic-600 text-white text-sm font-bold shadow-lg shadow-olympic-500/25 hover:shadow-xl hover:shadow-olympic-500/30 transition-all duration-300 hover:-translate-y-0.5"
           >
             <Handshake className="w-4.5 h-4.5" />
-            Become a Sponsor
+            {t('sponsors.becomeSponsor')}
           </Link>
         </div>
 
@@ -190,11 +192,11 @@ export default function HomePage() {
             <div className="mb-12">
               <div className="max-w-xl">
                 <h2 className="text-4xl sm:text-5xl font-black font-display text-olympic-900 tracking-tight leading-tight">
-                  <span className="gradient-text">Aterkia</span>{' '}
-                  News{' '}
+                  <span className="gradient-text">{t('news.title')}</span>{' '}
+                  {t('news.titleGradient')}{' '}
                 </h2>
                 <p className="text-slate-500 text-base sm:text-lg mt-2 font-light max-w-xl">
-                  The latest updates about our activities.
+                  {t('news.desc')}
                 </p>
               </div>
             </div>
@@ -293,6 +295,7 @@ export default function HomePage() {
 
 function RobotsCockpit() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeIdx, setActiveIdx] = useState(0);
   const [imageKey, setImageKey] = useState(0);
   const pausedRef = useRef(false);
@@ -341,18 +344,18 @@ function RobotsCockpit() {
         <div className="flex items-end justify-between mb-12">
           <div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-display tracking-tight">
-              <span className="text-white">Aterkia</span>{' '}
-              <span className="gradient-text">Robots</span>
+              <span className="text-white">{t('robots.heading')}</span>{' '}
+              <span className="gradient-text">{t('robots.headingGradient')}</span>
             </h2>
             <p className="text-sky-300/50 mt-3 text-sm sm:text-base max-w-md">
-              Our Competition Robots
+              {t('robots.subtitle')}
             </p>
           </div>
           <Link
             to="/robots"
             className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-sky-400 hover:text-sky-300 transition-colors group shrink-0 ml-4"
           >
-            More
+            {t('robots.more')}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>

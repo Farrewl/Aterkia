@@ -5,6 +5,7 @@ import ImageWithFallback from '../components/ImageWithFallback';
 import GLBViewer from '../components/GLBViewer';
 import RobotModal from '../components/RobotModal';
 import { useReveal } from '../components/motion';
+import { useTranslation } from '../i18n';
 import { Anchor, Waves, ArrowRight, Award, Box, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const statusColors = {
@@ -20,6 +21,7 @@ const categoryAccent = {
 
 export default function RobotsPage() {
   const location = useLocation();
+  const { t } = useTranslation();
   const [selectedRobot, setSelectedRobot] = useState(null);
   const [selectedSpec, setSelectedSpec] = useState(null);
   const dockRef = useRef(null);
@@ -72,11 +74,11 @@ export default function RobotsPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black font-display text-white tracking-tight leading-tight animate-fade-up" style={{ animationDelay: '80ms' }}>
-                Aterkia{' '}
-                <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">Robots</span>
+                {t('robots.sectionTitle')}{' '}
+                <span className="gradient-text bg-clip-text text-transparent">{t('robots.sectionGradient')}</span>
               </h1>
               <p className="text-white/40 text-base sm:text-lg font-light max-w-xl leading-relaxed animate-fade-up" style={{ animationDelay: '160ms' }}>
-                Operate the fleet. Pick a vessel from the dock to inspect its helm — spin the 3D model, review specs, and launch detail data.
+                {t('robots.sectionDesc')}
               </p>
             </div>
         </div>
@@ -88,7 +90,7 @@ export default function RobotsPage() {
           <div ref={reveal} className="reveal flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.08] text-white/60 text-sm font-semibold">
               <Waves className="w-4 h-4 text-sky-400" />
-              <span>{robotsData.length} vessels</span>
+              <span>{robotsData.length} {t('robots.vessels')}</span>
             </div>
             <div className="flex items-center gap-2">
               <button onClick={() => dockScroll(-1)} aria-label="Scroll dock left"
@@ -155,7 +157,7 @@ export default function RobotsPage() {
                       {robot.status}
                     </span>
                     <span className={`flex items-center gap-1 text-[10px] font-semibold ${active ? 'text-sky-400' : 'text-white/40'} transition-colors`}>
-                      {active ? 'Selected' : 'Select'}
+                      {active ? t('robots.selected') : t('robots.select')}
                       <ArrowRight className="w-3 h-3" />
                     </span>
                   </div>
@@ -220,7 +222,7 @@ export default function RobotsPage() {
             {/* Specs console */}
             <div className="relative p-5 sm:p-8 border-t border-white/[0.06]">
               <span className="text-xs font-bold text-white/40 uppercase tracking-widest flex items-center gap-2 mb-4">
-                <Box className="w-4 h-4 text-sky-400" /> Specifications
+                <Box className="w-4 h-4 text-sky-400" /> {t('robots.specifications')}
               </span>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
