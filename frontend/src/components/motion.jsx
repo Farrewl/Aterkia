@@ -137,6 +137,11 @@ export function useReveal() {
   }, []);
 
   useEffect(() => {
+    const targets = new Set(
+      document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-zoom')
+    );
+    refs.current.forEach((el) => targets.add(el));
+
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -145,7 +150,7 @@ export function useReveal() {
       },
       { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
     );
-    refs.current.forEach((el) => obs.observe(el));
+    targets.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
   }, []);
 

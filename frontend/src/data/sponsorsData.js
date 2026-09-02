@@ -19,7 +19,7 @@ export const sponsorsData = [
     id: "sp-apisqueen",
     name: "Apisqueen Underwater Thruster",
     role: "Underwater Thrusters",
-    logo: "/images/sponsors/470-110mm_360x.avif",
+    logo: "/images/sponsors/testblow.png",
     url: "https://apisqueen.com",
   },
   {

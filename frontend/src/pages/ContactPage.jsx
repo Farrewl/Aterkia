@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { siteConfig } from '../data/siteConfig';
-import { robotsData } from '../data/robotsData';
-import { Mail, MapPin, Send, CheckCircle2, ArrowUpRight, Anchor, MessageCircle, Users, Rocket, AlertCircle, Paperclip, Bold, Italic, Underline } from 'lucide-react';
+import { Mail, MapPin, Send, CheckCircle2, ArrowUpRight, AlertCircle, Paperclip, X, Clock, ChevronDown } from 'lucide-react';
 import { sponsorsData } from '../data/sponsorsData';
 import ImageWithFallback from '../components/ImageWithFallback';
-import { contactApi } from '../services/api';
+import SecretariatMap from '../components/SecretariatMap';
+import { uploadContactFile } from '../services/supabase';
 
 const marqueeSponsors = [...sponsorsData, ...sponsorsData];
 
 const CATEGORIES = ['Sponsorship', 'ASV Collaboration', 'AUV Collaboration', 'Media', 'General'];
+const MAX_FILES = 3;
+const MAX_FILE_SIZE = 25 * 1024 * 1024;
+const ALLOWED_FILE_TYPES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg', 'application/zip'];
+const ALLOWED_FILE_LABEL = 'PDF, DOC, DOCX, PNG, JPG, ZIP';
 
 function Bubbles({ count = 15 }) {
   return (
@@ -72,10 +76,12 @@ export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
-  const [attachment, setAttachment] = useState(null);
+  const [attachments, setAttachments] = useState([]);
   const [visibleCards, setVisibleCards] = useState(false);
+  const [openResearchHq, setOpenResearchHq] = useState(false);
   const cardsRef = useRef(null);
   const messageRef = useRef(null);
+  const attachmentRef = useRef(null);
 
   useEffect(() => {
     const el = cardsRef.current;
@@ -88,45 +94,98 @@ export default function ContactPage() {
     return () => obs.disconnect();
   }, []);
 
+  // Panaskan chunk leaflet di background saat halaman load, supaya saat
+  // accordion Research HQ dibuka map langsung render tanpa nunggu download
+  // split chunk (hanya tile OSM yang tersisa untuk streaming).
+  useEffect(() => {
+    let cancelled = false;
+    const preload = async () => {
+      try {
+        const mod = await import('../components/SecretariatMapInner');
+        if (!cancelled) window.__aterkiaLeafletReady = !!mod.LeafletMap;
+      } catch {
+        /* non-fatal */
+      }
+    };
+    preload();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitError(null);
+
+    const formId = import.meta.env.VITE_FORMSPREE_ID?.trim();
+    if (!formId) {
+      setSubmitError('Formspree is not configured yet. Please add VITE_FORMSPREE_ID to the frontend environment.');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const payload = new FormData();
       Object.entries(formState).forEach(([key, value]) => payload.append(key, value));
-      if (attachment) payload.append('attachment', attachment);
-      await contactApi.submit(payload);
+      payload.append('_subject', `[Aterkia Contact] ${formState.category} from ${formState.name}`);
+      payload.append('_replyto', formState.email);
+
+      if (attachments.length > 0) {
+        const uploadedFiles = await Promise.all(attachments.map(uploadContactFile));
+        payload.append('attachments', uploadedFiles.map(({ name, url }) => `${name}: ${url}`).join('\n'));
+      }
+
+      const formEndpoint = formId.startsWith('http') ? formId : `https://formspree.io/f/${formId}`;
+      const response = await fetch(formEndpoint, {
+        method: 'POST',
+        body: payload,
+        headers: { Accept: 'application/json' },
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.errors?.map((error) => error.message).join(' ') || 'Failed to send message. Please try again.');
+      }
+
       setIsSubmitted(true);
       setFormState({ name: '', email: '', category: initialCategory, message: '' });
-      setAttachment(null);
+      setAttachments([]);
+      if (attachmentRef.current) attachmentRef.current.value = '';
     } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to send message. Please try again or email us directly.';
-      setSubmitError(msg);
+      setSubmitError(err.message || 'Failed to send message. Please try again or email us directly.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const applyFormat = (marker) => {
-    const textarea = messageRef.current;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = formState.message.slice(start, end) || 'text';
-    const replacement = `${marker}${selected}${marker}`;
-    const message = `${formState.message.slice(0, start)}${replacement}${formState.message.slice(end)}`;
-    setFormState((prev) => ({ ...prev, message }));
-    requestAnimationFrame(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + marker.length, start + marker.length + selected.length);
-    });
+  const handleAttachmentsChange = (e) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length > MAX_FILES) {
+      setSubmitError(`You can attach up to ${MAX_FILES} files.`);
+      e.target.value = '';
+      return;
+    }
+
+    const invalidFile = selectedFiles.find((file) => !ALLOWED_FILE_TYPES.includes(file.type) || file.size > MAX_FILE_SIZE);
+    if (invalidFile) {
+      setSubmitError(`${invalidFile.name} is invalid. Use ${ALLOWED_FILE_LABEL}; each file must be 25 MB or smaller.`);
+      e.target.value = '';
+      return;
+    }
+
+    setSubmitError(null);
+    setAttachments(selectedFiles);
+  };
+
+  const removeAttachment = (index) => {
+    setAttachments((current) => current.filter((_, fileIndex) => fileIndex !== index));
+    if (attachmentRef.current) attachmentRef.current.value = '';
   };
 
   const contactCards = [
     { icon: Mail, label: 'Primary Email', value: siteConfig.email, href: `mailto:${siteConfig.email}` },
-    { icon: MessageCircle, label: 'Sponsorship & Partnerships', value: siteConfig.partnershipEmail, href: `mailto:${siteConfig.partnershipEmail}` },
-    { icon: MapPin, label: 'Research HQ', value: `Student Center, ${siteConfig.affiliation}, ${siteConfig.location}`, href: null },
+    { icon: MapPin, label: 'Research HQ', value: `Student Center, ${siteConfig.affiliation}, ${siteConfig.location}`, href: null, expandable: true },
   ];
 
   const socialLinks = [
@@ -173,92 +232,131 @@ export default function ContactPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
 
-            {/* Left — Contact Cards + Socials */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="space-y-4">
-                {contactCards.map((card, idx) => {
-                  const Icon = card.icon;
-                  const Wrapper = card.href ? 'a' : 'div';
-                  const wrapperProps = card.href ? { href: card.href } : {};
+             {/* Left — Contact Cards + Socials */}
+             <div className="lg:col-span-5 lg:self-center lg:translate-y-8 space-y-6">
+               <div className="space-y-4">
+                 {contactCards.map((card, idx) => {
+                   const Icon = card.icon;
+                   const Wrapper = card.href ? 'a' : 'div';
+                   const wrapperProps = card.href ? { href: card.href } : {};
 
-                  return (
-                    <Wrapper
-                      key={idx}
-                      {...wrapperProps}
-                      className={`flex items-start gap-4 p-5 rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 group
-                        ${card.href ? 'hover:border-sky-200 hover:shadow-lg hover:shadow-sky-100/60 cursor-pointer' : ''}
-                        ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}
-                      `}
-                      style={{ transitionDelay: `${idx * 120}ms` }}
-                    >
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center shrink-0 text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <Icon className="w-5 h-5" />
+                   return (
+                     <Wrapper
+                       key={idx}
+                       {...wrapperProps}
+                       onClick={
+                         card.expandable
+                           ? () => setOpenResearchHq((o) => !o)
+                           : undefined
+                       }
+                       aria-expanded={card.expandable ? openResearchHq : undefined}
+                       className={`flex items-start gap-4 p-5 rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 group
+                         ${card.href || card.expandable ? 'hover:border-sky-200 hover:shadow-lg hover:shadow-sky-100/60 cursor-pointer' : ''}
+                         ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}
+                       `}
+                       style={{ transitionDelay: `${idx * 120}ms` }}
+                     >
+                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center shrink-0 text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                         <Icon className="w-5 h-5" />
+                       </div>
+                       <div className="flex-1 min-w-0">
+                         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{card.label}</span>
+                         <span className={`text-sm font-semibold block leading-snug break-words ${card.href ? 'text-olympic-700 group-hover:text-sky-600 transition-colors' : 'text-slate-600'}`}>
+                           {card.value}
+                         </span>
+                       </div>
+                       {card.href ? (
+                         <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-sky-500 shrink-0 mt-1 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                       ) : card.expandable ? (
+                         <ChevronDown className={`w-4 h-4 text-slate-300 group-hover:text-sky-500 shrink-0 mt-1 transition-transform duration-300 ${openResearchHq ? 'rotate-180' : ''}`} />
+                       ) : null}
+                     </Wrapper>
+                   );
+                 })}
+
+                 {/* Research HQ — collapsible detail */}
+                 <div className={`overflow-hidden transition-[max-height,opacity] duration-500 ease-in-out ${openResearchHq ? 'max-h-[700px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                   <div className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+<div className="relative overflow-hidden h-[16rem]">
+                        {openResearchHq && <SecretariatMap coords={siteConfig.coords} zoom={15} />}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">{card.label}</span>
-                        <span className={`text-sm font-semibold block leading-snug break-words ${card.href ? 'text-olympic-700 group-hover:text-sky-600 transition-colors' : 'text-slate-600'}`}>
-                          {card.value}
-                        </span>
-                      </div>
-                      {card.href && (
-                        <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-sky-500 shrink-0 mt-1 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                      )}
-                    </Wrapper>
-                  );
-                })}
-              </div>
+                     <div className="p-5 space-y-3">
+                       <div className="flex items-start gap-3">
+                         <div className="w-9 h-9 rounded-lg bg-blue-50 border border-blue-100 text-blue-500 flex items-center justify-center shrink-0">
+                           <MapPin className="w-4 h-4" />
+                         </div>
+                         <div>
+                           <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Address</span>
+                           <p className="text-xs text-slate-600 leading-relaxed">{siteConfig.address}</p>
+                           <p className="text-[11px] font-mono text-slate-400 mt-1">{siteConfig.coords.lat}, {siteConfig.coords.lng}</p>
+                         </div>
+                       </div>
+                       <div className="flex items-start gap-3">
+                         <div className="w-9 h-9 rounded-lg bg-cyan-50 border border-cyan-100 text-cyan-500 flex items-center justify-center shrink-0">
+                           <Clock className="w-4 h-4" />
+                         </div>
+                         <div>
+                           <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Operating Hours</span>
+                           <p className="text-xs text-slate-600">{siteConfig.operatingHours}</p>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
 
-              {/* Sponsors */}
-              <div className={`pt-6 transition-all duration-500 delay-500 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-                <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-4">Our Sponsors</span>
-                <div className="relative w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_60px,_black_calc(100%-60px),transparent_100%)]">
-                  <div className="flex w-max animate-marquee hover:[animation-play-state:paused] items-center gap-10 sm:gap-14 py-2">
-                    {marqueeSponsors.map((sponsor, idx) => (
-                      <a
-                        key={`${sponsor.id}-${idx}`}
-                        href={sponsor.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={sponsor.name}
-                        className="relative group"
-                      >
-                        <div className="shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-                          <ImageWithFallback
-                            src={sponsor.logo}
-                            alt={sponsor.name}
-                            name={sponsor.name}
-                            type="sponsor"
-                            className="w-14 h-14 sm:w-20 sm:h-20 object-contain"
-                          />
-                        </div>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              </div>
+               {/* Sponsors */}
+               <div className={`pt-6 transition-all duration-500 delay-500 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+                 <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-4">Our Sponsors</span>
+                 <div className="relative w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_60px,_black_calc(100%-60px),transparent_100%)]">
+                   <div className="flex w-max animate-marquee hover:[animation-play-state:paused] items-center gap-10 sm:gap-14 py-2">
+                     {marqueeSponsors.map((sponsor, idx) => (
+                       <a
+                         key={`${sponsor.id}-${idx}`}
+                         href={sponsor.url}
+                         target="_blank"
+                         rel="noreferrer"
+                         aria-label={sponsor.name}
+                         className="relative group"
+                       >
+                         <div className="shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+                           <ImageWithFallback
+                             src={sponsor.logo}
+                             alt={sponsor.name}
+                             name={sponsor.name}
+                             type="sponsor"
+                             className="w-14 h-14 sm:w-20 sm:h-20 object-contain"
+                           />
+                         </div>
+                       </a>
+                     ))}
+                   </div>
+                 </div>
+               </div>
 
-              {/* Social links */}
-              <div className={`pt-2 transition-all duration-500 delay-[600ms] ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3 px-1">Follow Us</span>
-                <div className="flex gap-2">
-                  {socialLinks.map((s) => (
-                    <a
-                      key={s.label}
-                      href={s.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={s.label}
-                      className={`w-11 h-11 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg ${s.hover}`}
-                    >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d={s.icon} /></svg>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
+               {/* Social links */}
+               <div className={`pt-2 transition-all duration-500 delay-[600ms] ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3 px-1">Follow Us</span>
+                 <div className="flex gap-2">
+                   {socialLinks.map((s) => (
+                     <a
+                       key={s.label}
+                       href={s.href}
+                       target="_blank"
+                       rel="noreferrer"
+                       aria-label={s.label}
+                       className={`w-11 h-11 rounded-xl bg-white border border-slate-100 text-slate-400 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg ${s.hover}`}
+                     >
+                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d={s.icon} /></svg>
+                     </a>
+                   ))}
+</div>
+                 </div>
 
-            {/* Right — Contact Form */}
-            <div className={`lg:col-span-7 transition-all duration-700 delay-200 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+               </div>
+
+              {/* Right — Contact Form */}
+              <div className={`lg:col-span-7 transition-all duration-700 delay-200 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               <div className="relative bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 p-8 sm:p-10 overflow-hidden">
 
                 {isSubmitted ? (
@@ -278,7 +376,7 @@ export default function ContactPage() {
                     </button>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-5">
+                   <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-5">
                     {submitError && (
                       <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm" role="alert">
                         <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
@@ -335,28 +433,34 @@ export default function ContactPage() {
                         <label htmlFor="contact-message" className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Message</label>
                         <span className="text-[11px] text-slate-400">{formState.message.length}/2000</span>
                       </div>
-                      <div className="flex items-center gap-1 px-2 py-1.5 rounded-t-xl bg-slate-100 border border-slate-200 border-b-0">
-                        <button type="button" onClick={() => applyFormat('**')} className="p-1.5 rounded-md text-slate-500 hover:bg-white hover:text-slate-800" aria-label="Bold"><Bold className="w-4 h-4" /></button>
-                        <button type="button" onClick={() => applyFormat('*')} className="p-1.5 rounded-md text-slate-500 hover:bg-white hover:text-slate-800" aria-label="Italic"><Italic className="w-4 h-4" /></button>
-                        <button type="button" onClick={() => applyFormat('__')} className="p-1.5 rounded-md text-slate-500 hover:bg-white hover:text-slate-800" aria-label="Underline"><Underline className="w-4 h-4" /></button>
-                        <span className="ml-2 text-[11px] text-slate-400">Formatting is applied in the email</span>
-                      </div>
                       <textarea
                         id="contact-message"
                         ref={messageRef}
                         required
                         rows={5}
                         maxLength={2000}
-                        placeholder="Write your message, collaboration proposal, or question..."
+                        placeholder="Write your message, collaboration proposal, or question... You can use **bold**, _italic_, or __underline__ markdown."
                         value={formState.message}
                         onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                        className="w-full px-4 py-3 rounded-b-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all resize-none"
+                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all resize-none"
                       ></textarea>
-                      <label htmlFor="contact-attachment" className="mt-3 flex items-center gap-2 text-xs font-semibold text-slate-500 cursor-pointer hover:text-olympic-600">
-                        <Paperclip className="w-4 h-4" />
-                        <span>{attachment ? attachment.name : 'Attach document (PDF, DOC, DOCX, PNG, JPG, ZIP; max 5 MB)'}</span>
-                      </label>
-                      <input id="contact-attachment" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.zip" className="sr-only" onChange={(e) => setAttachment(e.target.files?.[0] || null)} />
+                       <label htmlFor="contact-attachment" className="mt-3 flex items-center gap-2 text-xs font-semibold text-slate-500 cursor-pointer hover:text-olympic-600">
+                         <Paperclip className="w-4 h-4" />
+                         <span>{attachments.length ? `${attachments.length} file${attachments.length === 1 ? '' : 's'} selected` : `Attach files (${ALLOWED_FILE_LABEL}; max 25 MB each, up to 3)`}</span>
+                       </label>
+                       <input id="contact-attachment" ref={attachmentRef} type="file" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.zip" className="sr-only" onChange={handleAttachmentsChange} />
+                       {attachments.length > 0 && (
+                         <ul className="mt-2 space-y-1.5" aria-label="Selected attachments">
+                           {attachments.map((file, index) => (
+                             <li key={`${file.name}-${file.lastModified}`} className="flex items-center justify-between gap-3 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                               <span className="min-w-0 truncate">{file.name}</span>
+                               <button type="button" onClick={() => removeAttachment(index)} className="shrink-0 rounded-md p-1 text-slate-400 hover:bg-white hover:text-red-500" aria-label={`Remove ${file.name}`}>
+                                 <X className="w-4 h-4" />
+                               </button>
+                             </li>
+                           ))}
+                         </ul>
+                       )}
                     </div>
 
                     <button
@@ -374,6 +478,7 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+
     </div>
   );
 }

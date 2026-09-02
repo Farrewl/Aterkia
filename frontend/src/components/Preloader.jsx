@@ -1,27 +1,67 @@
 import React, { useState, useEffect } from 'react';
 
+const SPLASH_KEY = 'aterkia-splash-seen';
+
 export default function Preloader({ children }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [assetsLoaded, setAssetsLoaded] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
+  const [isHiding, setIsHiding] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
+  // Splash hanya muncul SEKALI per session (sessionStorage). Setelah itu pakai spinner ringan.
   useEffect(() => {
-    const timer = setTimeout(() => setAssetsLoaded(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (assetsLoaded) {
-      const t = setTimeout(() => setIsLoading(false), 400);
+    const splashSeen = sessionStorage.getItem(SPLASH_KEY);
+    if (splashSeen) {
+      setShowSpinner(true);
+      const t = setTimeout(() => {
+        setShowSpinner(false);
+        setIsReady(true);
+      }, 400);
       return () => clearTimeout(t);
     }
-  }, [assetsLoaded]);
+    setShowSplash(true);
+    const t1 = setTimeout(() => setIsHiding(true), 2300);
+    const t2 = setTimeout(() => {
+      sessionStorage.setItem(SPLASH_KEY, '1');
+      setShowSplash(false);
+      setIsReady(true);
+    }, 3000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
 
   return (
     <>
-      {isLoading && (
-        <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+      {showSplash && (
+        <div
+          className={`fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden transition-opacity duration-700 ${
+            isHiding ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
+          style={{
+            background: 'radial-gradient(circle at 50% 40%, #0c2542 0%, #060d1a 55%, #03070f 100%)',
+          }}
+          aria-hidden="true"
+        >
+          <div className="relative z-10 flex flex-col items-center px-6" style={{ animation: 'aterkiaLogoReveal 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards', opacity: 0 }}>
+            <img
+              src="/assets/profile.png"
+              alt="Aterkia"
+              className="w-28 sm:w-36 md:w-44 h-auto object-contain drop-shadow-[0_0_30px_rgba(56,189,248,0.35)]"
+            />
+            <p className="mt-6 font-display text-2xl sm:text-3xl font-black tracking-[0.35em] text-white/90" style={{ animation: 'aterkiaTextReveal 1200ms 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards', opacity: 0 }}>
+              ATERKIA
+            </p>
+            <div className="mt-2 h-px w-40 bg-gradient-to-r from-transparent via-sky-400/60 to-transparent" style={{ animation: 'aterkiaLineGrow 1400ms 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards', transform: 'scaleX(0)' }} />
+            <p className="mt-4 text-[11px] sm:text-xs uppercase tracking-[0.4em] text-sky-200/40 font-mono">
+              RoboBoat Team
+            </p>
+          </div>
+        </div>
+      )}
+
+      {showSpinner && (
+        <div className="fixed inset-0 z-[9999] bg-white/80 backdrop-blur-sm flex items-center justify-center animate-fade-out">
           <div className="text-center">
-            <div className="w-28 h-28 mx-auto mb-4 relative">
+            <div className="w-16 h-16 mx-auto mb-4">
               <svg viewBox="0 0 120 120" className="w-full h-full animate-spin" style={{ animationDuration: '1.2s' }}>
                 <circle cx="60" cy="60" r="14" fill="#005EB8" />
                 <circle cx="60" cy="60" r="7" fill="#fff" />
@@ -41,7 +81,23 @@ export default function Preloader({ children }) {
           </div>
         </div>
       )}
-      {children}
+
+      <style>{`
+        @keyframes aterkiaLogoReveal {
+          0%   { transform: scale(0.94); opacity: 0; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes aterkiaTextReveal {
+          0%   { transform: translateY(8px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes aterkiaLineGrow {
+          0%   { transform: scaleX(0); }
+          100% { transform: scaleX(1); }
+        }
+      `}</style>
+
+      {isReady && children}
     </>
   );
 }

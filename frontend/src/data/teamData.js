@@ -110,7 +110,7 @@ export const divisionTeams = {
       fullName: "Feby Finance",
       role: "Ketua Divisi AUV",
       division: "AUV",
-      photo: "/images/team/auv/feby-finance-clean.png",
+      photo: "/images/team/auv/feby-finance-clean.webp",
       instagram: "@febyfinance",
       expertise: ["Team Leadership", "System Integration", "Underwater Robotics"],
       bio: "Memimpin integrasi mekanik, elektronika, persepsi, dan kendali robot bawah air."

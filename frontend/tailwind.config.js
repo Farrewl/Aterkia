@@ -34,6 +34,7 @@ export default {
         'marquee': 'marquee 30s linear infinite',
         'fade-up': 'fadeUp 0.6s ease-out both',
         'fade-in': 'fadeIn 0.4s ease-out both',
+        'fade-out': 'fadeOut 0.5s ease-in forwards',
         'slide-left': 'slideLeft 0.5s ease-out both',
         'slide-right': 'slideRight 0.5s ease-out both',
         'scale-in': 'scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both',
@@ -69,6 +70,10 @@ export default {
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
+        },
+        fadeOut: {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
         },
         slideLeft: {
           '0%': { opacity: '0', transform: 'translateX(40px)' },

@@ -403,6 +403,18 @@
     pointer-events: none;
   }
 
+  /* Full-deck sonar sweep radiate — expanding rings behind the helm vessel */
+  @keyframes sonarSweep {
+    0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.6; }
+    100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
+  }
+  .sonar-sweep {
+    background: radial-gradient(circle, transparent 0%, rgba(56, 189, 248, 0.05) 35%, transparent 70%);
+    border-radius: 9999px;
+    animation: sonarSweep 3.5s ease-out infinite;
+    pointer-events: none;
+  }
+
   /* Bubble trail behind the submarine */
   @keyframes trailBubble {
     0% { transform: translateY(8px) scale(0.5); opacity: 0.85; }
