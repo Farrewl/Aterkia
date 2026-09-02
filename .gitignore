@@ -13,6 +13,9 @@ dist/
 dist-ssr/
 *.local
 
+# Legacy backend removed from this repo (frontend + Supabase only now)
+backend/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -24,12 +27,31 @@ dist-ssr/
 *.sln
 *.sw?
 
-# Environment variables
+# Environment variables — NEVER commit real secrets/keys.
+# Keep only .env.example (placeholders) tracked.
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+!.env.example
+!.env.*.example
+
+# Secret / key files scattered anywhere in the tree
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+*.pem
+*.key
+*.p12
+serviceAccount*.json
+credentials*.json
+
+# Supabase local config that may contain project ref / keys
+supabase/.temp/
+supabase/.env
 
 # Temporary files & caches
 .cache/
