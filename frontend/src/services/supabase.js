@@ -29,19 +29,19 @@ export const uploadContactFile = async (file) => {
   return { name: file.name, url: data.publicUrl };
 };
 
-// Verifikasi token Turnstile di server (Supabase Edge Function), bukan di browser.
-// Token di-replay ke Cloudflare siteverify oleh fungsi `verify-turnstile`.
-export const verifyTurnstileToken = async (token) => {
+// Verifikasi token reCAPTCHA di server (Supabase Edge Function), bukan di browser.
+// Token di-replay ke Google siteverify oleh fungsi `verify-recaptcha`.
+export const verifyRecaptchaToken = async (token) => {
   if (!supabase) {
     return { success: false, error: 'Supabase is not configured yet.' };
   }
-  const { data, error } = await supabase.functions.invoke('verify-turnstile', {
+  const { data, error } = await supabase.functions.invoke('verify-recaptcha', {
     body: { token },
   });
   if (error) {
-    return { success: false, error: error.message || 'Turnstile verification failed.' };
+    return { success: false, error: error.message || 'reCAPTCHA verification failed.' };
   }
-  return { success: data.success === true, error: data.success ? null : 'Turnstile verification failed.' };
+  return { success: data.success === true, error: data.success ? null : 'reCAPTCHA verification failed.' };
 };
 
 // ── Admin: manajemen pengguna ──

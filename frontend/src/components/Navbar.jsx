@@ -52,9 +52,15 @@ export default function Navbar() {
 
   useEffect(() => {
     updateIndicator();
+    // Panjang label berubah saat ganti bahasa (EN↔ID); tunggu reflow lalu ukur ulang
+    // pill agar tetap terpusat pada halaman aktif.
+    const raf = requestAnimationFrame(() => setTimeout(updateIndicator, 50));
     window.addEventListener('resize', updateIndicator);
-    return () => window.removeEventListener('resize', updateIndicator);
-  }, [location.pathname]);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', updateIndicator);
+    };
+  }, [location.pathname, lang]);
 
   // Chrome tone: light pages get dark text, dark ocean pages always use white text
   const chromeLight = isLightPage && showBackground;

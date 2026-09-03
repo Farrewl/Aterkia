@@ -141,13 +141,24 @@ export default function ContactPage() {
       const formEndpoint = formId.startsWith('http') ? formId : `https://formspree.io/f/${formId}`;
       const response = await fetch(formEndpoint, {
         method: 'POST',
+        mode: 'cors',
         body: payload,
         headers: { Accept: 'application/json' },
       });
 
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.errors?.map((error) => error.message).join(' ') || 'Failed to send message. Please try again.');
+        // Formspree 400/403 sering balas HTML, bukan JSON.
+        const text = await response.text();
+        let detail = text;
+        try {
+          const data = JSON.parse(text);
+          detail = data?.errors?.map((error) => error.message).join(' ') || JSON.stringify(data);
+        } catch { /* tetap pakai text mentah */ }
+        throw new Error(
+          `Form submission failed (${response.status}). ` +
+          'Please verify the form is verified in your Formspree dashboard and that your Form ID is correct. ' +
+          `Server: ${detail?.slice(0, 200)}`
+        );
       }
 
       setIsSubmitted(true);

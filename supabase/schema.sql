@@ -132,6 +132,6 @@ where p.id = u.id
 
 -- ── Jalankan sekali di SQL Editor untuk mengangkat akun menjadi admin ──
 -- Ganti email sesuai akun yang ingin dijadikan admin. Jalankan SETELAH skema di atas.
-update public.profiles
-set role = 'admin'
-where email = 'ibnufirdaus2030@gmail.com';
+-- update public.profiles
+-- set role = 'admin'
+-- where email = 'ibnufirdaus2030@gmail.com';

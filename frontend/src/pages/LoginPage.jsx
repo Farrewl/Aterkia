@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../hooks';
-import TurnstileWidget from '../components/TurnstileWidget';
-import { verifyTurnstileToken } from '../services/supabase';
+import RecaptchaWidget from '../components/RecaptchaWidget';
+import { verifyRecaptchaToken } from '../services/supabase';
 import { useTranslation } from '../i18n';
 
 export default function LoginPage() {
@@ -14,14 +14,14 @@ export default function LoginPage() {
   const [phase, setPhase] = useState('form');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState('');
-  const [turnstileFailed, setTurnstileFailed] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState('');
+  const [recaptchaFailed, setRecaptchaFailed] = useState(false);
 
-  const siteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY || '').trim();
-  const turnstileEnabled = siteKey.length > 0;
+  const siteKey = (import.meta.env.VITE_RECAPTCHA_SITE_KEY || '').trim();
+  const recaptchaEnabled = siteKey.length > 0;
 
-  const handleTurnstileError = useCallback((err) => {
-    setTurnstileFailed(true);
+  const handleRecaptchaError = useCallback((err) => {
+    setRecaptchaFailed(true);
     setError(err.message);
   }, []);
 
@@ -41,15 +41,15 @@ export default function LoginPage() {
     setIsSubmitting(true);
     setError('');
 
-    // Turnstile harus diverifikasi server-side sebelum OAuth diizinkan.
-    // Jika Turnstile gagal load (ad blocker), lanjutkan tanpa verifikasi.
-    if (turnstileEnabled && !turnstileFailed) {
-      if (!turnstileToken) {
+    // reCAPTCHA diverifikasi server-side sebelum OAuth diizinkan.
+    // Jika gagal load (jaringan), lanjutkan tanpa verifikasi.
+    if (recaptchaEnabled && !recaptchaFailed) {
+      if (!recaptchaToken) {
         setError('Please complete the security check first.');
         setIsSubmitting(false);
         return;
       }
-      const verification = await verifyTurnstileToken(turnstileToken);
+      const verification = await verifyRecaptchaToken(recaptchaToken);
       if (!verification.success) {
         setIsSubmitting(false);
         setError(verification.error || 'Security check failed.');
@@ -116,17 +116,17 @@ export default function LoginPage() {
                   <span className="text-xs text-sky-300/80">{t('login.googleSecure')}</span>
                 </div>
 
-                {turnstileEnabled && (
+                {recaptchaEnabled && (
                   <div className="flex justify-center">
-                    <TurnstileWidget
+                    <RecaptchaWidget
                       siteKey={siteKey}
-                      onToken={setTurnstileToken}
-                      onError={handleTurnstileError}
+                      onToken={setRecaptchaToken}
+                      onError={handleRecaptchaError}
                     />
                   </div>
                 )}
 
-                <button type="button" onClick={handleGoogleLogin} disabled={isSubmitting || (turnstileEnabled && !turnstileToken && !turnstileFailed)} className="w-full py-3 rounded-xl bg-white text-slate-800 font-bold text-sm hover:bg-sky-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3">
+                <button type="button" onClick={handleGoogleLogin} disabled={isSubmitting || (recaptchaEnabled && !recaptchaToken && !recaptchaFailed)} className="w-full py-3 rounded-xl bg-white text-slate-800 font-bold text-sm hover:bg-sky-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3">
                   <GoogleIcon />
                   Continue with Google
                 </button>

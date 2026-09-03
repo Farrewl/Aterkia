@@ -4,13 +4,14 @@ import L from 'leaflet';
 
 const pinIcon = L.divIcon({
   className: '',
-  html: `<svg width="34" height="44" viewBox="0 0 34 44" xmlns="http://www.w3.org/2000/svg">
-    <path d="M17 1C9.3 1 3 7.3 3 15c0 10.5 14 28 14 28s14-17.5 14-28C31 7.3 24.7 1 17 1z" fill="#ef4444" stroke="#b91c1c" stroke-width="2"/>
-    <circle cx="17" cy="15" r="6" fill="white"/>
+  html: `<svg width="40" height="50" viewBox="0 0 40 50" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35));">
+    <path d="M20 1C10.7 1 3.2 8.6 3.2 18c0 11.6 16.8 30.5 16.8 30.5S36.8 29.6 36.8 18C36.8 8.6 29.3 1 20 1z" fill="#ef4444" stroke="#b91c1c" stroke-width="2"/>
+    <circle cx="20" cy="18" r="6.5" fill="white"/>
+    <circle cx="17.2" cy="15.6" r="2.2" fill="#dc2626" opacity="0.55"/>
   </svg>`,
-  iconSize: [34, 44],
-  iconAnchor: [17, 44],
-  popupAnchor: [0, -40],
+  iconSize: [40, 50],
+  iconAnchor: [20, 48],
+  popupAnchor: [0, -42],
 });
 
 function Recenter({ coords }) {
@@ -26,11 +27,13 @@ function Recenter({ coords }) {
       map.panTo([lat, lng], { animate: false });
     };
 
-    // Ukur ulang + kunci viewport ke pin BEBBERAP saat setelah accordion buka,
-    // supaya buka meninggalkan ukuran container yang salah/tile misaligned.
+    // Map di-render saat accordion (max-height) mulai terbuka — container belum
+    // punya tinggi final. Ukur ulang beberapa kali sampai transisi selesai agar
+    // semua tile ter-render (menghilangkan kotak putih sebagian).
     timers.push(requestAnimationFrame(() => fix()));
     timers.push(setTimeout(fix, 300));
     timers.push(setTimeout(fix, 650));
+    timers.push(setTimeout(fix, 900)); // akhir transisi max-height duration-500
 
     const el = map.getContainer();
     const ro = new ResizeObserver(() => fix());
@@ -72,9 +75,9 @@ export function LeafletMap({ coords, zoom = 15 }) {
       />
       <Marker position={[coords.lat, coords.lng]} icon={pinIcon}>
         <Popup>
-          <strong>URDC Undip</strong>
+          <strong>Aterkia Robotics Activity Center</strong>
           <br />
-          Undip Robotic Development Center, Tembalang, Semarang
+          Pusat kegiatan robotik Aterkia
         </Popup>
       </Marker>
       <Recenter coords={coords} />
