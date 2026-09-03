@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks';
 import { User, Mail, Shield, Key, Save, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 function InfoIcon({ className }) {
   return (
@@ -11,6 +12,7 @@ function InfoIcon({ className }) {
 }
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user, updateProfile, hasRole } = useAuth();
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -82,8 +84,8 @@ export default function ProfilePage() {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-sky-500/10 border border-sky-500/20 mb-4">
             <User className="w-10 h-10 text-sky-400" />
           </div>
-          <h1 className="text-3xl font-black font-display text-white tracking-tight">User Profile</h1>
-          <p className="text-white/40 text-sm mt-1.5">Manage your account information and preferences</p>
+          <h1 className="text-3xl font-black font-display text-white tracking-tight">{t('profile.title')}</h1>
+          <p className="text-white/40 text-sm mt-1.5">{t('profile.subtitle')}</p>
         </div>
 
         <div className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-2xl shadow-black/30 border border-white/10 overflow-hidden">
@@ -150,7 +152,7 @@ export default function ProfilePage() {
                         value={formData.name}
                         onChange={handleChange}
                         className={inputClass}
-                        placeholder="Your full name"
+                        placeholder={t('profile.namePlaceholder')}
                         disabled={!isAdmin}
                         required
                       />
@@ -168,7 +170,7 @@ export default function ProfilePage() {
                         type="email"
                         value={user?.email || ''}
                         className={inputClassDisabled}
-                        placeholder="Email cannot be changed"
+                        placeholder={t('profile.emailLocked')}
                         disabled
                       />
                     </div>
@@ -186,13 +188,13 @@ export default function ProfilePage() {
                       className={`${inputClass} pl-4 [&>option]:bg-olympic-900 ${!isAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
                       disabled={!isAdmin}
                     >
-                      <option value="">Select division</option>
-                      <option value="ASV">ASV Division</option>
-                      <option value="AUV">AUV Division</option>
-                      <option value="Leadership">Leadership</option>
-                      <option value="Mechanical">Mechanical</option>
-                      <option value="Electrical">Electrical</option>
-                      <option value="Software">Software</option>
+                      <option value="">{t('profile.selectDivision')}</option>
+                      <option value="ASV">{t('profile.divisionASV')}</option>
+                      <option value="AUV">{t('profile.divisionAUV')}</option>
+                      <option value="Leadership">{t('profile.divisionLeadership')}</option>
+                      <option value="Mechanical">{t('profile.divisionMechanical')}</option>
+                      <option value="Electrical">{t('profile.divisionElectrical')}</option>
+                      <option value="Software">{t('profile.divisionSoftware')}</option>
                     </select>
                   </div>
 
@@ -221,7 +223,7 @@ export default function ProfilePage() {
                   >
                     {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
                     <Save className="w-4 h-4" />
-                    <span>Save Changes</span>
+                    <span>{t('profile.saveChanges')}</span>
                   </button>
                 </div>}
               </form>
@@ -243,7 +245,7 @@ export default function ProfilePage() {
                         value={passwordData.currentPassword}
                         onChange={(e) => setPasswordData((prev) => ({ ...prev, currentPassword: e.target.value }))}
                         className={inputClass}
-                        placeholder="Enter your current password"
+                        placeholder={t('profile.currentPassword')}
                       />
                     </div>
                   </div>
@@ -261,7 +263,7 @@ export default function ProfilePage() {
                         value={passwordData.newPassword}
                         onChange={(e) => setPasswordData((prev) => ({ ...prev, newPassword: e.target.value }))}
                         className={inputClass}
-                        placeholder="At least 8 characters"
+                        placeholder={t('profile.newPasswordHint')}
                       />
                     </div>
                   </div>
@@ -279,7 +281,7 @@ export default function ProfilePage() {
                         value={passwordData.confirmPassword}
                         onChange={(e) => setPasswordData((prev) => ({ ...prev, confirmPassword: e.target.value }))}
                         className={inputClass}
-                        placeholder="Repeat new password"
+                        placeholder={t('profile.repeatPassword')}
                       />
                     </div>
                   </div>
@@ -291,7 +293,7 @@ export default function ProfilePage() {
                     className="px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-sm tracking-wide shadow-lg shadow-sky-500/20 transition-all duration-300 flex items-center gap-2"
                   >
                     <Save className="w-4 h-4" />
-                    <span>Change Password</span>
+                    <span>{t('profile.changePassword')}</span>
                   </button>
                 </div>
               </form>

@@ -6,6 +6,7 @@ import { sponsorsData } from '../data/sponsorsData';
 import ImageWithFallback from '../components/ImageWithFallback';
 import SecretariatMap from '../components/SecretariatMap';
 import { uploadContactFile } from '../services/supabase';
+import { useTranslation } from '../i18n';
 
 const marqueeSponsors = [...sponsorsData, ...sponsorsData];
 
@@ -63,6 +64,7 @@ function FloatingShip() {
 
 export default function ContactPage() {
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const initialCategory = CATEGORIES.includes(searchParams.get('category'))
     ? searchParams.get('category')
     : 'Sponsorship';
@@ -139,13 +141,24 @@ export default function ContactPage() {
       const formEndpoint = formId.startsWith('http') ? formId : `https://formspree.io/f/${formId}`;
       const response = await fetch(formEndpoint, {
         method: 'POST',
+        mode: 'cors',
         body: payload,
         headers: { Accept: 'application/json' },
       });
 
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        throw new Error(data?.errors?.map((error) => error.message).join(' ') || 'Failed to send message. Please try again.');
+        // Formspree 400/403 sering balas HTML, bukan JSON.
+        const text = await response.text();
+        let detail = text;
+        try {
+          const data = JSON.parse(text);
+          detail = data?.errors?.map((error) => error.message).join(' ') || JSON.stringify(data);
+        } catch { /* tetap pakai text mentah */ }
+        throw new Error(
+          `Form submission failed (${response.status}). ` +
+          'Please verify the form is verified in your Formspree dashboard and that your Form ID is correct. ' +
+          `Server: ${detail?.slice(0, 200)}`
+        );
       }
 
       setIsSubmitted(true);
@@ -184,8 +197,8 @@ export default function ContactPage() {
   };
 
   const contactCards = [
-    { icon: Mail, label: 'Primary Email', value: siteConfig.email, href: `mailto:${siteConfig.email}` },
-    { icon: MapPin, label: 'Research HQ', value: `Student Center, ${siteConfig.affiliation}, ${siteConfig.location}`, href: null, expandable: true },
+    { icon: Mail, label: t('contact.primaryEmail'), value: siteConfig.email, href: `mailto:${siteConfig.email}` },
+    { icon: MapPin, label: t('contact.researchHq'), value: `Student Center, ${siteConfig.affiliation}, ${siteConfig.location}`, href: null, expandable: true },
   ];
 
   const socialLinks = [
@@ -210,14 +223,14 @@ export default function ContactPage() {
           <div className="text-center max-w-3xl mx-auto">
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-display text-white tracking-tight leading-tight animate-fade-up" style={{ animationDelay: '100ms' }}>
-              Support{' '}
+              {t('contact.heroTitle')}{' '}
               <span className="bg-gradient-to-r from-sky-400 via-blue-400 to-sky-300 bg-clip-text text-transparent">
-                Aterkia
+                {t('contact.heroGradient')}
               </span>
             </h1>
 
             <p className="text-white/50 text-lg sm:text-xl mt-5 font-light leading-relaxed animate-fade-up max-w-xl mx-auto" style={{ animationDelay: '200ms' }}>
-              Have a collaboration idea, sponsorship offer, or want to learn more about our maritime robotics research?
+              {t('contact.heroDesc')}
             </p>
           </div>
         </div>
@@ -286,7 +299,7 @@ export default function ContactPage() {
                            <MapPin className="w-4 h-4" />
                          </div>
                          <div>
-                           <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Address</span>
+                           <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{t('contact.address')}</span>
                            <p className="text-xs text-slate-600 leading-relaxed">{siteConfig.address}</p>
                            <p className="text-[11px] font-mono text-slate-400 mt-1">{siteConfig.coords.lat}, {siteConfig.coords.lng}</p>
                          </div>
@@ -296,7 +309,7 @@ export default function ContactPage() {
                            <Clock className="w-4 h-4" />
                          </div>
                          <div>
-                           <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Operating Hours</span>
+                           <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{t('contact.operatingHours')}</span>
                            <p className="text-xs text-slate-600">{siteConfig.operatingHours}</p>
                          </div>
                        </div>
@@ -307,7 +320,7 @@ export default function ContactPage() {
 
                {/* Sponsors */}
                <div className={`pt-6 transition-all duration-500 delay-500 ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-                 <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-4">Our Sponsors</span>
+                 <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-4">{t('sponsors.title')}</span>
                  <div className="relative w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_60px,_black_calc(100%-60px),transparent_100%)]">
                    <div className="flex w-max animate-marquee hover:[animation-play-state:paused] items-center gap-10 sm:gap-14 py-2">
                      {marqueeSponsors.map((sponsor, idx) => (
@@ -336,7 +349,7 @@ export default function ContactPage() {
 
                {/* Social links */}
                <div className={`pt-2 transition-all duration-500 delay-[600ms] ${visibleCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3 px-1">Follow Us</span>
+                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3 px-1">{t('contact.followUs')}</span>
                  <div className="flex gap-2">
                    {socialLinks.map((s) => (
                      <a
@@ -364,15 +377,15 @@ export default function ContactPage() {
                     <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-500 flex items-center justify-center mx-auto animate-bounce-soft">
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
-                    <h4 className="text-xl font-black font-display text-olympic-900">Message Sent Successfully!</h4>
+                    <h4 className="text-xl font-black font-display text-olympic-900">{t('contact.formSuccessTitle')}</h4>
                     <p className="text-slate-500 text-sm max-w-sm mx-auto font-light leading-relaxed">
-                      Thank you for contacting Team Aterkia. The relevant division coordinator will follow up shortly.
+                      {t('contact.formSuccessDesc')}
                     </p>
                     <button
                       onClick={() => setIsSubmitted(false)}
                       className="px-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-sm font-semibold text-slate-700 transition-colors mt-2"
                     >
-                      Send Another Message
+                      {t('contact.formSendAnother')}
                     </button>
                   </div>
                 ) : (
@@ -386,7 +399,7 @@ export default function ContactPage() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label htmlFor="contact-name" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name / Organization</label>
+                        <label htmlFor="contact-name" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('contact.formTitle')}</label>
                         <input
                           id="contact-name"
                           type="text"
@@ -399,7 +412,7 @@ export default function ContactPage() {
                         />
                       </div>
                       <div>
-                        <label htmlFor="contact-email" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                        <label htmlFor="contact-email" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('contact.formEmail')}</label>
                         <input
                           id="contact-email"
                           type="email"
@@ -413,24 +426,24 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label htmlFor="contact-category" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Inquiry Category</label>
+                      <label htmlFor="contact-category" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('contact.formCategory')}</label>
                       <select
                         id="contact-category"
                         value={formState.category}
                         onChange={(e) => setFormState({ ...formState, category: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all"
                       >
-                        <option value="Sponsorship">Sponsorship / Partnership Offer</option>
-                        <option value="ASV Collaboration">ASV Division Collaboration</option>
-                        <option value="AUV Collaboration">AUV Division Collaboration</option>
-                        <option value="Media">Media Coverage / Interview</option>
-                        <option value="General">General Inquiry</option>
+                        <option value="Sponsorship">{t('contact.categorySponsorship')}</option>
+                        <option value="ASV Collaboration">{t('contact.categoryASV')}</option>
+                        <option value="AUV Collaboration">{t('contact.categoryAUV')}</option>
+                        <option value="Media">{t('contact.categoryMedia')}</option>
+                        <option value="General">{t('contact.categoryGeneral')}</option>
                       </select>
                     </div>
 
                     <div>
                       <div className="flex items-center justify-between gap-3 mb-2">
-                        <label htmlFor="contact-message" className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Message</label>
+                        <label htmlFor="contact-message" className="block text-xs font-bold text-slate-500 uppercase tracking-wider">{t('contact.formMessage')}</label>
                         <span className="text-[11px] text-slate-400">{formState.message.length}/2000</span>
                       </div>
                       <textarea
@@ -439,14 +452,14 @@ export default function ContactPage() {
                         required
                         rows={5}
                         maxLength={2000}
-                        placeholder="Write your message, collaboration proposal, or question... You can use **bold**, _italic_, or __underline__ markdown."
+                        placeholder={t('contact.formMessageHint')}
                         value={formState.message}
                         onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-olympic-500/20 focus:border-olympic-400 transition-all resize-none"
                       ></textarea>
                        <label htmlFor="contact-attachment" className="mt-3 flex items-center gap-2 text-xs font-semibold text-slate-500 cursor-pointer hover:text-olympic-600">
                          <Paperclip className="w-4 h-4" />
-                         <span>{attachments.length ? `${attachments.length} file${attachments.length === 1 ? '' : 's'} selected` : `Attach files (${ALLOWED_FILE_LABEL}; max 25 MB each, up to 3)`}</span>
+                         <span>{attachments.length ? `${attachments.length} file${attachments.length === 1 ? '' : 's'} selected` : t('contact.formAttachment')}</span>
                        </label>
                        <input id="contact-attachment" ref={attachmentRef} type="file" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.zip" className="sr-only" onChange={handleAttachmentsChange} />
                        {attachments.length > 0 && (
@@ -469,7 +482,7 @@ export default function ContactPage() {
                       className="w-full py-3.5 rounded-xl bg-gradient-to-r from-olympic-500 to-olympic-600 hover:from-olympic-600 hover:to-olympic-700 text-white font-bold text-sm tracking-wide shadow-lg shadow-olympic-500/25 hover:shadow-xl hover:shadow-olympic-500/30 transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       <Send className="w-4 h-4" />
-                      <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
+                      <span>{isSubmitting ? t('contact.formSending') : t('contact.formSend')}</span>
                     </button>
                   </form>
                 )}

@@ -8,6 +8,12 @@ export default function Preloader({ children }) {
   const [showSpinner, setShowSpinner] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
+  const ready = () => {
+    setShowSplash(false);
+    setShowSpinner(false);
+    setIsReady(true);
+  };
+
   // Splash hanya muncul SEKALI per session (sessionStorage). Setelah itu pakai spinner ringan.
   useEffect(() => {
     const splashSeen = sessionStorage.getItem(SPLASH_KEY);
@@ -20,13 +26,25 @@ export default function Preloader({ children }) {
       return () => clearTimeout(t);
     }
     setShowSplash(true);
-    const t1 = setTimeout(() => setIsHiding(true), 2300);
-    const t2 = setTimeout(() => {
-      sessionStorage.setItem(SPLASH_KEY, '1');
-      setShowSplash(false);
-      setIsReady(true);
-    }, 3000);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    // Branding minimal tampil penuh sambil menunggu hero video siap (atau fallback 8s).
+    // Saat siap, splash (logo + latar) memudar dalam 700ms lalu konten tampil.
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      setIsHiding(true);
+      setTimeout(() => {
+        sessionStorage.setItem(SPLASH_KEY, '1');
+        ready();
+      }, 700);
+    };
+    const t2 = setTimeout(finish, 8000);
+    const onVideoReady = () => finish();
+    window.addEventListener('hero-video-ready', onVideoReady);
+    return () => {
+      clearTimeout(t2);
+      window.removeEventListener('hero-video-ready', onVideoReady);
+    };
   }, []);
 
   return (

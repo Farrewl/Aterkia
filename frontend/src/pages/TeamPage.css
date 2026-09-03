@@ -1,0 +1,139 @@
+.humaan-team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.humaan-card-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition-delay: var(--card-delay, 0ms);
+}
+
+.humaan-card-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.humaan-member-card {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background: #0f172a;
+}
+
+.humaan-name-pill {
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  background: rgba(6, 13, 26, 0.72);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.humaan-name-pill__name {
+  display: block;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.humaan-name-pill__role {
+  display: block;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 0.15rem;
+}
+
+.org-feature-wrap {
+  position: relative;
+}
+
+.division-members__heading {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.division-members__heading span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+}
+
+.division-members__heading h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-top: 0.25rem;
+}
+
+.division-members__heading p {
+  color: #64748b;
+  font-size: 0.9rem;
+  max-width: 44rem;
+  margin: 0.5rem auto 0;
+}
+
+.subdivision-flow__heading {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.subdivision-flow__lines {
+  position: relative;
+}
+
+.subdivision-flow__line-base {
+  stroke-dasharray: 8 8;
+  animation: subdivisionFlowDash 1.2s linear infinite;
+}
+
+.subdivision-flow__line {
+  stroke-linecap: round;
+}
+
+.water-flow-line {
+  animation: waterFlow 4s ease-in-out infinite;
+}
+
+@keyframes subdivisionFlowDash {
+  to { stroke-dashoffset: -16; }
+}
+
+@keyframes waterFlow {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+.subdivision-result__story {
+  text-align: center;
+}
+
+.subdivision-result__story-stage {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #38bdf8;
+}
+
+.subdivision-result__story-title h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-top: 0.5rem;
+}
+
+.subdivision-result__story-title em {
+  font-style: normal;
+  color: #0284c7;
+}

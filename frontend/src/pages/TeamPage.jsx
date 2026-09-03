@@ -1,23 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import './TeamPage.css';
 import {
   ArrowDown,
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
-  Mail,
-  Anchor,
-  Waves,
-  Users,
-  ChevronRight,
-  X
+  Mail
 } from 'lucide-react';
 import { divisionTeams } from '../data/teamData';
 import { siteConfig } from '../data/siteConfig';
 import ImageWithFallback from '../components/ImageWithFallback';
-import OrgChart from '../components/OrgChart';
-import { TiltCard, Spotlight, useReveal } from '../components/motion';
 
-const TEAM_GROUP_PHOTO = '/images/team/aterkia-team-group.webp';
+const TEAM_GROUP_PHOTO = '/images/team/aterkia-team-group.png';
 const PRESIDENT_PHOTO = '/images/team/president/muhammad-bintang-tri-surya.webp';
 
 const teamTracks = {
@@ -26,58 +20,72 @@ const teamTracks = {
     shortLabel: 'Engineering & Robotics',
     description: 'Tim yang merancang, membangun, memprogram, dan menguji robot maritim Aterkia.',
     tags: ['ASV', 'AUV'],
-    divisions: ['ASV', 'AUV'],
-    accent: 'from-sky-500 to-cyan-400',
-    icon: Anchor,
+    divisions: ['ASV', 'AUV']
   },
   NONTECHNICAL: {
     label: 'NONTEKNIS',
     shortLabel: 'Operations & Organization',
     description: 'Tim yang menjaga administrasi, keuangan, operasional, dan representasi Aterkia.',
     tags: ['Secretary & Treasurer', 'Official'],
-    divisions: ['SECRETARY_TREASURER', 'OFFICIAL'],
-    accent: 'from-cyan-500 to-teal-400',
-    icon: Users,
-  },
+    divisions: ['SECRETARY_TREASURER', 'OFFICIAL']
+  }
 };
 
-const DIVISION_ACCENT = {
-  ASV: { label: 'Surface Robotics', grad: 'from-sky-500 to-cyan-400', ring: 'ring-sky-400/30' },
-  AUV: { label: 'Underwater Robotics', grad: 'from-cyan-500 to-blue-500', ring: 'ring-cyan-400/30' },
-  SECRETARY_TREASURER: { label: 'Secretary & Treasurer', grad: 'from-teal-500 to-emerald-400', ring: 'ring-teal-400/30' },
-  OFFICIAL: { label: 'Official Team', grad: 'from-amber-500 to-orange-400', ring: 'ring-amber-400/30' },
+const divisionPresentation = {
+  ASV: {
+    shortLabel: 'Surface Robotics',
+    description: 'Kapal otonom untuk navigasi, persepsi, dan misi di permukaan air.',
+    tags: ['Navigation', 'Hull', 'Telemetry']
+  },
+  AUV: {
+    shortLabel: 'Underwater Robotics',
+    description: 'Robot bawah air untuk persepsi visual, kendali, dan eksplorasi laut.',
+    tags: ['Vision', 'Control', 'Pressure Hull']
+  },
+  SECRETARY_TREASURER: {
+    shortLabel: 'Secretary & Treasurer',
+    description: 'Menjaga administrasi, dokumentasi, penganggaran, dan akuntabilitas tim.',
+    tags: ['Secretary', 'Finance', 'Administration']
+  },
+  OFFICIAL: {
+    shortLabel: 'Official Team',
+    description: 'Mengelola operasional, komunikasi, acara, dan representasi resmi Aterkia.',
+    tags: ['Operations', 'Relations', 'Events']
+  }
 };
 
 function DivisionGlyph({ division }) {
-  const className = 'w-9 h-9';
   if (division === 'ASV') {
     return (
-      <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
         <path d="M8 27.5h32l-5.2 8H14.1L8 27.5Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
         <path d="M18 27.5V18h12l5 9.5M24 18v-6M24 12h7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M9 40c3 0 3-2 6-2s3 2 6 2 3-2 6-2 3 2 6 2 3-2 6-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       </svg>
     );
   }
+
   if (division === 'SECRETARY_TREASURER') {
     return (
-      <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
         <path d="M12 7h24v34H12zM18 15h12M18 22h7M18 32h12" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
         <circle cx="31" cy="23" r="6" fill="currentColor" opacity=".18" />
         <path d="M31 19v8M28.5 21.5H33a2 2 0 0 1 0 4h-4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     );
   }
+
   if (division === 'OFFICIAL') {
     return (
-      <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
         <path d="m24 6 5.2 5.4 7.4-1 1.3 7.3 6.1 4.2-3.5 6.6 2 7.2-7.1 2.3-3.1 6.8-8.3-2.8-8.3 2.8-3.1-6.8-7.1-2.3 2-7.2L4 21.9l6.1-4.2 1.3-7.3 7.4 1L24 6Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
         <path d="m18.5 25 3.6 3.6 7.8-8" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     );
   }
+
   return (
-    <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden="true">
+    <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
       <path d="M9 26c0-5 6.7-9 15-9s15 4 15 9-6.7 9-15 9S9 31 9 26Z" stroke="currentColor" strokeWidth="2" />
       <path d="M39 26h5M4 26h5M20 17v-5h8v5M16 35l-3 5M32 35l3 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx="18" cy="26" r="2" fill="currentColor" />
@@ -104,70 +112,114 @@ function LinkedinIcon(props) {
   );
 }
 
-function SectionEyebrow({ children }) {
-  return (
-    <span className="inline-flex items-center gap-2 text-xs font-bold text-sky-400 uppercase tracking-widest">
-      <span className="h-px w-6 bg-gradient-to-r from-transparent to-sky-400/70" />
-      {children}
-      <span className="h-px w-6 bg-gradient-to-l from-transparent to-sky-400/70" />
-    </span>
-  );
-}
-
-function SectionTitle({ children }) {
-  return (
-    <h2 className="mt-3 text-3xl sm:text-4xl font-black font-display text-white tracking-tight">{children}</h2>
-  );
-}
-
-/* MemberCard — photo card with name pill */
-function MemberCard({ member }) {
+function MemberCard({ member, order }) {
+  const cardRef = useRef(null);
   const firstName = member.fullName.split(' ')[0];
+  const divisionName = member.division?.toLowerCase() || '';
+  const divisionKey = divisionName.includes('auv')
+    ? 'auv'
+    : divisionName.includes('nontek')
+      ? 'nontek'
+      : 'asv';
+
+  useEffect(() => {
+    const element = cardRef.current;
+    if (!element) return undefined;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      element.classList.add('is-visible');
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        element.classList.add('is-visible');
+        observer.unobserve(element);
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -4% 0px' }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <article className="reveal-zoom">
-      <div className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-white/[0.04] border border-white/10">
+    <article
+      ref={cardRef}
+      className="humaan-card-reveal"
+      style={{ '--card-delay': `${(order % 4) * 80}ms` }}
+    >
+      <div className={`humaan-member-card humaan-member-card--${divisionKey} group`}>
         <ImageWithFallback
           src={member.photo}
           alt={`Foto ${member.fullName}`}
           name={member.fullName}
           division={member.division}
           type="team"
-          className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.025]"
           containerClassName="h-full w-full"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-        <div className="absolute right-3 bottom-3 left-3 flex items-center gap-2 rounded-full border border-white/10 bg-[#05052f]/85 p-1 pr-3 backdrop-blur-sm">
-          <span className="shrink-0 truncate rounded-full bg-[#03002e] px-3 py-1.5 text-xs font-extrabold text-sky-300">
-            {firstName}
-          </span>
-          <span className="min-w-0 truncate text-[11px] font-bold text-white/80">{member.role}</span>
+
+        <div className="humaan-name-pill" title={`${member.fullName} — ${member.role}`}>
+          <span className="humaan-name-pill__name">{firstName}</span>
+          <span className="humaan-name-pill__role">{member.role}</span>
         </div>
       </div>
     </article>
   );
 }
 
-/* Profile contact row */
-function ProfileContact({ icon: Icon, label, value, href }) {
-  const content = (
-    <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-500/10 text-sky-400">
-        <Icon className="h-4 w-4" aria-hidden="true" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <small className="block text-[10px] font-bold uppercase tracking-wider text-white/35">{label}</small>
-        <strong className="block truncate text-sm font-semibold text-white/85">{value}</strong>
-      </span>
-      {href && <ArrowUpRight className="h-4 w-4 shrink-0 text-white/25" aria-hidden="true" />}
+function ScrollReveal({ children, className = '' }) {
+  const revealRef = useRef(null);
+
+  useEffect(() => {
+    const element = revealRef.current;
+    if (!element) return undefined;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      element.classList.add('is-visible');
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        element.classList.add('is-visible');
+        observer.unobserve(element);
+      },
+      { threshold: 0.14, rootMargin: '0px 0px -8% 0px' }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={revealRef} className={`org-scroll-reveal ${className}`}>
+      {children}
     </div>
   );
+}
 
-  if (!href) return content;
+function ProfileContact({ icon: Icon, label, value, href }) {
+  const content = (
+    <>
+      <span className="org-contact__icon"><Icon aria-hidden="true" /></span>
+      <span className="org-contact__copy">
+        <small>{label}</small>
+        <strong>{value}</strong>
+      </span>
+      {href && <ArrowUpRight className="org-contact__arrow" aria-hidden="true" />}
+    </>
+  );
+
+  if (!href) return <div className="org-contact org-contact--static">{content}</div>;
 
   const isExternal = href.startsWith('http');
   return (
     <a
-      className="transition-colors duration-300 hover:border-sky-400/30 hover:bg-white/[0.06]"
+      className="org-contact"
       href={href}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noreferrer' : undefined}
@@ -178,7 +230,6 @@ function ProfileContact({ icon: Icon, label, value, href }) {
   );
 }
 
-/* Featured person — portrait right/left layout */
 function FeaturedPerson({ person, division, kind, imageSide = 'right' }) {
   const isAdvisor = kind === 'advisor';
   const isSubteam = kind === 'subteam';
@@ -188,148 +239,356 @@ function FeaturedPerson({ person, division, kind, imageSide = 'right' }) {
   const contacts = [
     { icon: Mail, label: 'Email', value: email, href: `mailto:${email}` },
     { icon: InstagramIcon, label: 'Instagram', value: instagramHandle, href: instagramUrl },
-    { icon: LinkedinIcon, label: 'LinkedIn', value: person.linkedinLabel || person.fullName, href: person.linkedin || '' },
+    {
+      icon: LinkedinIcon,
+      label: 'LinkedIn',
+      value: person.linkedinLabel || person.fullName,
+      href: person.linkedin || ''
+    }
   ];
-  const imageLeft = imageSide === 'left';
 
   return (
-    <article className={`grid grid-cols-1 items-center gap-8 lg:grid-cols-2 ${imageLeft ? '' : ''} reveal`}>
-      <div className={`${imageLeft ? 'lg:order-2' : ''}`}>
-        <Spotlight color="56,189,248" opacity={0.08} className="rounded-3xl">
-          <div className="relative rounded-3xl border border-white/10 bg-white/[0.03] p-7 sm:p-9">
-            <span className="text-xs font-bold uppercase tracking-widest text-sky-400">
-              {isAdvisor ? 'Faculty & Research' : isSubteam ? 'Sub-division Leadership' : 'Division Leadership'}
-            </span>
-            <h3 className="mt-3 font-display text-2xl font-black text-white sm:text-3xl">{person.fullName}</h3>
-            <p className="mt-1 text-sm font-medium text-sky-300/80">{person.role}</p>
+    <article
+      className={`org-person org-person--${kind} org-person--image-${imageSide}`}
+      data-person={person.id}
+    >
+      <div className="org-person__copy">
+        <div className="org-person__topline">
+          <span className="org-person__eyebrow">
+            {isAdvisor ? 'Faculty & Research' : isSubteam ? 'Sub-division Leadership' : 'Division Leadership'}
+          </span>
+          <span className="org-person__topline-meta">
+            <small>Aterkia</small>
+            <i aria-hidden="true" />
+            <b>{division.name}</b>
+          </span>
+        </div>
 
-            <div className="mt-6">
-              <span className="text-xs font-bold uppercase tracking-wider text-white/35">Area keahlian</span>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {person.expertise?.map((skill) => (
-                  <span key={skill} className="rounded-lg border border-sky-500/25 bg-sky-500/10 px-3 py-1.5 text-xs font-semibold text-sky-200">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
+        <div className="org-person__identity">
+          <div className="org-person__heading">
+            <h3>{person.fullName}</h3>
+            <p className="org-person__role">{person.role}</p>
+          </div>
 
-            <div className="mt-6 border-t border-white/10 pt-6">
-              <span className="text-xs font-bold uppercase tracking-wider text-white/35">Connect</span>
-              <div className="mt-3 space-y-2.5">
-                {contacts.map((contact) => (
-                  <ProfileContact key={contact.label} {...contact} />
-                ))}
+          <div className="org-person__details-grid">
+            <div className="org-person__expertise">
+              <span><b /> Area keahlian</span>
+              <div>
+                {person.expertise?.map((skill) => <i key={skill}>{skill}</i>)}
               </div>
             </div>
           </div>
-        </Spotlight>
+
+          <div className="org-person__contact-area">
+            <div className="org-person__contact-heading">
+              <span>Connect</span>
+              <small>Email & social profiles</small>
+            </div>
+
+            <div className="org-person__contacts" aria-label={`Kontak ${person.fullName}`}>
+              {contacts.map((contact) => (
+                <ProfileContact key={contact.label} {...contact} />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className={`${imageLeft ? 'lg:order-1' : ''}`}>
-        <div className="relative mx-auto w-full max-w-sm">
-          <div className={`absolute -inset-3 rounded-[2rem] bg-gradient-to-br from-sky-500/20 via-transparent to-cyan-400/20 blur-xl ${!imageLeft ? 'lg:left-auto' : ''}`} />
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
-            <div className="relative aspect-[3/4]">
-              <ImageWithFallback
-                src={person.photo}
-                alt={`Foto ${person.fullName}`}
-                name={person.fullName}
-                division={person.division}
-                type="team"
-                className="h-full w-full object-cover object-top"
-                containerClassName="h-full w-full"
-              />
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/70 to-transparent p-4">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-white/70">Aterkia / {division.name}</span>
-                <strong className="text-sm font-black text-white">
-                  {isAdvisor ? 'Faculty Advisor' : kind === 'chair' ? 'Division Lead' : isSubteam ? person.role : 'Vice Division Lead'}
-                </strong>
-              </div>
-            </div>
+      <div className="org-person__portrait">
+        <span className="org-person__portrait-glow" aria-hidden="true" />
+        <span className="org-person__division-mark">{division.name}</span>
+        <div className="org-person__portrait-frame">
+          <ImageWithFallback
+            src={person.photo}
+            alt={`Foto ${person.fullName}`}
+            name={person.fullName}
+            division={person.division}
+            type="team"
+            className="h-full w-full object-contain object-bottom"
+            containerClassName="h-full w-full"
+          />
+          <div className="org-person__portrait-caption">
+            <span>Aterkia / {division.name}</span>
+            <strong>
+              {isAdvisor
+                ? 'Faculty Advisor'
+                : kind === 'chair'
+                  ? 'Division Lead'
+                  : isSubteam
+                    ? person.role
+                  : 'Vice Division Lead'}
+            </strong>
           </div>
+        </div>
+
+        <div className="org-person__portrait-note" aria-hidden="true">
+          <span>Marine Robotics</span>
+          <b>{division.name}</b>
         </div>
       </div>
     </article>
   );
 }
 
-/* Subdivision explorer — MECH / ELKAPRO selector + panel */
 function SubdivisionExplorer({ team }) {
   const [activeSubdivision, setActiveSubdivision] = useState(null);
+  const flowRef = useRef(null);
+  const resultFlowRef = useRef(null);
   const subdivisions = Object.values(team.subdivisions || {});
   const selectedSubdivision = subdivisions.find((item) => item.id === activeSubdivision) || null;
   const selectedMembers = selectedSubdivision
     ? team.members.filter((member) => selectedSubdivision.memberIds.includes(member.id))
     : [];
 
+  useEffect(() => {
+    setActiveSubdivision(null);
+  }, [team.id]);
+
+  useEffect(() => {
+    const flow = flowRef.current;
+    if (!flow) return undefined;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      flow.style.setProperty('--sub-heading', '1');
+      flow.style.setProperty('--sub-trunk', '1');
+      flow.style.setProperty('--sub-branches', '1');
+      flow.style.setProperty('--sub-cards', '1');
+      return undefined;
+    }
+
+    let frameId;
+    let currentProgress = 0;
+    let targetProgress = 0;
+
+    const applyProgress = (progress) => {
+      flow.style.setProperty('--sub-heading', Math.min(1, progress / 0.25).toFixed(3));
+      flow.style.setProperty('--sub-trunk', Math.max(0, Math.min(1, (progress - 0.12) / 0.34)).toFixed(3));
+      flow.style.setProperty('--sub-branches', Math.max(0, Math.min(1, (progress - 0.38) / 0.38)).toFixed(3));
+      flow.style.setProperty('--sub-cards', Math.max(0, Math.min(1, (progress - 0.62) / 0.38)).toFixed(3));
+    };
+
+    const updateTarget = () => {
+      const bounds = flow.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const distance = Math.max(viewportHeight * 0.52, bounds.height - viewportHeight * 0.04);
+      targetProgress = Math.max(0, Math.min(1, (viewportHeight * 0.96 - bounds.top) / distance));
+    };
+
+    const render = () => {
+      currentProgress += (targetProgress - currentProgress) * 0.1;
+      applyProgress(currentProgress);
+      if (Math.abs(targetProgress - currentProgress) < 0.001) {
+        currentProgress = targetProgress;
+        applyProgress(currentProgress);
+        frameId = undefined;
+        return;
+      }
+      frameId = window.requestAnimationFrame(render);
+    };
+
+    const requestUpdate = () => {
+      updateTarget();
+      if (frameId === undefined) frameId = window.requestAnimationFrame(render);
+    };
+
+    updateTarget();
+    currentProgress = targetProgress;
+    applyProgress(currentProgress);
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+
+    return () => {
+      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+    };
+  }, [team.id]);
+
+  useEffect(() => {
+    const flow = resultFlowRef.current;
+    if (!flow || !selectedSubdivision) return undefined;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      flow.style.setProperty('--sub-result-upper', '1');
+      flow.style.setProperty('--sub-result-title', '1');
+      flow.style.setProperty('--sub-result-lower', '1');
+      return undefined;
+    }
+
+    let frameId;
+    let currentProgress = 0;
+    let targetProgress = 0;
+
+    const applyProgress = (progress) => {
+      flow.style.setProperty('--sub-result-upper', Math.min(1, progress / 0.46).toFixed(3));
+      flow.style.setProperty('--sub-result-title', Math.max(0, Math.min(1, (progress - 0.27) / 0.34)).toFixed(3));
+      flow.style.setProperty('--sub-result-lower', Math.max(0, Math.min(1, (progress - 0.44) / 0.56)).toFixed(3));
+    };
+
+    const updateTarget = () => {
+      const bounds = flow.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const distance = Math.max(viewportHeight * 0.54, bounds.height - viewportHeight * 0.06);
+      targetProgress = Math.max(0, Math.min(1, (viewportHeight * 0.95 - bounds.top) / distance));
+    };
+
+    const render = () => {
+      currentProgress += (targetProgress - currentProgress) * 0.1;
+      applyProgress(currentProgress);
+      if (Math.abs(targetProgress - currentProgress) < 0.001) {
+        currentProgress = targetProgress;
+        applyProgress(currentProgress);
+        frameId = undefined;
+        return;
+      }
+      frameId = window.requestAnimationFrame(render);
+    };
+
+    const requestUpdate = () => {
+      updateTarget();
+      if (frameId === undefined) frameId = window.requestAnimationFrame(render);
+    };
+
+    updateTarget();
+    currentProgress = targetProgress;
+    applyProgress(currentProgress);
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+
+    return () => {
+      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+    };
+  }, [selectedSubdivision]);
+
   const selectSubdivision = (subdivisionId) => {
-    setActiveSubdivision((cur) => (cur === subdivisionId ? null : subdivisionId));
+    setActiveSubdivision(subdivisionId);
+    window.setTimeout(() => {
+      document.getElementById(`${team.id.toLowerCase()}-subdivision-detail`)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 360);
   };
 
   return (
-    <section className="relative rounded-3xl border border-white/10 bg-white/[0.02] p-6 sm:p-8">
-      <div className="mb-6">
-        <SectionEyebrow>Inside {team.name}</SectionEyebrow>
-        <SectionTitle>
-          Meet the <span className="gradient-text">sub teams</span>
-        </SectionTitle>
-      </div>
+    <section className="subdivision-explorer" aria-labelledby={`${team.id.toLowerCase()}-subdivision-title`}>
+      <div ref={flowRef} className="subdivision-flow">
+        <header className="subdivision-flow__heading">
+          <span>Inside {team.name}</span>
+          <h2 id={`${team.id.toLowerCase()}-subdivision-title`}>
+            Meet the <em>sub teams</em>
+          </h2>
+        </header>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {subdivisions.map((subdivision) => {
-          const isActive = activeSubdivision === subdivision.id;
-          const isInactive = activeSubdivision && !isActive;
-          return (
-            <button
-              key={subdivision.id}
-              type="button"
-              onClick={() => selectSubdivision(subdivision.id)}
-              aria-expanded={isActive}
-              className={`group rounded-2xl border p-5 text-left transition-all duration-300 ${
-                isActive
-                  ? 'border-sky-400/40 bg-sky-500/10'
-                  : 'border-white/10 bg-white/[0.03] hover:border-sky-400/25 hover:bg-white/[0.06]'
-              } ${isInactive ? 'opacity-40' : ''}`}
-            >
-              <div className="flex items-center justify-between">
-                <strong className="font-display text-lg font-black text-white">{subdivision.name}</strong>
-                <span className="flex items-center gap-1 text-xs font-bold text-sky-400">
-                  {isActive ? (<><ArrowLeft className="h-3.5 w-3.5" /> Back</>) : (<>Explore <ArrowRight className="h-3.5 w-3.5" /></>)}
+        <svg className="subdivision-flow__lines" viewBox="0 0 1000 210" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="subdivision-water-gradient" gradientUnits="userSpaceOnUse" x1="500" y1="0" x2="500" y2="210">
+              <stop offset="0" stopColor="#12c6e4" />
+              <stop offset="0.52" stopColor="#557fe9" />
+              <stop offset="1" stopColor="#ff8667" />
+            </linearGradient>
+          </defs>
+          <path className="subdivision-flow__line-base water-flow-base" style={{ stroke: 'url(#subdivision-water-gradient)' }} d="M500 0 C500 38 494 58 500 78" />
+          <path className="subdivision-flow__line-base water-flow-base" style={{ stroke: 'url(#subdivision-water-gradient)' }} d="M500 78 C468 118 390 126 250 146 C220 151 210 176 210 210" />
+          <path className="subdivision-flow__line-base water-flow-base" style={{ stroke: 'url(#subdivision-water-gradient)' }} d="M500 78 C532 118 610 126 750 146 C780 151 790 176 790 210" />
+          <path className="subdivision-flow__line subdivision-flow__line--trunk water-flow-line" style={{ stroke: 'url(#subdivision-water-gradient)' }} pathLength="1" d="M500 0 C500 38 494 58 500 78" />
+          <path className="subdivision-flow__line subdivision-flow__line--mechanical water-flow-line" style={{ stroke: 'url(#subdivision-water-gradient)' }} pathLength="1" d="M500 78 C468 118 390 126 250 146 C220 151 210 176 210 210" />
+          <path className="subdivision-flow__line subdivision-flow__line--elkapro water-flow-line" style={{ stroke: 'url(#subdivision-water-gradient)' }} pathLength="1" d="M500 78 C532 118 610 126 750 146 C780 151 790 176 790 210" />
+        </svg>
+
+        <div className={`subdivision-options ${activeSubdivision ? 'has-selection' : ''}`}>
+          {subdivisions.map((subdivision) => {
+            const isActive = activeSubdivision === subdivision.id;
+            const isCollapsed = activeSubdivision && !isActive;
+            return (
+              <button
+                key={subdivision.id}
+                type="button"
+                className={`subdivision-option subdivision-option--${subdivision.id.toLowerCase()} ${isActive ? 'is-active' : ''} ${isCollapsed ? 'is-collapsed' : ''}`}
+                onClick={() => (isActive ? setActiveSubdivision(null) : selectSubdivision(subdivision.id))}
+                aria-expanded={isActive}
+                aria-controls={`${team.id.toLowerCase()}-subdivision-detail`}
+              >
+                <span className="subdivision-option__index">{subdivision.id === 'MECHANICAL' ? 'MECH' : 'ELKA'}</span>
+                <strong>{subdivision.name}</strong>
+                <small>{subdivision.fullName}</small>
+                <p>{subdivision.description}</p>
+                <span className={`subdivision-option__action ${isActive ? 'is-back' : ''}`}>
+                  {isActive ? <><ArrowLeft /> Back</> : <>Explore <ArrowRight /></>}
                 </span>
-              </div>
-              <span className="mt-0.5 block text-xs font-semibold text-sky-300/70">{subdivision.fullName}</span>
-              <p className="mt-2 text-sm font-light leading-relaxed text-white/50">{subdivision.description}</p>
-            </button>
-          );
-        })}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {selectedSubdivision && (
-        <div id={`${team.id.toLowerCase()}-subdivision-detail`} className="mt-8 space-y-8 animate-fade-in">
-          <div className="border-t border-white/10 pt-8">
+        <div
+          key={`${team.id}-${selectedSubdivision.id}`}
+          id={`${team.id.toLowerCase()}-subdivision-detail`}
+          className={`subdivision-result subdivision-result--${selectedSubdivision.id.toLowerCase()}`}
+        >
+          <header ref={resultFlowRef} className="subdivision-result__story">
+            <div className="subdivision-result__story-stage">
+              <svg viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="subdivision-result-water-gradient" gradientUnits="userSpaceOnUse" x1="500" y1="0" x2="500" y2="560">
+                    <stop offset="0" stopColor="#12c6e4" />
+                    <stop offset="0.52" stopColor="#557fe9" />
+                    <stop offset="1" stopColor="#ff8667" />
+                  </linearGradient>
+                </defs>
+                <path
+                  className="subdivision-result__line-base water-flow-base"
+                  style={{ stroke: 'url(#subdivision-result-water-gradient)' }}
+                  d={selectedSubdivision.id === 'MECHANICAL'
+                    ? 'M500 0 C500 70 416 92 430 150 C440 192 486 214 500 240'
+                    : 'M500 0 C500 70 584 92 570 150 C560 192 514 214 500 240'}
+                />
+                <path className="subdivision-result__line-base water-flow-base" style={{ stroke: 'url(#subdivision-result-water-gradient)' }} d="M500 326 C500 374 526 404 526 458 C526 508 504 536 500 560" />
+                <path
+                  className="subdivision-result__line subdivision-result__line--upper water-flow-line"
+                  style={{ stroke: 'url(#subdivision-result-water-gradient)' }}
+                  pathLength="1"
+                  d={selectedSubdivision.id === 'MECHANICAL'
+                    ? 'M500 0 C500 70 416 92 430 150 C440 192 486 214 500 240'
+                    : 'M500 0 C500 70 584 92 570 150 C560 192 514 214 500 240'}
+                />
+                <path className="subdivision-result__line subdivision-result__line--lower water-flow-line" style={{ stroke: 'url(#subdivision-result-water-gradient)' }} pathLength="1" d="M500 326 C500 374 526 404 526 458 C526 508 504 536 500 560" />
+              </svg>
+
+              <div className="subdivision-result__story-title">
+                <h2>Meet the <em>{selectedSubdivision.name}</em> lead</h2>
+              </div>
+
+            </div>
+          </header>
+
+          <ScrollReveal className="org-feature-wrap org-feature-wrap--subteam">
             <FeaturedPerson
               person={selectedSubdivision.leader}
               division={team}
               kind="subteam"
               imageSide={selectedSubdivision.id === 'MECHANICAL' ? 'right' : 'left'}
             />
-          </div>
+          </ScrollReveal>
 
-          <div className="border-t border-white/10 pt-8">
-            <div className="mb-6">
-              <span className="text-xs font-bold uppercase tracking-widest text-sky-400">{selectedSubdivision.fullName}</span>
-              <SectionTitle>Anggota {selectedSubdivision.name} {team.name}</SectionTitle>
-              <p className="mt-2 text-sm font-light text-white/40">
-                Tim yang bekerja langsung bersama ketua sub-divisi dalam satu alur pengembangan.
-              </p>
+          <ScrollReveal className="division-members division-members--subteam">
+            <div className="division-members__heading">
+              <span>{selectedSubdivision.fullName}</span>
+              <h2>Anggota {selectedSubdivision.name} {team.name}</h2>
+              <p>Tim yang bekerja langsung bersama ketua sub-divisi dalam satu alur pengembangan.</p>
             </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {selectedMembers.map((member) => (
-                <MemberCard key={member.id} member={member} />
+            <div className="humaan-team-grid">
+              {selectedMembers.map((member, index) => (
+                <MemberCard key={member.id} member={member} order={index} />
               ))}
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       )}
     </section>
@@ -337,257 +596,764 @@ function SubdivisionExplorer({ team }) {
 }
 
 export default function TeamPage() {
-  const headerReveal = useReveal();
   const [activeTrack, setActiveTrack] = useState(null);
+  const [pendingTrack, setPendingTrack] = useState(null);
+  const [isReturningToTracks, setIsReturningToTracks] = useState(false);
   const [activeDivision, setActiveDivision] = useState(null);
+  const groupSectionRef = useRef(null);
+  const groupPhotoRef = useRef(null);
+  const groupTitleRef = useRef(null);
+  const leaderStoryRef = useRef(null);
+  const structureBridgeRef = useRef(null);
+  const divisionStoryRef = useRef(null);
+  const divisionProfileStoryRef = useRef(null);
+  const divisionLeadershipStoryRef = useRef(null);
+  const trackTransitionTimerRef = useRef(null);
   const selectedTeam = activeDivision ? divisionTeams[activeDivision] : null;
   const selectedTrack = activeTrack ? teamTracks[activeTrack] : null;
-  const showFacultyAdvisor = selectedTeam ? ['ASV', 'AUV'].includes(selectedTeam.id) : false;
   const visibleDivisions = selectedTrack
     ? selectedTrack.divisions.map((divisionId) => divisionTeams[divisionId])
     : [];
-
   const presidentContacts = [
     { icon: Mail, label: 'Email', value: siteConfig.email, href: `mailto:${siteConfig.email}` },
     { icon: InstagramIcon, label: 'Instagram', value: '@roboboat_undip', href: siteConfig.socials.instagram },
-    { icon: LinkedinIcon, label: 'LinkedIn', value: 'Aterkia RoboBoat', href: siteConfig.socials.linkedin },
+    { icon: LinkedinIcon, label: 'LinkedIn', value: 'Aterkia RoboBoat', href: siteConfig.socials.linkedin }
   ];
 
-  const handleBackToTracks = () => { setActiveDivision(null); setActiveTrack(null); };
-  const handleBackToDivisions = () => { setActiveDivision(null); };
+  const handleBackToDivisions = () => {
+    const selector = document.querySelector('.division-selector');
+    setActiveDivision(null);
+    window.requestAnimationFrame(() => {
+      selector?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
+  const handleBackToTracks = () => {
+    if (isReturningToTracks) return;
+
+    const transitionDelay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 560;
+    setIsReturningToTracks(true);
+    trackTransitionTimerRef.current = window.setTimeout(() => {
+      setActiveDivision(null);
+      setActiveTrack(null);
+      setIsReturningToTracks(false);
+      trackTransitionTimerRef.current = null;
+      window.requestAnimationFrame(() => {
+        document.querySelector('.team-track-grid')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }, transitionDelay);
+  };
+
+  const handleSelectTrack = (trackId) => {
+    if (pendingTrack) return;
+
+    const transitionDelay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620;
+    setPendingTrack(trackId);
+    trackTransitionTimerRef.current = window.setTimeout(() => {
+      setActiveDivision(null);
+      setActiveTrack(trackId);
+      setPendingTrack(null);
+      trackTransitionTimerRef.current = null;
+    }, transitionDelay);
+  };
+
+  useEffect(() => () => {
+    if (trackTransitionTimerRef.current) {
+      window.clearTimeout(trackTransitionTimerRef.current);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+
+    let frameId;
+    let isHeroVisible = true;
+    const updateGroupHero = () => {
+      frameId = undefined;
+      const section = groupSectionRef.current;
+      if (!section || !isHeroVisible) return;
+
+      const bounds = section.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, -bounds.top / window.innerHeight));
+
+      if (groupPhotoRef.current) {
+        groupPhotoRef.current.style.transform = `translate3d(0, ${progress * -42}px, 0)`;
+      }
+      if (groupTitleRef.current) {
+        groupTitleRef.current.style.transform = `translate3d(0, ${progress * -68}px, 0)`;
+      }
+    };
+
+    const onScroll = () => {
+      if (!isHeroVisible) return;
+      if (frameId === undefined) frameId = window.requestAnimationFrame(updateGroupHero);
+    };
+
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isHeroVisible = entry.isIntersecting;
+        entry.target.classList.toggle('is-parallax-active', isHeroVisible);
+        if (isHeroVisible) onScroll();
+      },
+      { rootMargin: '120px 0px' }
+    );
+
+    updateGroupHero();
+    if (groupSectionRef.current) visibilityObserver.observe(groupSectionRef.current);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    return () => {
+      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
+      visibilityObserver.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const story = leaderStoryRef.current;
+    if (!story) return undefined;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      story.style.setProperty('--leader-scroll', '1');
+      story.style.setProperty('--leader-upper', '1');
+      story.style.setProperty('--leader-vision', '1');
+      story.style.setProperty('--leader-lower', '1');
+      return undefined;
+    }
+
+    let frameId;
+    let currentProgress = 0;
+    let targetProgress = 0;
+
+    const applyLeaderProgress = (progress) => {
+      story.style.setProperty('--leader-scroll', progress.toFixed(3));
+      story.style.setProperty('--leader-upper', Math.min(1, progress / 0.56).toFixed(3));
+      story.style.setProperty('--leader-vision', Math.max(0, Math.min(1, (progress - 0.24) / 0.34)).toFixed(3));
+      story.style.setProperty('--leader-lower', Math.max(0, Math.min(1, (progress - 0.44) / 0.56)).toFixed(3));
+    };
+
+    const updateTargetProgress = () => {
+      const bounds = story.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const start = viewportHeight * 0.94;
+      const scrollDistance = Math.max(viewportHeight * 0.72, bounds.height - (viewportHeight * 0.1));
+      targetProgress = Math.max(0, Math.min(1, (start - bounds.top) / scrollDistance));
+    };
+
+    const renderLeaderStory = () => {
+      currentProgress += (targetProgress - currentProgress) * 0.11;
+
+      if (Math.abs(targetProgress - currentProgress) < 0.001) {
+        currentProgress = targetProgress;
+        applyLeaderProgress(currentProgress);
+        frameId = undefined;
+        return;
+      }
+
+      applyLeaderProgress(currentProgress);
+      frameId = window.requestAnimationFrame(renderLeaderStory);
+    };
+
+    const requestUpdate = () => {
+      updateTargetProgress();
+      if (frameId === undefined) frameId = window.requestAnimationFrame(renderLeaderStory);
+    };
+
+    updateTargetProgress();
+    currentProgress = targetProgress;
+    applyLeaderProgress(currentProgress);
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+
+    return () => {
+      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+    };
+  }, []);
+
+  useEffect(() => {
+    const bridge = structureBridgeRef.current;
+    if (!bridge) return undefined;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      bridge.classList.add('is-visible');
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        bridge.classList.toggle('is-visible', entry.isIntersecting);
+      },
+      { threshold: 0.04, rootMargin: '0px 0px 28% 0px' }
+    );
+
+    observer.observe(bridge);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const story = divisionStoryRef.current;
+    if (!story || !activeTrack) return undefined;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      story.style.setProperty('--division-story-title', '1');
+      story.style.setProperty('--division-story-trunk', '1');
+      story.style.setProperty('--division-story-branches', '1');
+      return undefined;
+    }
+
+    let frameId;
+    let currentProgress = 0;
+    let targetProgress = 0;
+
+    const applyProgress = (progress) => {
+      story.style.setProperty('--division-story-title', '1');
+      story.style.setProperty('--division-story-trunk', Math.max(0, Math.min(1, (progress - 0.02) / 0.3)).toFixed(3));
+      story.style.setProperty('--division-story-branches', Math.max(0, Math.min(1, (progress - 0.25) / 0.65)).toFixed(3));
+    };
+
+    const updateTarget = () => {
+      const bounds = story.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const start = viewportHeight * 0.96;
+      const distance = Math.max(viewportHeight * 0.56, bounds.height - viewportHeight * 0.06);
+      targetProgress = Math.max(0, Math.min(1, (start - bounds.top) / distance));
+    };
+
+    const render = () => {
+      currentProgress += (targetProgress - currentProgress) * 0.1;
+      applyProgress(currentProgress);
+
+      if (Math.abs(targetProgress - currentProgress) < 0.001) {
+        currentProgress = targetProgress;
+        applyProgress(currentProgress);
+        frameId = undefined;
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(render);
+    };
+
+    const requestUpdate = () => {
+      updateTarget();
+      if (frameId === undefined) frameId = window.requestAnimationFrame(render);
+    };
+
+    updateTarget();
+    currentProgress = targetProgress;
+    applyProgress(currentProgress);
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+
+    const scrollTimer = window.setTimeout(() => {
+      document.getElementById('division-options')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      requestUpdate();
+    }, 80);
+
+    return () => {
+      window.clearTimeout(scrollTimer);
+      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+    };
+  }, [activeTrack]);
+
+  useEffect(() => {
+    const story = divisionProfileStoryRef.current;
+    if (!story || !activeDivision) return undefined;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      story.style.setProperty('--profile-intro', '1');
+      story.style.setProperty('--profile-upper', '1');
+      story.style.setProperty('--profile-advisor', '1');
+      story.style.setProperty('--profile-lower', '1');
+      return undefined;
+    }
+
+    let frameId;
+    let currentProgress = 0;
+    let targetProgress = 0;
+
+    const applyProgress = (progress) => {
+      story.style.setProperty('--profile-intro', Math.min(1, progress / 0.24).toFixed(3));
+      story.style.setProperty('--profile-upper', Math.max(0, Math.min(1, (progress - 0.1) / 0.4)).toFixed(3));
+      story.style.setProperty('--profile-advisor', Math.max(0, Math.min(1, (progress - 0.34) / 0.32)).toFixed(3));
+      story.style.setProperty('--profile-lower', Math.max(0, Math.min(1, (progress - 0.46) / 0.54)).toFixed(3));
+    };
+
+    const updateTarget = () => {
+      const bounds = story.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const entryLine = viewportHeight * 0.95;
+      const distance = Math.max(viewportHeight * 0.6, bounds.height - viewportHeight * 0.08);
+
+      // Start as soon as the story enters the viewport, then reveal every
+      // segment in the same top-to-bottom direction as the reading flow.
+      targetProgress = Math.max(0, Math.min(1, (entryLine - bounds.top) / distance));
+    };
+
+    const render = () => {
+      currentProgress += (targetProgress - currentProgress) * 0.1;
+      applyProgress(currentProgress);
+      if (Math.abs(targetProgress - currentProgress) < 0.001) {
+        currentProgress = targetProgress;
+        applyProgress(currentProgress);
+        frameId = undefined;
+        return;
+      }
+      frameId = window.requestAnimationFrame(render);
+    };
+
+    const requestUpdate = () => {
+      updateTarget();
+      if (frameId === undefined) frameId = window.requestAnimationFrame(render);
+    };
+
+    updateTarget();
+    currentProgress = targetProgress;
+    applyProgress(currentProgress);
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+
+    return () => {
+      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+    };
+  }, [activeDivision]);
+
+  useEffect(() => {
+    const story = divisionLeadershipStoryRef.current;
+    if (!story || !activeDivision) return undefined;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      story.style.setProperty('--lead-upper', '1');
+      story.style.setProperty('--lead-title', '1');
+      story.style.setProperty('--lead-lower', '1');
+      return undefined;
+    }
+
+    let frameId;
+    let currentProgress = 0;
+    let targetProgress = 0;
+
+    const applyProgress = (progress) => {
+      story.style.setProperty('--lead-upper', Math.min(1, progress / 0.46).toFixed(3));
+      story.style.setProperty('--lead-title', Math.max(0, Math.min(1, (progress - 0.28) / 0.34)).toFixed(3));
+      story.style.setProperty('--lead-lower', Math.max(0, Math.min(1, (progress - 0.44) / 0.56)).toFixed(3));
+    };
+
+    const updateTarget = () => {
+      const bounds = story.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const entryLine = viewportHeight * 0.95;
+      const distance = Math.max(viewportHeight * 0.56, bounds.height - viewportHeight * 0.06);
+      targetProgress = Math.max(0, Math.min(1, (entryLine - bounds.top) / distance));
+    };
+
+    const render = () => {
+      currentProgress += (targetProgress - currentProgress) * 0.095;
+      applyProgress(currentProgress);
+      if (Math.abs(targetProgress - currentProgress) < 0.001) {
+        currentProgress = targetProgress;
+        applyProgress(currentProgress);
+        frameId = undefined;
+        return;
+      }
+      frameId = window.requestAnimationFrame(render);
+    };
+
+    const requestUpdate = () => {
+      updateTarget();
+      if (frameId === undefined) frameId = window.requestAnimationFrame(render);
+    };
+
+    updateTarget();
+    currentProgress = targetProgress;
+    applyProgress(currentProgress);
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+
+    return () => {
+      if (frameId !== undefined) window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+    };
+  }, [activeDivision]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#0c4a6e] via-olympic-950 to-[#060d1a]">
-      {/* ── Hero ── */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-[15%] left-[55%] h-72 w-72 rounded-full bg-sky-500/8 blur-3xl" />
-          <div className="absolute bottom-[10%] left-[10%] h-56 w-56 rounded-full bg-cyan-400/6 blur-3xl" />
-        </div>
+    <main className="team-page">
+      <section ref={groupSectionRef} className="team-group-section" aria-labelledby="team-title">
+        <div className="team-group-stage">
 
-        <div className="relative z-10 mx-auto max-w-5xl px-4 pt-20 pb-16 text-center sm:px-6 sm:pt-28">
-          <h1 className="text-4xl font-black font-display text-white tracking-tight sm:text-6xl animate-fade-up">
-            <span className="block text-2xl font-light text-white/40 sm:text-3xl">We are</span>
-            <span className="gradient-text text-5xl sm:text-7xl">Aterkia</span>
-          </h1>
+          <div ref={groupTitleRef} className="team-group-title-motion">
+            <h1 id="team-title" className="team-group-title">
+              <span className="team-group-title__lead">We are</span>
+              <span className="team-group-title__brand">Aterkia</span>
+            </h1>
+          </div>
 
-          <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-sky-900/40 animate-fade-up" style={{ animationDelay: '150ms' }}>
+          <div ref={groupPhotoRef} className="team-group-photo-motion">
             <img
               src={TEAM_GROUP_PHOTO}
               alt="Tim Aterkia bersama setelah meraih penghargaan"
               decoding="async"
               fetchPriority="high"
-              width="1619"
-              height="971"
-              className="w-full object-cover"
+              className="team-group-photo"
             />
           </div>
 
-          <a href="#meet-the-team" className="mt-10 inline-flex items-center gap-2 text-sm font-semibold text-sky-300 transition-colors hover:text-sky-200">
-            Meet the team
-            <ArrowDown className="h-4 w-4" />
-          </a>
+          <div className="team-hero-footer ">
+            <a href="#meet-the-team" aria-label="View division options">
+              <span>Meet the team</span>
+              <ArrowDown />
+            </a>
+          </div>
         </div>
+
       </section>
 
-      {/* ── Org chart ── */}
-      <OrgChart />
-
-      {/* ── Meet the team ── */}
-      <section id="meet-the-team" className="relative bg-[#060d1a] py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {/* President */}
-          <div ref={headerReveal} className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-center">
-            <Spotlight color="56,189,248" opacity={0.08} className="rounded-3xl">
-              <div className="relative rounded-3xl border border-white/10 bg-white/[0.03] p-7 sm:p-9">
-                <span className="text-xs font-bold uppercase tracking-widest text-amber-400/90">President of Aterkia</span>
-                <h2 className="mt-3 font-display text-3xl font-black text-white sm:text-4xl">
-                  Muhammad Bintang Tri Surya
+      <section id="meet-the-team" className="division-selector" aria-label="Pilih divisi Aterkia">
+        <div className="division-selector__intro division-selector__intro--president">
+          <header ref={leaderStoryRef} className="team-structure__header">
+            <div className="team-leader-story-stage">
+              <div className="team-structure__heading-copy">
+                <h2>
+                  <span>Meet the team </span><em>leader</em>
                 </h2>
-                <p className="mt-2 text-sm font-medium text-sky-300/80">Electrical Engineering ’23</p>
-
-                <div className="mt-6">
-                  <span className="text-xs font-bold uppercase tracking-wider text-white/35">Leadership focus</span>
-                  <p className="mt-2 text-sm font-light leading-relaxed text-white/55">
-                    Menyatukan tim teknis dan nonteknis agar bergerak dalam satu visi.
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {['Technical Direction', 'Organization', 'Team Development'].map((f) => (
-                      <span key={f} className="rounded-lg border border-amber-400/25 bg-amber-400/10 px-3 py-1.5 text-xs font-semibold text-amber-200/90">
-                        {f}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-6 border-t border-white/10 pt-6">
-                  <span className="text-xs font-bold uppercase tracking-wider text-white/35">Connect</span>
-                  <div className="mt-3 space-y-2.5">
-                    {presidentContacts.map((contact) => (
-                      <ProfileContact key={contact.label} {...contact} />
-                    ))}
-                  </div>
-                </div>
               </div>
-            </Spotlight>
 
-            <div className="mx-auto w-full max-w-sm">
-              <div className="relative -inset-3 rounded-[2rem] bg-gradient-to-br from-amber-500/15 via-transparent to-sky-400/15 blur-xl" />
-              <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
-                <div className="relative aspect-[3/4]">
-                  <ImageWithFallback
-                    src={PRESIDENT_PHOTO}
-                    alt="Muhammad Bintang Tri Surya, President Aterkia"
-                    name="Muhammad Bintang Tri Surya"
-                    division="Leadership"
-                    type="team"
-                    className="h-full w-full object-cover object-top"
-                    containerClassName="h-full w-full"
+              <div className="team-leader-flow">
+                <svg viewBox="0 0 180 620" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="leader-scroll-gradient" gradientUnits="userSpaceOnUse" x1="90" y1="0" x2="90" y2="620">
+                      <stop offset="0" stopColor="#1cc8e7" />
+                      <stop offset="0.5" stopColor="#6379ef" />
+                      <stop offset="1" stopColor="#ff8f69" />
+                    </linearGradient>
+                  </defs>
+                  <path className="team-leader-flow__path-base water-flow-base" style={{ stroke: 'url(#leader-scroll-gradient)' }} d="M90 0 C90 88 108 108 108 158 C108 194 94 204 90 220" />
+                  <line className="team-leader-flow__path-base water-flow-base" style={{ stroke: 'url(#leader-scroll-gradient)' }} x1="90" y1="220" x2="90" y2="322" />
+                  <path
+                    className="team-leader-flow__path team-leader-flow__path--upper water-flow-line"
+                    pathLength="1"
+                    d="M90 0 C90 88 108 108 108 158 C108 194 94 204 90 220"
                   />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-center">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/70">Aterkia / Leadership</span>
-                    <strong className="block text-sm font-black text-white">President</strong>
+                  <path className="team-leader-flow__path-base water-flow-base" style={{ stroke: 'url(#leader-scroll-gradient)' }} d="M90 322 C88 382 72 408 72 474 C72 548 88 568 90 620" />
+                  <path
+                    className="team-leader-flow__path team-leader-flow__path--lower water-flow-line"
+                    pathLength="1"
+                    d="M90 322 C88 382 72 408 72 474 C72 548 88 568 90 620"
+                  />
+                </svg>
+                <strong className="team-leader-flow__vision">
+                  <span>One </span><em className="is-vision">vision</em>
+                  <span> One </span><em className="is-direction">direction</em>
+                </strong>
+              </div>
+            </div>
+          </header>
+
+          <article className="team-president" aria-labelledby="team-president-name">
+            <span className="team-president__surface" aria-hidden="true" />
+            <span className="team-president__signal team-president__signal--one" aria-hidden="true" />
+            <span className="team-president__signal team-president__signal--two" aria-hidden="true" />
+
+            <figure className="team-president__portrait">
+              <img
+                src={PRESIDENT_PHOTO}
+                alt="Muhammad Bintang Tri Surya, President Aterkia"
+                loading="lazy"
+                decoding="async"
+              />
+              <span className="team-president__portrait-shade" aria-hidden="true" />
+              <figcaption>
+                <span>Aterkia / Leadership</span>
+                <strong>President</strong>
+              </figcaption>
+            </figure>
+
+            <div className="team-president__profile">
+              <div className="team-president__identity">
+                <p>President of Aterkia</p>
+                <h2 id="team-president-name">
+                  <span>Muhammad Bintang Tri Surya</span>
+                </h2>
+                <div className="team-president__role-line">
+                  <div>
+                    <strong>Electrical Engineering ’23</strong>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Show track selector OR division options */}
-          {!activeTrack ? (
-            <div className="mt-16 grid grid-cols-1 gap-5 sm:grid-cols-2" aria-label="Pilih jalur tim">
-              {Object.entries(teamTracks).map(([trackId, track]) => {
-                const Icon = track.icon;
-                const TrackLink = TiltCard;
-                return (
-                  <TrackLink key={trackId} maxTilt={4} className="h-full">
-                    <button
-                      type="button"
-                      onClick={() => { setActiveDivision(null); setActiveTrack(trackId); }}
-                      aria-controls="division-options"
-                      className="group relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-7 text-left transition-all duration-300 hover:border-sky-400/30 hover:bg-white/[0.06]"
-                    >
-                      <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${track.accent}`} />
-                      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 group-hover:scale-110 transition-transform duration-300">
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <small className="text-xs font-bold uppercase tracking-widest text-sky-400">{track.shortLabel}</small>
-                      <strong className="mt-1 block font-display text-2xl font-black text-white">{track.label}</strong>
-                      <p className="mt-2 text-sm font-light leading-relaxed text-white/50">{track.description}</p>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {track.tags.map((tag) => (
-                          <span key={tag} className="rounded-lg bg-white/5 px-3 py-1 text-xs font-semibold text-white/60">{tag}</span>
-                        ))}
-                      </div>
-                      <span className="mt-5 inline-flex items-center gap-1 text-sm font-bold text-sky-400">
-                        Explore <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </span>
-                    </button>
-                  </TrackLink>
-                );
-              })}
-            </div>
-          ) : (
-            <div id="division-options" className="mt-16 animate-fade-in">
-              {/* Track chapter header */}
-              <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={handleBackToTracks}
-                    className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-white/70 transition-colors hover:border-sky-400/30 hover:text-white"
-                  >
-                    <ArrowLeft className="h-4 w-4" /> Back
-                  </button>
-                  <div>
-                    <small className="text-xs font-bold uppercase tracking-widest text-sky-400">{selectedTrack.shortLabel}</small>
-                    <h3 className="font-display text-2xl font-black text-white">{selectedTrack.label}</h3>
-                  </div>
+              <div className="team-president__leadership">
+                <span>Leadership focus</span>
+                <p>
+                  Menyatukan tim teknis dan nonteknis agar bergerak dalam satu visi.
+                </p>
+                <div className="team-president__focus-list" aria-label="Fokus kepemimpinan president">
+                  <span>Technical Direction</span>
+                  <span>Organization</span>
+                  <span>Team Development</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {selectedTrack.tags.map((tag) => (
-                    <span key={tag} className="rounded-lg bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-200">{tag}</span>
+              </div>
+
+              <div className="team-president__connect">
+                <div className="team-president__connect-heading">
+                  <span>Connect</span>
+                  <small>Official contact & social profiles</small>
+                </div>
+                <div className="team-president__contacts">
+                  {presidentContacts.map((contact) => (
+                    <ProfileContact key={contact.label} {...contact} />
                   ))}
                 </div>
               </div>
+            </div>
+          </article>
 
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                {visibleDivisions.map((division) => {
-                  const isActive = activeDivision === division.id;
-                  const isInactive = activeDivision && !isActive;
-                  const accent = DIVISION_ACCENT[division.id];
-                  return (
+          <div
+            ref={structureBridgeRef}
+            className={`team-structure__bridge ${selectedTrack ? 'is-selected' : ''}`}
+            aria-hidden="true"
+          >
+            <svg className="team-structure__bridge-lines" viewBox="0 0 1000 500" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="team-structure-water-gradient" gradientUnits="userSpaceOnUse" x1="500" y1="0" x2="500" y2="500">
+                  <stop offset="0" stopColor="#12c6e4" />
+                  <stop offset="0.52" stopColor="#557fe9" />
+                  <stop offset="1" stopColor="#ff8667" />
+                </linearGradient>
+              </defs>
+              <path className="team-structure__bridge-line-base water-flow-base" style={{ stroke: 'url(#team-structure-water-gradient)' }} d="M500 0 C500 52 490 92 500 132" />
+              <path className="team-structure__bridge-line team-structure__bridge-line--trunk water-flow-line" style={{ stroke: 'url(#team-structure-water-gradient)' }} pathLength="1" d="M500 0 C500 52 490 92 500 132" />
+              {!selectedTrack ? (
+                <>
+                  <path className="team-structure__bridge-line-base water-flow-base" style={{ stroke: 'url(#team-structure-water-gradient)' }} d="M500 350 C482 390 435 408 365 427 C306 444 270 468 250 500" />
+                  <path className="team-structure__bridge-line-base water-flow-base" style={{ stroke: 'url(#team-structure-water-gradient)' }} d="M500 350 C518 390 565 408 635 427 C694 444 730 468 750 500" />
+                  <path className="team-structure__bridge-line team-structure__bridge-line--left water-flow-line" style={{ stroke: 'url(#team-structure-water-gradient)' }} pathLength="1" d="M500 350 C482 390 435 408 365 427 C306 444 270 468 250 500" />
+                  <path className="team-structure__bridge-line team-structure__bridge-line--right water-flow-line" style={{ stroke: 'url(#team-structure-water-gradient)' }} pathLength="1" d="M500 350 C518 390 565 408 635 427 C694 444 730 468 750 500" />
+                  <path className="team-structure__bridge-line team-structure__bridge-line--mobile water-flow-line" style={{ stroke: 'url(#team-structure-water-gradient)' }} pathLength="1" d="M500 350 C494 404 506 451 500 500" />
+                </>
+              ) : (
+                <>
+                  <path className="team-structure__bridge-line-base water-flow-base" style={{ stroke: 'url(#team-structure-water-gradient)' }} d="M500 350 C494 404 506 451 500 500" />
+                  <path className="team-structure__bridge-line team-structure__bridge-line--single water-flow-line" style={{ stroke: 'url(#team-structure-water-gradient)' }} pathLength="1" d="M500 350 C494 404 506 451 500 500" />
+                </>
+              )}
+            </svg>
+            <div className="team-structure__bridge-node">
+              <strong><span>Team </span><em>structure</em></strong>
+            </div>
+          </div>
+        </div>
+
+        {!activeTrack ? (
+          <div
+            className={`team-track-grid ${pendingTrack ? 'is-transitioning' : ''}`}
+            aria-label="Pilih jalur tim"
+            aria-busy={Boolean(pendingTrack)}
+          >
+            {Object.entries(teamTracks).map(([trackId, track]) => (
+              <button
+                key={trackId}
+                type="button"
+                className={`team-track-card team-track-card--${trackId.toLowerCase()} ${pendingTrack === trackId ? 'is-entering' : pendingTrack ? 'is-leaving' : ''}`}
+                onClick={() => handleSelectTrack(trackId)}
+                aria-controls="division-options"
+              >
+                <span className="team-track-card__surface" aria-hidden="true" />
+                <span className="team-track-card__rail" aria-hidden="true" />
+                <span className="team-track-card__copy">
+                  <small>{track.shortLabel}</small>
+                  <strong>{track.label}</strong>
+                  <span>{track.description}</span>
+                  <span className="team-track-card__tags">
+                    {track.tags.map((tag) => <i key={tag}>{tag}</i>)}
+                  </span>
+                </span>
+                <span className="team-track-card__action">Explore <ArrowRight /></span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div
+            id="division-options"
+            className={`division-path division-path--${activeTrack.toLowerCase()} ${isReturningToTracks ? 'is-returning' : ''}`}
+          >
+            <article className={`track-chapter-card track-chapter-card--${activeTrack.toLowerCase()}`}>
+              <span className="track-chapter-card__surface" aria-hidden="true" />
+              <span className="track-chapter-card__rail" aria-hidden="true" />
+              <button
+                type="button"
+                className="track-chapter-card__back"
+                onClick={handleBackToTracks}
+                disabled={isReturningToTracks}
+              >
+                <ArrowLeft />
+                <span>Back</span>
+              </button>
+              <div className="track-chapter-card__copy">
+                <small>{selectedTrack.shortLabel}</small>
+                <h2>{selectedTrack.label}</h2>
+                <p>{selectedTrack.description}</p>
+                <span className="track-chapter-card__tags">
+                  {selectedTrack.tags.map((tag) => <i key={tag}>{tag}</i>)}
+                </span>
+              </div>
+              <span className="track-chapter-card__flow-origin" aria-hidden="true" />
+            </article>
+
+            <header ref={divisionStoryRef} className="division-route-story">
+              <div className="division-route-story__stage">
+                <div className="division-route-story__heading">
+                  <h2>Choose your <em>division</em></h2>
+                </div>
+
+                <svg className="division-route-story__flow" viewBox="0 0 1000 460" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="division-route-water-gradient" gradientUnits="userSpaceOnUse" x1="500" y1="0" x2="500" y2="460">
+                      <stop offset="0" stopColor="#12c6e4" />
+                      <stop offset="0.52" stopColor="#557fe9" />
+                      <stop offset="1" stopColor="#ff8667" />
+                    </linearGradient>
+                  </defs>
+                  <path className="division-route-story__line-base water-flow-base" style={{ stroke: 'url(#division-route-water-gradient)' }} d="M500 0 C500 62 486 102 500 158" />
+                  <path className="division-route-story__line-base water-flow-base" style={{ stroke: 'url(#division-route-water-gradient)' }} d="M500 158 C474 236 386 264 250 304 C220 313 210 370 210 460" />
+                  <path className="division-route-story__line-base water-flow-base" style={{ stroke: 'url(#division-route-water-gradient)' }} d="M500 158 C526 236 614 264 750 304 C780 313 790 370 790 460" />
+                  <path className="division-route-story__line division-route-story__line--trunk water-flow-line" style={{ stroke: 'url(#division-route-water-gradient)' }} pathLength="1" d="M500 0 C500 62 486 102 500 158" />
+                  <path className="division-route-story__line division-route-story__line--left water-flow-line" style={{ stroke: 'url(#division-route-water-gradient)' }} pathLength="1" d="M500 158 C474 236 386 264 250 304 C220 313 210 370 210 460" />
+                  <path className="division-route-story__line division-route-story__line--right water-flow-line" style={{ stroke: 'url(#division-route-water-gradient)' }} pathLength="1" d="M500 158 C526 236 614 264 750 304 C780 313 790 370 790 460" />
+                </svg>
+              </div>
+            </header>
+
+            <div className={`division-split ${activeDivision ? 'has-selection' : ''}`}>
+              {visibleDivisions.map((division) => {
+                const isActive = activeDivision === division.id;
+                const isCollapsed = activeDivision && !isActive;
+                const presentation = divisionPresentation[division.id];
+
+                return (
+                  <React.Fragment key={division.id}>
                     <button
-                      key={division.id}
                       type="button"
                       onClick={() => (isActive ? handleBackToDivisions() : setActiveDivision(division.id))}
                       aria-pressed={isActive}
                       aria-controls="division-detail"
-                      className={`group relative overflow-hidden rounded-3xl border p-6 text-left transition-all duration-300 ${
-                        isActive
-                          ? 'border-sky-400/40 bg-sky-500/10'
-                          : 'border-white/10 bg-white/[0.03] hover:border-sky-400/25 hover:bg-white/[0.06]'
-                      } ${isInactive ? 'opacity-40' : ''}`}
+                      className={`division-choice division-choice--${division.id.toLowerCase()} ${isActive ? 'is-active' : ''} ${isCollapsed ? 'is-collapsed' : ''}`}
                     >
-                      <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${accent.grad} text-white shadow-lg`}>
+                      <span className="division-choice__surface" aria-hidden="true" />
+                      <span className="division-choice__icon">
                         <DivisionGlyph division={division.id} />
-                      </div>
-                      <strong className="font-display text-2xl font-black text-white">{division.name}</strong>
-                      <span className="mt-0.5 block text-sm font-semibold text-sky-300/80">{accent.label}</span>
-                      <p className="mt-2 text-sm font-light leading-relaxed text-white/50">{division.tagline}</p>
-                      <span className={`mt-4 inline-flex items-center gap-1 text-sm font-bold ${isActive ? 'text-white' : 'text-sky-400'}`}>
-                        {isActive ? (<><ArrowLeft className="h-4 w-4" /> Back</>) : (<>Explore <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></>)}
+                      </span>
+                      <span className="division-choice__content">
+                        <strong>{division.name}</strong>
+                        <span>{presentation.shortLabel}</span>
+                        <small>{presentation.description}</small>
+                      </span>
+                      <span className={`division-choice__action ${isActive ? 'is-back' : ''}`}>
+                        {isActive ? (
+                          <><ArrowLeft /> Back</>
+                        ) : (
+                          <>Explore <ArrowRight /></>
+                        )}
                       </span>
                     </button>
-                  );
-                })}
-              </div>
+
+                  </React.Fragment>
+                );
+              })}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </section>
 
-      {/* ── Division detail ── */}
       {selectedTeam && (
-        <section key={selectedTeam.id} id="division-detail" className="relative border-t border-white/5 bg-gradient-to-b from-[#060d1a] to-[#0a1628] py-16 animate-fade-in">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-12">
-              <SectionEyebrow>Discover {selectedTeam.name}</SectionEyebrow>
-              <SectionTitle>
-                Meet the <span className="gradient-text">{selectedTeam.name}</span> team
-              </SectionTitle>
-              <p className="mt-2 max-w-2xl text-sm font-light leading-relaxed text-white/40">{selectedTeam.tagline}</p>
-            </div>
-
-            {showFacultyAdvisor && (
-              <div className="mb-4">
-                <FeaturedPerson person={selectedTeam.advisor} division={selectedTeam} kind="advisor" imageSide="right" />
+        <section key={selectedTeam.id} id="division-detail" className={`division-detail division-detail--${selectedTeam.id.toLowerCase()}`}>
+          <header ref={divisionProfileStoryRef} className="division-profile-story">
+            <div className="division-profile-story__stage">
+              <div className="division-profile-story__intro">
+                <h2>Discover <em>{selectedTeam.name}</em></h2>
+                <p>{selectedTeam.tagline}</p>
               </div>
-            )}
 
-            <div className="mt-12">
-              <FeaturedPerson person={selectedTeam.chair} division={selectedTeam} kind="chair" imageSide="right" />
-            </div>
+              <div className="division-profile-story__flow">
+                <svg viewBox="0 0 180 640" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="division-profile-water-gradient" gradientUnits="userSpaceOnUse" x1="90" y1="0" x2="90" y2="640">
+                      <stop offset="0" stopColor="#12c6e4" />
+                      <stop offset="0.52" stopColor="#557fe9" />
+                      <stop offset="1" stopColor="#ff8667" />
+                    </linearGradient>
+                  </defs>
+                  <path className="division-profile-story__line-base water-flow-base" style={{ stroke: 'url(#division-profile-water-gradient)' }} d="M90 0 C90 72 108 104 108 164 C108 204 96 224 90 244" />
+                  <path className="division-profile-story__line-base water-flow-base" style={{ stroke: 'url(#division-profile-water-gradient)' }} d="M90 396 C84 430 72 452 72 514 C72 578 88 604 90 640" />
+                  <path className="division-profile-story__line division-profile-story__line--upper water-flow-line" style={{ stroke: 'url(#division-profile-water-gradient)' }} pathLength="1" d="M90 0 C90 72 108 104 108 164 C108 204 96 224 90 244" />
+                  <path className="division-profile-story__line division-profile-story__line--lower water-flow-line" style={{ stroke: 'url(#division-profile-water-gradient)' }} pathLength="1" d="M90 396 C84 430 72 452 72 514 C72 578 88 604 90 640" />
+                </svg>
 
-            {selectedTeam.subdivisions ? (
-              <div className="mt-12">
-                <SubdivisionExplorer team={selectedTeam} />
-              </div>
-            ) : (
-              <div className="mt-12 border-t border-white/10 pt-10">
-                <div className="mb-6">
-                  <span className="text-xs font-bold uppercase tracking-widest text-sky-400">Our crew</span>
-                  <SectionTitle>Anggota divisi {selectedTeam.name}</SectionTitle>
-                  <p className="mt-2 text-sm font-light text-white/40">Tim lintas disiplin yang bekerja sebagai satu kesatuan.</p>
-                </div>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                  {selectedTeam.members.map((member) => (
-                    <MemberCard key={member.id} member={member} />
-                  ))}
+                <div className="division-profile-story__advisor-title">
+                  <h2>Meet the <em>faculty advisor</em></h2>
+                  <p>The guiding mind behind {selectedTeam.name} research, safety, and engineering direction.</p>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          </header>
+
+          <ScrollReveal className="org-feature-wrap org-feature-wrap--advisor">
+            <FeaturedPerson person={selectedTeam.advisor} division={selectedTeam} kind="advisor" imageSide="right" />
+          </ScrollReveal>
+
+          <header ref={divisionLeadershipStoryRef} className="division-leadership-story">
+            <div className="division-leadership-story__stage">
+              <svg viewBox="0 0 180 620" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="division-leadership-water-gradient" gradientUnits="userSpaceOnUse" x1="90" y1="0" x2="90" y2="620">
+                    <stop offset="0" stopColor="#12c6e4" />
+                    <stop offset="0.52" stopColor="#557fe9" />
+                    <stop offset="1" stopColor="#ff8667" />
+                  </linearGradient>
+                </defs>
+                <path className="division-leadership-story__line-base water-flow-base" style={{ stroke: 'url(#division-leadership-water-gradient)' }} d="M90 0 C90 72 64 98 64 166 C64 218 82 240 90 264" />
+                <path className="division-leadership-story__line-base water-flow-base" style={{ stroke: 'url(#division-leadership-water-gradient)' }} d="M90 356 C98 392 120 422 120 492 C120 550 98 586 90 620" />
+                <path className="division-leadership-story__line division-leadership-story__line--upper water-flow-line" style={{ stroke: 'url(#division-leadership-water-gradient)' }} pathLength="1" d="M90 0 C90 72 64 98 64 166 C64 218 82 240 90 264" />
+                <path className="division-leadership-story__line division-leadership-story__line--lower water-flow-line" style={{ stroke: 'url(#division-leadership-water-gradient)' }} pathLength="1" d="M90 356 C98 392 120 422 120 492 C120 550 98 586 90 620" />
+              </svg>
+
+              <div className="division-leadership-story__title">
+                <h2>Meet the <em>{selectedTeam.name}</em> leader</h2>
+              </div>
+            </div>
+          </header>
+
+          <ScrollReveal className="org-feature-wrap org-feature-wrap--chair">
+            <FeaturedPerson person={selectedTeam.chair} division={selectedTeam} kind="chair" imageSide="right" />
+          </ScrollReveal>
+
+          {selectedTeam.subdivisions ? (
+            <SubdivisionExplorer team={selectedTeam} />
+          ) : (
+            <ScrollReveal className="division-members">
+              <div className="division-members__heading">
+                <span>Our crew</span>
+                <h2>Anggota divisi {selectedTeam.name}</h2>
+                <p>Tim lintas disiplin yang bekerja sebagai satu kesatuan.</p>
+              </div>
+              <div className="humaan-team-grid">
+                {selectedTeam.members.map((member, index) => (
+                  <MemberCard key={member.id} member={member} order={index} />
+                ))}
+              </div>
+            </ScrollReveal>
+          )}
         </section>
       )}
     </main>

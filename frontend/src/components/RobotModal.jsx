@@ -56,12 +56,6 @@ export default function RobotModal({ robot, onClose }) {
               <ImageWithFallback src={robot.image} alt={robot.name} name={robot.name} category={robot.category} type="robot" className="w-full h-auto object-contain max-h-[50vh] p-4" containerClassName="w-full" />
             )}
           </div>
-          {/* 3D placeholder pesan */}
-          {robot.model3D && (
-            <div className="flex items-center gap-2 text-[11px] text-sky-300/60">
-              <Box className="w-3.5 h-3.5" /> Interaktif 3D — seret untuk memutar, scroll untuk zoom
-            </div>
-          )}
 
           {/* Snippet */}
           <p className="text-sky-300/60 text-sm font-medium">{robot.snippet}</p>

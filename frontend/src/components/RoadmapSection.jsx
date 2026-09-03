@@ -1,8 +1,9 @@
 import React from 'react';
 import { missionData } from '../data/missionData';
-import { Compass, ArrowRight } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 export default function RoadmapSection() {
+  const { t } = useTranslation();
   return (
     <section className="relative py-16 sm:py-20 bg-[#060d1a] overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
@@ -12,16 +13,11 @@ export default function RoadmapSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-10">
           <div className="max-w-xl">
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 uppercase tracking-widest mb-4">
-              <Compass className="w-4 h-4" />
-              Next Mission
-            </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-display text-white tracking-tight">
-              Our{' '}
-              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">Roadmap</span>
+              {t('roadmap.title')}{' '}
+              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">{t('roadmap.titleGradient')}</span>
             </h2>
           </div>
-          <ArrowRight className="hidden sm:block w-6 h-6 text-white/20" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

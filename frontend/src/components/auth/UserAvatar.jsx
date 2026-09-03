@@ -28,7 +28,7 @@ export default function UserAvatar() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="rounded-full hover:scale-105 transition-all duration-300 hover:shadow-lg hover:shadow-olympic-500/30 focus:outline-none"
+        className="flex items-center justify-center rounded-full p-0.5 ring-2 ring-transparent hover:ring-olympic-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-olympic-500/30 focus:outline-none"
         aria-label="User menu"
         aria-expanded={isOpen}
       >
@@ -62,18 +62,18 @@ export default function UserAvatar() {
               Profil
             </Link>
 
-            <Link
-              to="/dashboard"
+            <a
+              href="/monitoring/"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
             >
               <Monitor className="w-4 h-4 text-slate-400" />
-              Monitor {isAdmin ? '(Admin)' : '(View Only)'}
-            </Link>
+              Monitoring {isAdmin ? '(Admin)' : '(View Only)'}
+            </a>
 
             {isAdmin && (
               <Link
-                to="/dashboard"
+                to="/admin"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
               >

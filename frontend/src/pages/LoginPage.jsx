@@ -2,24 +2,26 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../hooks';
-import TurnstileWidget from '../components/TurnstileWidget';
-import { verifyTurnstileToken } from '../services/supabase';
+import RecaptchaWidget from '../components/RecaptchaWidget';
+import { verifyRecaptchaToken } from '../services/supabase';
+import { useTranslation } from '../i18n';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { loginWithGoogle, isAuthenticated } = useAuth();
 
   const [phase, setPhase] = useState('form');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState('');
-  const [turnstileFailed, setTurnstileFailed] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState('');
+  const [recaptchaFailed, setRecaptchaFailed] = useState(false);
 
-  const siteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY || '').trim();
-  const turnstileEnabled = siteKey.length > 0;
+  const siteKey = (import.meta.env.VITE_RECAPTCHA_SITE_KEY || '').trim();
+  const recaptchaEnabled = siteKey.length > 0;
 
-  const handleTurnstileError = useCallback((err) => {
-    setTurnstileFailed(true);
+  const handleRecaptchaError = useCallback((err) => {
+    setRecaptchaFailed(true);
     setError(err.message);
   }, []);
 
@@ -39,15 +41,15 @@ export default function LoginPage() {
     setIsSubmitting(true);
     setError('');
 
-    // Turnstile harus diverifikasi server-side sebelum OAuth diizinkan.
-    // Jika Turnstile gagal load (ad blocker), lanjutkan tanpa verifikasi.
-    if (turnstileEnabled && !turnstileFailed) {
-      if (!turnstileToken) {
+    // reCAPTCHA diverifikasi server-side sebelum OAuth diizinkan.
+    // Jika gagal load (jaringan), lanjutkan tanpa verifikasi.
+    if (recaptchaEnabled && !recaptchaFailed) {
+      if (!recaptchaToken) {
         setError('Please complete the security check first.');
         setIsSubmitting(false);
         return;
       }
-      const verification = await verifyTurnstileToken(turnstileToken);
+      const verification = await verifyRecaptchaToken(recaptchaToken);
       if (!verification.success) {
         setIsSubmitting(false);
         setError(verification.error || 'Security check failed.');
@@ -111,24 +113,24 @@ export default function LoginPage() {
             <div className="space-y-4 animate-fade-up" style={{ animationDelay: '300ms' }}>
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-sky-500/10 border border-sky-500/20">
                   <ShieldCheck className="w-5 h-5 text-sky-400 shrink-0" />
-                  <span className="text-xs text-sky-300/80">Continue securely with Google via Supabase</span>
+                  <span className="text-xs text-sky-300/80">{t('login.googleSecure')}</span>
                 </div>
 
-                {turnstileEnabled && (
+                {recaptchaEnabled && (
                   <div className="flex justify-center">
-                    <TurnstileWidget
+                    <RecaptchaWidget
                       siteKey={siteKey}
-                      onToken={setTurnstileToken}
-                      onError={handleTurnstileError}
+                      onToken={setRecaptchaToken}
+                      onError={handleRecaptchaError}
                     />
                   </div>
                 )}
 
-                <button type="button" onClick={handleGoogleLogin} disabled={isSubmitting || (turnstileEnabled && !turnstileToken && !turnstileFailed)} className="w-full py-3 rounded-xl bg-white text-slate-800 font-bold text-sm hover:bg-sky-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3">
+                <button type="button" onClick={handleGoogleLogin} disabled={isSubmitting || (recaptchaEnabled && !recaptchaToken && !recaptchaFailed)} className="w-full py-3 rounded-xl bg-white text-slate-800 font-bold text-sm hover:bg-sky-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3">
                   <GoogleIcon />
                   Continue with Google
                 </button>
-                {isSubmitting && <p className="text-center text-xs text-sky-300/70">Verifying &amp; redirecting to Google...</p>}
+                {isSubmitting && <p className="text-center text-xs text-sky-300/70">{t('login.verifying')}</p>}
                 {error && (
                   <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 animate-shake" role="alert">
                     <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
@@ -146,8 +148,8 @@ export default function LoginPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-sky-300 via-sky-200 to-cyan-300 animate-dive-expand origin-center" />
           <div className="absolute inset-0 flex items-center justify-center z-20">
             <div className="text-center animate-fade-in">
-              <h2 className="text-5xl sm:text-6xl font-black text-white font-display drop-shadow-2xl tracking-tight">Welcome Back</h2>
-              <p className="text-white/80 text-lg mt-3 font-light drop-shadow-lg">Diving into the Aterkia world</p>
+              <h2 className="text-5xl sm:text-6xl font-black text-white font-display drop-shadow-2xl tracking-tight">{t('login.welcomeBack')}</h2>
+              <p className="text-white/80 text-lg mt-3 font-light drop-shadow-lg">{t('login.subtitle')}</p>
             </div>
           </div>
         </div>

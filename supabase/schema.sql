@@ -29,14 +29,65 @@ to authenticated
 using (auth.uid() = id)
 with check (auth.uid() = id);
 
+-- ── Admin policies ──
+-- Admin aktif dapat membaca semua profil dan memperbarui profil pengguna lain
+-- (role / division / is_active). Email dikelola oleh auth, tidak diubah di sini.
+drop policy if exists "Admins can read all profiles" on public.profiles;
+create policy "Admins can read all profiles"
+on public.profiles for select
+to authenticated
+using (
+  auth.uid() = id
+  or exists (
+    select 1 from public.profiles p
+    where p.id = auth.uid() and p.role = 'admin' and p.is_active = true
+  )
+);
+
+drop policy if exists "Admins can update other profiles" on public.profiles;
+create policy "Admins can update other profiles"
+on public.profiles for update
+to authenticated
+using (
+  auth.uid() <> id
+  and exists (
+    select 1 from public.profiles p
+    where p.id = auth.uid() and p.role = 'admin' and p.is_active = true
+  )
+)
+with check (
+  auth.uid() <> id
+  and exists (
+    select 1 from public.profiles p
+    where p.id = auth.uid() and p.role = 'admin' and p.is_active = true
+  )
+);
+
 create or replace function public.protect_profile_privileges()
 returns trigger
 language plpgsql
+security definer set search_path = public
 as $$
+declare
+  is_admin boolean;
 begin
-  new.role = old.role;
-  new.is_active = old.is_active;
-  new.email = old.email;
+  -- Cek keistimewaan pengguna yang sedang login (definer → aman dari RLS).
+  select (p.role = 'admin' and p.is_active) into is_admin
+  from public.profiles p
+  where p.id = auth.uid();
+
+  if auth.uid() = old.id then
+    -- Perubahan pada profil sendiri: role / is_active / email tidak boleh diubah (cegah eskalasi).
+    new.role = old.role;
+    new.is_active = old.is_active;
+    new.email = old.email;
+  elsif is_admin then
+    -- Admin mengubah profil pengguna lain: boleh ubah role & is_active; email tetap auth-managed.
+    new.email = old.email;
+  else
+    -- Bukan admin dan bukan diri sendiri → tolak.
+    raise exception 'Not authorized to modify this profile';
+  end if;
   return new;
 end;
 $$;
@@ -78,3 +129,9 @@ from auth.users u
 where p.id = u.id
   and (p.avatar_url is null or p.avatar_url = '')
   and (u.raw_user_meta_data->>'picture') is not null;
+
+-- ── Jalankan sekali di SQL Editor untuk mengangkat akun menjadi admin ──
+-- Ganti email sesuai akun yang ingin dijadikan admin. Jalankan SETELAH skema di atas.
+-- update public.profiles
+-- set role = 'admin'
+-- where email = 'ibnufirdaus2030@gmail.com';

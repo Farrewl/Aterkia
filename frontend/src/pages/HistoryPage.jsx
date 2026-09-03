@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { historyData } from '../data/historyData';
 import { CheckCircle2 } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 const CABLE_INSET = 96;
 
@@ -85,6 +86,7 @@ function Submarine({ size = 'desktop', topPx, docked, facingLeft, svgRef, propRe
 }
 
 export default function HistoryPage() {
+  const { t } = useTranslation();
   const containerRef = useRef(null);
   const timelineRef = useRef(null);
   const dotRefs = useRef([]);
@@ -314,11 +316,11 @@ export default function HistoryPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black font-display text-white tracking-tight leading-tight mb-5 animate-fade-up" style={{ animationDelay: '120ms' }}>
-              Our{' '}
-              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">History</span>
+              {t('history.title')}{' '}
+              <span className="gradient-text bg-clip-text text-transparent">{t('history.titleGradient')}</span>
             </h1>
             <p className="text-white/50 text-base sm:text-lg leading-relaxed font-light max-w-2xl animate-fade-up" style={{ animationDelay: '240ms' }}>
-              Our journey from our founding to the present
+              {t('history.desc')}
             </p>
           </div>
         </div>
@@ -450,7 +452,7 @@ export default function HistoryPage() {
                           {item.milestones && item.milestones.length > 0 && (
                             <div className="pt-5 border-t border-white/10 space-y-2.5">
                               <span className="text-xs font-bold text-white/30 uppercase tracking-wider block mb-1">
-                                Key Achievements:
+                                {t('history.keyAchievements')}
                               </span>
                               <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 ${isLeft ? 'md:text-left' : ''}`}>
                                 {item.milestones.map((m, mIdx) => (

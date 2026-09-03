@@ -1,11 +1,13 @@
 import React from 'react';
 import { divisionTeams } from '../data/teamData';
 import { Anchor, Waves, Users, Cpu } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 const TECH = ['ASV', 'AUV'];
 const SUB_ICONS = { MECHANICAL: Cpu, ELKAPRO: Cpu };
 
 export default function Divisions() {
+  const { t } = useTranslation();
   const tech = TECH.map((key) => divisionTeams[key]);
   const nonTech = [
     divisionTeams.SECRETARY_TREASURER,
@@ -43,9 +45,9 @@ export default function Divisions() {
                   </div>
                   <p className="text-xs text-white/40 font-light">{sub.fullName}</p>
                   <div className="mt-3 flex items-center gap-2">
-                    <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wider">Ketua</span>
+                    <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wider">{t('divisions.chair')}</span>
                     <span className="text-xs text-sky-300/80 font-medium">
-                      {sub.leader?.fullName ? sub.leader.fullName : 'TBD'}
+                      {sub.leader?.fullName ? sub.leader.fullName : t('divisions.tbd')}
                     </span>
                   </div>
                 </div>
@@ -54,7 +56,7 @@ export default function Divisions() {
           </div>
         ) : (
           <p className="text-xs text-white/40 font-light">
-            {team.chair?.role || 'Koordinator'} · {team.members?.length || 0} anggota
+            {team.chair?.role || t('divisions.coordinator')} · {team.members?.length || 0} {t('divisions.members')}
           </p>
         )}
       </div>
@@ -72,11 +74,11 @@ export default function Divisions() {
         <div className="max-w-2xl mb-12 reveal">
           <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 uppercase tracking-widest mb-4">
             <Users className="w-4 h-4" />
-            Team Structure
+            {t('divisions.teamStructure')}
           </span>
           <h2 className="text-3xl sm:text-4xl font-black font-display text-white tracking-tight">
-            Our{' '}
-            <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">Divisions</span>
+            {t('divisions.title')}{' '}
+            <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">{t('divisions.titleGradient')}</span>
           </h2>
         </div>
 
