@@ -26,24 +26,22 @@ export default function Preloader({ children }) {
       return () => clearTimeout(t);
     }
     setShowSplash(true);
-    // Tampilkan branding minimal, lalu sembunyikan saat hero video siap (atau timeout 8s).
-    const t1 = setTimeout(() => setIsHiding(true), 2300);
+    // Branding minimal tampil penuh sambil menunggu hero video siap (atau fallback 8s).
+    // Saat siap, splash (logo + latar) memudar dalam 700ms lalu konten tampil.
     let done = false;
     const finish = () => {
       if (done) return;
       done = true;
-      clearTimeout(t1);
-      sessionStorage.setItem(SPLASH_KEY, '1');
-      ready();
+      setIsHiding(true);
+      setTimeout(() => {
+        sessionStorage.setItem(SPLASH_KEY, '1');
+        ready();
+      }, 700);
     };
     const t2 = setTimeout(finish, 8000);
-    const onVideoReady = () => {
-      // Beri jeda singkat agar transisi fade keluar terlihat.
-      setTimeout(finish, 400);
-    };
+    const onVideoReady = () => finish();
     window.addEventListener('hero-video-ready', onVideoReady);
     return () => {
-      clearTimeout(t1);
       clearTimeout(t2);
       window.removeEventListener('hero-video-ready', onVideoReady);
     };

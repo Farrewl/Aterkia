@@ -7,12 +7,15 @@ import { sponsorsData } from '../data/sponsorsData';
 import { aboutData } from '../data/aboutData';
 import ImageWithFallback from '../components/ImageWithFallback';
 import RoadmapSection from '../components/RoadmapSection';
+import { useReveal } from '../components/motion';
 import { useTranslation } from '../i18n';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const newsScrollRef = useRef(null);
   const { t } = useTranslation();
+  // Aktifkan reveal observer untuk semua elemen .reveal* di homepage (RoadmapSection dkk.)
+  useReveal();
 
   const [newsCanLeft, setNewsCanLeft] = useState(false);
   const [newsCanRight, setNewsCanRight] = useState(true);

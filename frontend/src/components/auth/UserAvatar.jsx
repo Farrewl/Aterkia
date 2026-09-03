@@ -62,14 +62,14 @@ export default function UserAvatar() {
               Profil
             </Link>
 
-            <Link
-              to="/dashboard"
+            <a
+              href="/monitoring/"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
             >
               <Monitor className="w-4 h-4 text-slate-400" />
-              Monitor {isAdmin ? '(Admin)' : '(View Only)'}
-            </Link>
+              Monitoring {isAdmin ? '(Admin)' : '(View Only)'}
+            </a>
 
             {isAdmin && (
               <Link

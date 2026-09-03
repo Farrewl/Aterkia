@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks';
+import { useAuth } from '../context/AuthContext';
 import {
   Ship, Anchor, Activity, Wifi, HardDrive,
   TrendingUp, RefreshCw,

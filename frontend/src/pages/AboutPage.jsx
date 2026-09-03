@@ -314,6 +314,7 @@ function scrollAchievements(dir) {
 
 /* ── Mission stepper ── */
 function MissionStepper() {
+  const { t } = useTranslation();
   const wrapRef = useRef(null);
   const [progress, setProgress] = useState(0);
 
