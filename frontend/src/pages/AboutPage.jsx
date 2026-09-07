@@ -154,10 +154,7 @@ export default function AboutPage() {
       </div>
 
       {/* ── Divisions ── */}
-      <Divisions />
-
-      {/* ── Kegiatan ── */}
-      <ActivitiesSection />
+      <Divisions /> 
 
       {/* ── Roadmap ── */}
       <RoadmapSection />
@@ -206,43 +203,42 @@ export default function AboutPage() {
       </section>
 
       {/* ── Slogan ── */}
-      <section className="relative overflow-hidden border-t border-sky-400/10 bg-[#050b16] py-12 sm:py-16">
+      <section className="relative overflow-hidden bg-[#050b16] py-16 sm:py-24 border-t border-sky-400/10">
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-          <div className="absolute -left-24 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full bg-sky-500/10 blur-3xl" />
-          <div className="absolute -right-24 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full bg-orange-400/10 blur-3xl" />
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-400/50 to-transparent" />
+          <div className="absolute left-1/4 top-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-sky-500/8 rounded-full blur-[100px]" />
+          <div className="absolute right-1/4 top-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-orange-400/6 rounded-full blur-[100px]" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-400/40 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-orange-400/20 to-transparent" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-6 flex items-center justify-between gap-4">
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-sky-400">{t('about.sloganOurSpirit')}</span>
-            <span className="hidden text-xs font-light text-white/30 sm:block">{t('about.sloganScroll')}</span>
+          <div className="mb-8 flex items-center justify-between gap-4">
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-sky-400/80">{t('about.sloganOurSpirit')}</span>
           </div>
 
-          <div className="overflow-hidden pb-3">
-            <div className="flex w-full items-center justify-between gap-2 sm:gap-5">
-              {aboutData.slogan.lines.map((line, idx) => (
-                <React.Fragment key={line}>
-                  <h2
-                    className={`min-w-0 flex-1 whitespace-nowrap text-center text-[clamp(1.05rem,5.8vw,4.5rem)] font-black font-display tracking-[-0.07em] ${
-                      idx === 0
-                        ? 'bg-gradient-to-r from-sky-300 to-cyan-400 bg-clip-text text-transparent'
-                        : idx === 1
-                        ? 'text-white/75'
-                        : 'bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent'
-                    }`}
-                  >
-                    {line}
-                  </h2>
-                  {idx < aboutData.slogan.lines.length - 1 && (
-                    <span className="shrink-0 text-base font-light text-white/20 sm:text-3xl" aria-hidden="true">•</span>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
+          {/* Slogan — single line, no scroll, full width */}
+          <div className="flex w-full items-center justify-between">
+            {aboutData.slogan.lines.map((line, idx) => (
+              <React.Fragment key={line}>
+                <h2
+                  className={`flex-1 text-center font-black font-display tracking-tight leading-none ${
+                    idx === 0
+                      ? 'text-[clamp(1.4rem,5.5vw,5rem)] bg-gradient-to-r from-sky-200 via-cyan-300 to-sky-400 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(56,189,248,0.3)]'
+                      : idx === 1
+                      ? 'text-[clamp(1.4rem,5.5vw,5rem)] bg-gradient-to-r from-slate-200 via-white to-slate-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]'
+                      : 'text-[clamp(1.4rem,5.5vw,5rem)] bg-gradient-to-r from-amber-200 via-yellow-300 to-orange-400 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(251,191,36,0.3)]'
+                  }`}
+                >
+                  {line}
+                </h2>
+                {idx < aboutData.slogan.lines.length - 1 && (
+                  <span className="shrink-0 mx-2 sm:mx-4 w-2 h-2 rounded-full bg-gradient-to-br from-sky-400/40 to-transparent" aria-hidden="true" />
+                )}
+              </React.Fragment>
+            ))}
           </div>
 
-          <p className="mt-6 max-w-xl text-xs font-light leading-relaxed text-white/35 sm:text-sm">
+          <p className="mt-8 max-w-xl mx-auto text-center text-xs font-light leading-relaxed text-white/30 sm:text-sm">
             {aboutData.slogan.subtitle}
           </p>
         </div>

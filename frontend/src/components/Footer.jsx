@@ -44,24 +44,7 @@ export default function Footer() {
             </div>
 
             {/* Navigasi */}
-            <div className="md:col-span-3 space-y-4">
-              <h4 className="font-bold text-olympic-200 uppercase text-xs tracking-wider">{t('footer.navigation')}</h4>
-              <ul className="space-y-2.5">
-                {[
-                  { to: '/', label: t('nav.home') },
-                  { to: '/about', label: t('nav.about') },
-                  { to: '/history', label: t('nav.history') },
-                  { to: '/robots', label: t('nav.robots') },
-                  { to: '/team', label: t('nav.team') },
-                ].map((link) => (
-                  <li key={link.to}>
-                    <Link to={link.to} className="text-olympic-400 hover:text-white text-sm transition-colors duration-200 hover:translate-x-1 inline-block">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <div className="md:col-span-3 space-y-4"></div>
 
             {/* Kontak */}
             <div className="md:col-span-4 space-y-4">
@@ -69,9 +52,6 @@ export default function Footer() {
               <div className="space-y-3 text-sm text-olympic-400">
                 <a href={`mailto:${siteConfig.email}`} className="block hover:text-white transition-colors">
                   {siteConfig.email}
-                </a>
-                <a href={`mailto:${siteConfig.partnershipEmail}`} className="block hover:text-white transition-colors">
-                  {siteConfig.partnershipEmail}
                 </a>
                 <p className="text-olympic-500 text-xs leading-relaxed">
                   Student Center, Universitas Diponegoro

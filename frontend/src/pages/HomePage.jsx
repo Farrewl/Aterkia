@@ -1,12 +1,13 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Calendar, ChevronRight, ChevronLeft, ExternalLink, Trophy, Flag, Users, Anchor, Handshake } from 'lucide-react';
 import { robotsData } from '../data/robotsData';
 import { newsData } from '../data/newsData';
 import { sponsorsData } from '../data/sponsorsData';
 import { aboutData } from '../data/aboutData';
 import ImageWithFallback from '../components/ImageWithFallback';
-import RoadmapSection from '../components/RoadmapSection';
+import ActivitiesSection from '../components/ActivitiesSection';
 import { useReveal } from '../components/motion';
 import { useTranslation } from '../i18n';
 
@@ -14,8 +15,12 @@ export default function HomePage() {
   const navigate = useNavigate();
   const newsScrollRef = useRef(null);
   const { t } = useTranslation();
-  // Aktifkan reveal observer untuk semua elemen .reveal* di homepage (RoadmapSection dkk.)
   useReveal();
+
+  const { scrollY } = useScroll();
+  const heroTextY = useTransform(scrollY, [0, 500], [0, 150]);
+  const heroVideoY = useTransform(scrollY, [0, 500], [0, 80]);
+  const heroScale = useTransform(scrollY, [0, 500], [1, 1.1]);
 
   const [newsCanLeft, setNewsCanLeft] = useState(false);
   const [newsCanRight, setNewsCanRight] = useState(true);
@@ -56,19 +61,25 @@ export default function HomePage() {
 
       {/* 1. HERO SECTION */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute top-20 right-[15%] w-80 h-80 bg-olympic-100/60 rounded-full blur-3xl animate-pulse-glow" />
-        <div className="absolute bottom-20 left-[10%] w-64 h-64 bg-olympic-200/40 blob-1 blur-2xl animate-float" />
+        <motion.div className="absolute top-20 right-[15%] w-80 h-80 bg-olympic-100/60 rounded-full blur-3xl animate-pulse-glow" style={{ y: useTransform(scrollY, [0, 500], [0, -50]) }} />
+        <motion.div className="absolute bottom-20 left-[10%] w-64 h-64 bg-olympic-200/40 blob-1 blur-2xl animate-float" style={{ y: useTransform(scrollY, [0, 500], [0, 80]) }} />
         <div className="absolute inset-0 dot-pattern opacity-40" />
 
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-olympic-900 via-sky-900 to-olympic-950">
+        <motion.div
+          className="absolute inset-0 z-0 bg-gradient-to-br from-olympic-900 via-sky-900 to-olympic-950"
+          style={{ y: heroVideoY, scale: heroScale }}
+        >
           <video autoPlay loop muted playsInline preload="auto" className="w-full h-full object-cover opacity-40" onLoadedData={() => window.dispatchEvent(new Event('hero-video-ready'))}>
             <source src={`/videos/Copy of Aterkia\u2019s Video.mp4`} type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/30 via-white/15 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-transparent to-transparent" />
-        </div>
+        </motion.div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <motion.div
+          className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+          style={{ y: heroTextY }}
+        >
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-display text-balance drop-shadow-lg leading-tight">
               <span className="text-white block">{t('hero.title')}</span>
@@ -89,17 +100,31 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* 2. WAVE DIVIDER + SPONSORS */}
-      <div className="relative bg-olympic-900 overflow-hidden">
-        <div className="relative w-full">
-          <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full block" style={{ height: '80px', marginBottom: '-1px' }}>
-            <path d="M0,0 L1440,0 L1440,40 C1320,40 1260,90 1140,80 C1020,70 960,20 840,30 C720,40 660,95 540,85 C420,75 360,25 240,35 C120,45 60,90 0,80 Z" fill="#ffffff" />
+      <div className="relative bg-olympic-900">
+        {/* Top wave — one fully-filled shape, overlaps hero bottom so no raw seam shows */}
+        <div className="relative w-full -mt-10 z-10">
+          <svg viewBox="0 0 1440 140" preserveAspectRatio="none" className="w-full block" style={{ height: '150px', marginBottom: '-1px' }}>
+            <defs>
+              <linearGradient id="sponsorWaveGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#0a1a2e" />
+                <stop offset="35%" stopColor="#7d99b8" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="#0a1628" />
+              </linearGradient>
+            </defs>
+            <path d="M0,0 L1440,0 L1440,40 C1080,90 720,-10 360,55 C240,75 120,30 0,50 L0,140 Z" fill="url(#sponsorWaveGrad)" />
           </svg>
+          <div
+            className="absolute inset-x-0 -top-8 h-40 pointer-events-none"
+            style={{
+              background: 'radial-gradient(ellipse 50% 80% at 50% 0%, rgba(220,232,255,0.32) 0%, rgba(168,192,224,0.10) 40%, transparent 75%)',
+            }}
+          />
         </div>
-        <div className="relative z-10 text-center pt-1 pb-1">
+        <div className="relative z-20 text-center pt-1 pb-1">
           <span className="text-xs sm:text-sm font-bold tracking-widest uppercase gradient-text">
             {t('sponsors.title')}
           </span>
@@ -162,9 +187,11 @@ export default function HomePage() {
         </div>
 
         {/* Bottom wave — sponsors into robots deep ocean */}
-        <div className="relative w-full">
-          <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full block" style={{ height: '80px', marginTop: '-1px' }}>
-            <path d="M0,80 C120,80 180,30 300,35 C420,40 480,95 600,90 C720,85 780,30 900,25 C1020,20 1080,80 1200,85 C1320,90 1380,50 1440,40 L1440,120 L0,120 Z" fill="#060d1a" />
+        <div className="relative">
+          <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full block" style={{ height: '120px' }}>
+            <path d="M0,8 C120,0 240,20 360,8 C480,0 600,16 720,6 C840,16 960,2 1080,10 C1200,2 1320,14 1440,6 L1440,60 C1320,80 1200,20 1080,50 C960,80 840,10 720,40 C600,70 480,15 360,45 C240,75 120,25 0,55 Z" fill="#0a1628" />
+            <path d="M0,55 C120,25 240,75 360,45 C480,15 600,70 720,40 C840,10 960,80 1080,50 C1200,20 1320,80 1440,60 L1440,100 L0,100 Z" fill="#0c1e38" />
+            <path d="M0,80 C180,50 360,110 540,75 C720,40 900,100 1080,70 C1260,40 1380,85 1440,65 L1440,120 L0,120 Z" fill="#060d1a" />
           </svg>
         </div>
       </div>
@@ -172,13 +199,22 @@ export default function HomePage() {
       {/* 3. ROBOTS — Interactive Cockpit */}
       <RobotsCockpit />
 
-      {/* 3.5 ROADMAP — Next Mission */}
-      <RoadmapSection />
+      {/* Soft seam: deep ocean robots → activity deck */}
+      <div className="relative">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full block" style={{ height: '120px' }}>
+          <path d="M0,0 L1440,0 L1440,60 C1320,80 1200,20 1080,50 C960,80 840,10 720,40 C600,70 480,15 360,45 C240,75 120,25 0,55 Z" fill="#0c1e38" />
+          <path d="M0,55 C120,25 240,75 360,45 C480,15 600,70 720,40 C840,10 960,80 1080,50 C1200,20 1320,80 1440,60 L1440,100 L0,100 Z" fill="#0a1628" />
+          <path d="M0,80 C180,50 360,110 540,75 C720,40 900,100 1080,70 C1260,40 1380,85 1440,65 L1440,120 L0,120 Z" fill="#060d1a" />
+        </svg>
+      </div>
+
+      {/* 3.5 OUR ACTIVITY — Next Mission */}
+      <ActivitiesSection />
 
       {/* Seamless wave: deep ocean robots → light news */}
       <div className="relative">
         <svg viewBox="0 0 1440 200" preserveAspectRatio="none" className="w-full block" style={{ height: '120px' }}>
-          <path d="M0,0 L1440,0 L1440,60 C1320,80 1200,20 1080,50 C960,80 840,10 720,40 C600,70 480,15 360,45 C240,75 120,25 0,55 Z" fill="#0c1e38" />
+          <path d="M0,20 C120,4 240,36 360,16 C480,2 600,30 720,12 C840,30 960,2 1080,16 C1200,36 1320,4 1440,20 L1440,60 C1320,80 1200,20 1080,50 C960,80 840,10 720,40 C600,70 480,15 360,45 C240,75 120,25 0,55 Z" fill="#0c1e38" />
           <path d="M0,55 C120,25 240,75 360,45 C480,15 600,70 720,40 C840,10 960,80 1080,50 C1200,20 1320,80 1440,60 L1440,100 L0,100 Z" fill="#1e3a5f" />
           <path d="M0,80 C180,50 360,110 540,75 C720,40 900,100 1080,70 C1260,40 1380,85 1440,65 L1440,120 L0,120 Z" fill="#3b6a8f" />
           <path d="M0,100 C240,75 480,130 720,95 C960,60 1200,110 1440,80 L1440,140 L0,140 Z" fill="#7baac4" />

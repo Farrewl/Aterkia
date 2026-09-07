@@ -2,11 +2,38 @@ import React, { useState, useEffect } from 'react';
 
 const SPLASH_KEY = 'aterkia-splash-seen';
 
+const trackAssets = () => {
+  return new Promise((resolve) => {
+    const images = Array.from(document.images || []);
+    const videos = Array.from(document.querySelectorAll('video'));
+
+    const imagePromises = images.map((img) => {
+      if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+      return new Promise((res) => {
+        img.addEventListener('load', res, { once: true });
+        img.addEventListener('error', res, { once: true });
+      });
+    });
+
+    const videoPromises = videos.map((vid) => {
+      if (vid.readyState >= 3) return Promise.resolve();
+      return new Promise((res) => {
+        vid.addEventListener('canplaythrough', res, { once: true });
+        vid.addEventListener('loadeddata', res, { once: true });
+        vid.addEventListener('error', res, { once: true });
+      });
+    });
+
+    Promise.all([...imagePromises, ...videoPromises]).then(resolve);
+  });
+};
+
 export default function Preloader({ children }) {
   const [showSplash, setShowSplash] = useState(false);
   const [isHiding, setIsHiding] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [slowLoading, setSlowLoading] = useState(false);
 
   const ready = () => {
     setShowSplash(false);
@@ -14,7 +41,6 @@ export default function Preloader({ children }) {
     setIsReady(true);
   };
 
-  // Splash hanya muncul SEKALI per session (sessionStorage). Setelah itu pakai spinner ringan.
   useEffect(() => {
     const splashSeen = sessionStorage.getItem(SPLASH_KEY);
     if (splashSeen) {
@@ -26,8 +52,7 @@ export default function Preloader({ children }) {
       return () => clearTimeout(t);
     }
     setShowSplash(true);
-    // Branding minimal tampil penuh sambil menunggu hero video siap (atau fallback 8s).
-    // Saat siap, splash (logo + latar) memudar dalam 700ms lalu konten tampil.
+
     let done = false;
     const finish = () => {
       if (done) return;
@@ -38,11 +63,30 @@ export default function Preloader({ children }) {
         ready();
       }, 700);
     };
-    const t2 = setTimeout(finish, 8000);
-    const onVideoReady = () => finish();
+
+    // 5s slow-loading message timer
+    const slowTimer = setTimeout(() => {
+      if (!done) setSlowLoading(true);
+    }, 5000);
+
+    // Hard fallback: 12s, in case the assets never resolve
+    const hardCap = setTimeout(finish, 12000);
+
+    // Track all assets
+    const trackTimer = setTimeout(() => {
+      trackAssets().then(finish);
+    }, 200);
+
+    const onVideoReady = () => {
+      // Check assets again when hero video signals ready
+      setTimeout(() => trackAssets().then(finish), 300);
+    };
     window.addEventListener('hero-video-ready', onVideoReady);
+
     return () => {
-      clearTimeout(t2);
+      clearTimeout(slowTimer);
+      clearTimeout(hardCap);
+      clearTimeout(trackTimer);
       window.removeEventListener('hero-video-ready', onVideoReady);
     };
   }, []);
@@ -72,6 +116,16 @@ export default function Preloader({ children }) {
             <p className="mt-4 text-[11px] sm:text-xs uppercase tracking-[0.4em] text-sky-200/40 font-mono">
               RoboBoat Team
             </p>
+
+            {/* Slow-loading notification — appears after 5s */}
+            {slowLoading && (
+              <p
+                className="mt-8 text-[11px] sm:text-xs uppercase tracking-[0.3em] text-sky-300/70 font-mono animate-fade-in"
+                style={{ animation: 'aterkiaTextReveal 800ms ease-out forwards' }}
+              >
+                Loading assets...
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -113,6 +167,11 @@ export default function Preloader({ children }) {
           0%   { transform: scaleX(0); }
           100% { transform: scaleX(1); }
         }
+        @keyframes fadeIn {
+          0%   { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        .animate-fade-in { animation: fadeIn 600ms ease-out forwards; }
       `}</style>
 
       {isReady && children}
