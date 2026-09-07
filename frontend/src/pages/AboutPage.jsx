@@ -154,7 +154,7 @@ export default function AboutPage() {
       </div>
 
       {/* ── Divisions ── */}
-      <Divisions />
+      <Divisions /> 
 
       {/* ── Roadmap ── */}
       <RoadmapSection />

@@ -3,11 +3,13 @@ import { useAuth } from '../context/AuthContext';
 import {
   Ship, Anchor, Activity, Wifi, HardDrive,
   TrendingUp, RefreshCw,
-  BarChart3, MapPin, Terminal, ShieldCheck, Eye, Lock
+  BarChart3, MapPin, Terminal, ShieldCheck, Eye, Lock, ArrowLeft
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { createMqttPoller } from '../services/mqtt';
+import CameraFeed from '../components/CameraFeed';
 
 const EMPTY_ASV = { connected: false, lat: null, lng: null, speed: 0, heading: 0, battery: 0, depth: 0, signal: 0, mode: 'STANDBY', ts: null };
 const EMPTY_AUV = { ...EMPTY_ASV };
@@ -17,7 +19,7 @@ const INITIAL_MISSIONS = [
   { id: 'm-02', name: 'Subsea Inspection', robot: 'Ateravinoleum', status: 'pending', progress: 0 },
 ];
 
-export default function DashboardPage() {
+function MonitoringDashboard() {
   const { user, hasRole } = useAuth();
   const isAdmin = hasRole('admin');
 
@@ -28,8 +30,6 @@ export default function DashboardPage() {
   ]);
   const [clock, setClock] = useState(() => new Date());
   const pollerRef = useRef(null);
-  const isAdminRef = useRef(isAdmin);
-  isAdminRef.current = isAdmin;
 
   const appendLog = useCallback((level, source, msg) => {
     const now = new Date().toTimeString().slice(0, 8);
@@ -73,10 +73,17 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#0a1628] to-[#060d1a] text-white">
       {/* Header */}
-      <header className="border-b border-white/10 bg-white/5 backdrop-blur-xl sticky top-[68px] z-30">
+      <header className="border-b border-white/10 bg-white/5 backdrop-blur-xl sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
+              <Link
+                to="/"
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors"
+                aria-label="Back to homepage"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
               <div className="w-10 h-10 rounded-xl bg-olympic-500/20 flex items-center justify-center">
                 <Ship className="w-5 h-5 text-sky-400" />
               </div>
@@ -117,6 +124,11 @@ export default function DashboardPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          {/* Live camera feed + buoy detection */}
+          <div className="lg:col-span-12">
+            <CameraFeed />
+          </div>
 
           {/* Left column — telemetry + map */}
           <div className="lg:col-span-7 space-y-6">
@@ -269,7 +281,6 @@ export default function DashboardPage() {
   );
 }
 
-/* ── Leaflet map with two real markers ── */
 function LiveMap({ asv, auv }) {
   const center = [-6.9827, 110.4224];
   const hasAsv = asv.lat != null && asv.lng != null;
@@ -317,7 +328,6 @@ function LiveMap({ asv, auv }) {
   );
 }
 
-/* ── Reusable robot telemetry card ── */
 function RobotTelemetryCard({ icon: Icon, title, subtitle, iconColor, iconBg, accent, data, online, metrics }) {
   return (
     <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
@@ -362,4 +372,8 @@ function TelemetryItem({ icon: Icon, label, value, color }) {
       <div className={`font-display font-bold text-xl ${color}`}>{value}</div>
     </div>
   );
+}
+
+export default function MonitoringPage() {
+  return <MonitoringDashboard />;
 }

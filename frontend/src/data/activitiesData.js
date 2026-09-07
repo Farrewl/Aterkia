@@ -13,6 +13,26 @@ export const activitiesData = [
     ],
   },
   {
+    id: 'exploration',
+    title: 'Exploration',
+    description: 'Field research and data collection across diverse marine environments — mapping coastlines, surveying bathymetry, and scouting new mission zones for the fleet.',
+    images: [
+      '/images/robots/robot-asv-1.png',
+      '/images/news/Pelepasan-Kontingen-KKI-Undip-2025-1536x862.webp',
+      '/images/news/foto1-768x496.webp',
+    ],
+  },
+  {
+    id: 'deployment',
+    title: 'Deployment',
+    description: 'Live deployment of the ASV and AUV in operational waters — pushing autonomous control, real-time telemetry, and mission reliability beyond the lab bench.',
+    images: [
+      '/images/team/aterkia-team-group.webp',
+      '/images/news/images.png',
+      '/images/robots/robot-asv-1.png',
+    ],
+  },
+  {
     id: 'trial',
     title: 'Robot Trial',
     description: 'Field-testing the ASV and AUV in real waters — calibrating sensors, tuning PID, and pushing the boat until something breaks (so it does not break at the contest).',

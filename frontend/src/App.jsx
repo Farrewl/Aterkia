@@ -1,11 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { I18nProvider } from './i18n';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
-import Preloader from './components/Preloader';
+import EntryAnimation from './components/EntryAnimation';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Halaman
 import HomePage from './pages/HomePage';
@@ -17,18 +18,22 @@ import ContactPage from './pages/ContactPage';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/auth/ProfilePage';
 import AdminPage from './pages/auth/AdminPage';
+import MonitoringPage from './pages/MonitoringPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 export default function App() {
+  const location = useLocation();
+  const showNavbar = !location.pathname.startsWith('/monitoring');
+
   return (
     <I18nProvider>
       <AuthProvider>
-        <Preloader>
-          <Router>
+        <EntryAnimation>
+          <ErrorBoundary>
             <ScrollToTop />
             <div className="min-h-screen bg-[#060d1a] text-slate-800 font-sans flex flex-col">
-              <Navbar />
+              {showNavbar && <Navbar />}
               <main className="flex-grow">
                 <Routes>
                   <Route path="/" element={<HomePage />} />
@@ -48,13 +53,14 @@ export default function App() {
                       <AdminPage />
                     </ProtectedRoute>
                   } />
+                  <Route path="/monitoring" element={<MonitoringPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </main>
-              <Footer />
+              {showNavbar && <Footer />}
             </div>
-          </Router>
-        </Preloader>
+          </ErrorBoundary>
+        </EntryAnimation>
       </AuthProvider>
     </I18nProvider>
   );

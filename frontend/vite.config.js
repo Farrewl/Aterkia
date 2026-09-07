@@ -9,12 +9,5 @@ export default defineConfig({
     port: 5173,
     open: false,
     host: true,
-    proxy: {
-      // Monitoring app runs on 5174 — proxied under same origin so Supabase localStorage session is shared.
-      '/monitoring': {
-        target: 'http://localhost:5174',
-        changeOrigin: true,
-      },
-    },
   }
 });

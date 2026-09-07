@@ -105,19 +105,26 @@ export default function HomePage() {
 
       {/* 2. WAVE DIVIDER + SPONSORS */}
       <div className="relative bg-olympic-900">
-        <div className="relative w-full -translate-y-6 -mb-6">
-          <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full block" style={{ height: '100px', marginBottom: '-1px' }}>
+        {/* Top wave — one fully-filled shape, overlaps hero bottom so no raw seam shows */}
+        <div className="relative w-full -mt-10 z-10">
+          <svg viewBox="0 0 1440 140" preserveAspectRatio="none" className="w-full block" style={{ height: '150px', marginBottom: '-1px' }}>
             <defs>
               <linearGradient id="sponsorWaveGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#d9e1f1" />
-                <stop offset="55%" stopColor="#4b6280" />
+                <stop offset="0%" stopColor="#0a1a2e" />
+                <stop offset="35%" stopColor="#7d99b8" stopOpacity="0.18" />
                 <stop offset="100%" stopColor="#0a1628" />
               </linearGradient>
             </defs>
-            <path d="M0,8 C120,0 240,44 360,18 C480,2 600,38 720,12 C840,36 960,2 1080,20 C1200,6 1320,42 1440,16 L1440,120 L0,120 Z" fill="url(#sponsorWaveGrad)" />
+            <path d="M0,0 L1440,0 L1440,40 C1080,90 720,-10 360,55 C240,75 120,30 0,50 L0,140 Z" fill="url(#sponsorWaveGrad)" />
           </svg>
+          <div
+            className="absolute inset-x-0 -top-8 h-40 pointer-events-none"
+            style={{
+              background: 'radial-gradient(ellipse 50% 80% at 50% 0%, rgba(220,232,255,0.32) 0%, rgba(168,192,224,0.10) 40%, transparent 75%)',
+            }}
+          />
         </div>
-        <div className="relative z-10 text-center pt-1 pb-1">
+        <div className="relative z-20 text-center pt-1 pb-1">
           <span className="text-xs sm:text-sm font-bold tracking-widest uppercase gradient-text">
             {t('sponsors.title')}
           </span>
