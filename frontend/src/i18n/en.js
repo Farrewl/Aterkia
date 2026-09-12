@@ -15,10 +15,18 @@ const en = {
     description: 'An autonomous maritime robotics team from Universitas Diponegoro. Designing, building, and testing ocean robots for international competition.',
     viewRobots: 'View Our Robots',
     aboutAterkia: 'About Aterkia',
+    tabs: {
+      monitoring: 'Monitoring',
+      recruitment: 'Recruitment',
+    },
+    recruitment: {
+      title: 'Join Aterkia',
+      desc: 'We are looking for passionate engineers and official members to join our maritime robotics team.',
+      apply: 'Apply Now',
+    },
   },
   sponsors: {
     title: 'Our Sponsors',
-    interested: 'Interested in supporting Aterkia Roboboat Team?',
     becomeSponsor: 'Become a Sponsor',
   },
   stats: {
@@ -113,6 +121,21 @@ const en = {
     alumniTitle: 'Our',
     alumniGradient: 'Alumni',
     alumniDesc: 'Members who have graduated and continue to be part of the Aterkia family.',
+    structure: {
+      president: 'President of Aterkia',
+      vicePresident: 'Vice President',
+      secretary: 'Secretary',
+      treasurer: 'Treasurer',
+      officialLead: 'Official Lead',
+      media: 'Media',
+      sponsor: 'Sponsor',
+      asvLead: 'ASV Lead',
+      auvLead: 'AUV Lead',
+      mechanical: 'Mechanical',
+      elkapro: 'Electrical & Programming',
+      lead: 'Lead',
+      member: 'Member',
+    },
   },
   contact: {
     heroTitle: 'Support',

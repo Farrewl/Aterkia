@@ -136,19 +136,6 @@ export default function Navbar() {
 
           {/* Kanan: Language + UserAvatar/Login + Contact Us */}
           <div className="hidden md:flex items-center gap-2.5">
-            <button
-              type="button"
-              onClick={() => setLang(lang === 'en' ? 'id' : 'en')}
-              aria-label="Toggle language"
-              className={`flex items-center gap-1.5 px-3 py-2.5 rounded-2xl text-[13px] font-bold transition-all duration-300 border-2 ${
-                chromeLight
-                  ? 'border-slate-200 text-slate-500 hover:border-olympic-500 hover:text-olympic-600 hover:bg-olympic-50'
-                  : 'border-white/30 text-white/85 hover:bg-white/10 hover:border-white/60'
-              }`}
-            >
-              <Globe className="w-4 h-4" />
-              {lang === 'en' ? 'ID' : 'EN'}
-            </button>
             {isAuthenticated ? (
               <UserAvatar />
             ) : (
@@ -168,6 +155,19 @@ export default function Navbar() {
                 {t('nav.login')}
               </NavLink>
             )}
+            <button
+              type="button"
+              onClick={() => setLang(lang === 'en' ? 'id' : 'en')}
+              aria-label="Toggle language"
+              className={`flex items-center gap-1.5 px-3 py-2.5 rounded-2xl text-[13px] font-bold transition-all duration-300 border-2 ${
+                chromeLight
+                  ? 'border-slate-200 text-slate-500 hover:border-olympic-500 hover:text-olympic-600 hover:bg-olympic-50'
+                  : 'border-white/30 text-white/85 hover:bg-white/10 hover:border-white/60'
+              }`}
+            >
+              <Globe className="w-4 h-4" />
+              {lang === 'en' ? 'ID' : 'EN'}
+            </button>
             <NavLink
               to="/contact"
               className={({ isActive }) =>

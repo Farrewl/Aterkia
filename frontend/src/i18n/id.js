@@ -15,6 +15,15 @@ const id = {
     description: 'Tim robotika maritim otonom dari Universitas Diponegoro. Merancang, membangun, dan menguji robot laut untuk kompetisi internasional.',
     viewRobots: 'Lihat Robot Kami',
     aboutAterkia: 'Tentang Aterkia',
+    tabs: {
+      monitoring: 'Monitoring',
+      recruitment: 'Perekrutan',
+    },
+    recruitment: {
+      title: 'Bergabung dengan Aterkia',
+      desc: 'Kami mencari engineer yang bersemangat dan anggota resmi untuk bergabung dengan tim robotika maritim kami.',
+      apply: 'Daftar Sekarang',
+    },
   },
   sponsors: {
     title: 'Sponsor Kami',
@@ -113,6 +122,21 @@ const id = {
     alumniTitle: 'Alumni',
     alumniGradient: 'Kami',
     alumniDesc: 'Anggota yang telah lulus dan tetap menjadi bagian dari keluarga Aterkia.',
+    structure: {
+      president: 'Ketua Aterkia',
+      vicePresident: 'Wakil Ketua',
+      secretary: 'Sekretaris',
+      treasurer: 'Bendahara',
+      officialLead: 'Ketua Official',
+      media: 'Media',
+      sponsor: 'Sponsor',
+      asvLead: 'Ketua ASV',
+      auvLead: 'Ketua AUV',
+      mechanical: 'Mekanik',
+      elkapro: 'Elkapro',
+      lead: 'Ketua',
+      member: 'Anggota',
+    },
   },
   contact: {
     heroTitle: 'Dukung',

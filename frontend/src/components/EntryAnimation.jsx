@@ -1,11 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+
+const MIN_DURATION = 3000;
+const FADE_DURATION = 700;
+const HARD_CAP = 15000;
 
 export default function EntryAnimation({ children }) {
-  const [visible, setVisible] = useState(true);
-  const [text, setText] = useState(false);
+  const [visible, setVisible] = useState(() => !sessionStorage.getItem('aterkia_entered'));
+  const [fading, setFading] = useState(false);
+  const [showLoadingText, setShowLoadingText] = useState(false);
+
+  const minDone = useRef(false);
+  const assetsDone = useRef(false);
+  const fadeStarted = useRef(false);
+  const timers = useRef([]);
+
+  const startFade = useCallback(() => {
+    if (fadeStarted.current) return;
+    fadeStarted.current = true;
+    sessionStorage.setItem('aterkia_entered', 'true');
+    setVisible(false);
+    setFading(true);
+    timers.current.push(setTimeout(() => setFading(false), FADE_DURATION));
+  }, []);
 
   useEffect(() => {
-    const textTimer = setTimeout(() => setText(true), 5000);
+    if (!visible) return;
+
+    const loadingTextTimer = setTimeout(() => setShowLoadingText(true), 5000);
+    timers.current.push(loadingTextTimer);
 
     const assetImgs = Array.from(document.images || []);
     const assetVids = Array.from(document.querySelectorAll('video'));
@@ -26,22 +48,34 @@ export default function EntryAnimation({ children }) {
       ),
     ];
 
+    const tryFade = () => {
+      if (minDone.current && assetsDone.current) startFade();
+    };
+
+    const assetTimer = setTimeout(() => {
+      assetsDone.current = true;
+      tryFade();
+    }, HARD_CAP);
+    timers.current.push(assetTimer);
+
     Promise.all(promises).then(() => {
-      clearTimeout(textTimer);
-      setTimeout(() => setVisible(false), 600);
+      assetsDone.current = true;
+      tryFade();
     });
 
-    const hardCap = setTimeout(() => {
-      setVisible(false);
-    }, 12000);
+    const minTimer = setTimeout(() => {
+      minDone.current = true;
+      tryFade();
+    }, MIN_DURATION);
+    timers.current.push(minTimer);
 
     return () => {
-      clearTimeout(textTimer);
-      clearTimeout(hardCap);
+      timers.current.forEach(clearTimeout);
+      timers.current = [];
     };
-  }, []);
+  }, [startFade]);
 
-  if (!visible) return <>{children}</>;
+  if (!visible && !fading) return <>{children}</>;
 
   return (
     <div
@@ -49,6 +83,7 @@ export default function EntryAnimation({ children }) {
       style={{
         background: 'radial-gradient(circle at 50% 40%, #0c2542 0%, #060d1a 55%, #03070f 100%)',
         opacity: visible ? 1 : 0,
+        pointerEvents: fading ? 'none' : 'auto',
       }}
       aria-hidden="true"
     >
@@ -72,7 +107,7 @@ export default function EntryAnimation({ children }) {
           className="mt-2 h-px w-40 bg-gradient-to-r from-transparent via-sky-400/60 to-transparent"
           style={{ animation: 'aterkiaLineGrow 1400ms 500ms cubic-bezier(0.16,1,0.3,1) forwards', transform: 'scaleX(0)' }}
         />
-        {text && (
+        {showLoadingText && (
           <p
             className="mt-8 text-[11px] sm:text-xs uppercase tracking-[0.3em] text-sky-300/70 font-mono"
             style={{ animation: 'aterkiaTextReveal 800ms ease-out forwards', opacity: 0 }}

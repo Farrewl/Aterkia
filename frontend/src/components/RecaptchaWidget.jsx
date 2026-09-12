@@ -25,13 +25,17 @@ export default function RecaptchaWidget({ siteKey, onToken, onError, className =
       if (!window.grecaptcha || !containerRef.current) return;
       if (widgetIdRef.current != null) return;
       clearTimeout(failTimeout);
-      widgetIdRef.current = window.grecaptcha.render(containerRef.current, {
-        sitekey: siteKey,
-        theme: 'dark',
-        callback: (token) => { onTokenRef.current?.(token); },
-        'expired-callback': () => { onTokenRef.current?.(''); },
-        'error-callback': () => { onErrorRef.current?.(new Error('reCAPTCHA challenge failed. Please try again.')); },
-      });
+      try {
+        widgetIdRef.current = window.grecaptcha.render(containerRef.current, {
+          sitekey: siteKey,
+          theme: 'dark',
+          callback: (token) => { onTokenRef.current?.(token); },
+          'expired-callback': () => { onTokenRef.current?.(''); },
+          'error-callback': () => { onErrorRef.current?.(new Error('reCAPTCHA challenge failed. Please try again.')); },
+        });
+      } catch (err) {
+        console.error('reCAPTCHA render error:', err);
+      }
     };
 
     // recaptcha/api.js dimuat dengan onload=onRecaptchaLoad (lihat index.html).

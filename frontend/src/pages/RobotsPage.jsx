@@ -9,8 +9,6 @@ import { useTranslation } from '../i18n';
 import { Anchor, Waves, ArrowRight, Award, Box, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const statusColors = {
-  Active: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
-  Legacy: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
   'In Development': 'text-sky-400 bg-sky-400/10 border-sky-400/20',
 };
 
@@ -85,7 +83,7 @@ export default function RobotsPage() {
       </section>
 
       {/* ── Fleet Dock — pilihan vessel ── */}
-      <section className="relative pb-4 overflow-hidden">
+      <section className="relative pb-4 overflow-hidden pt-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div ref={reveal} className="reveal flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.08] text-white/60 text-sm font-semibold">

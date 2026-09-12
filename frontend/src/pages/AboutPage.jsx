@@ -175,6 +175,14 @@ export default function AboutPage() {
               {t('about.whyTitle')}{' '}
               <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">{t('about.whyGradient')}</span>
             </h2>
+            <div className="mt-6">
+              <a
+                href="/recruitment"
+                className="btn-primary text-xs sm:text-sm px-6 py-2.5 inline-flex items-center gap-2"
+              >
+                Join Aterkia Team
+              </a>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
