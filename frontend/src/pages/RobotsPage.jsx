@@ -90,16 +90,6 @@ export default function RobotsPage() {
               <Waves className="w-4 h-4 text-sky-400" />
               <span>{robotsData.length} {t('robots.vessels')}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => dockScroll(-1)} aria-label="Scroll dock left"
-                className="p-2 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white/50 hover:text-white hover:bg-white/[0.08] transition-colors">
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button onClick={() => dockScroll(1)} aria-label="Scroll dock right"
-                className="p-2 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white/50 hover:text-white hover:bg-white/[0.08] transition-colors">
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
           </div>
 
           {/* Horizontal dock */}
