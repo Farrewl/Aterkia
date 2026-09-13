@@ -103,7 +103,7 @@ export default function RobotsPage() {
           </div>
 
           {/* Horizontal dock */}
-          <div ref={dockRef} className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory">
+          <div ref={dockRef} className="flex gap-5 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory">
             {robotsData.map((robot) => {
               const rAccent = categoryAccent[robot.category] || categoryAccent.ASV;
               const active = helm.id === robot.id;
@@ -151,9 +151,11 @@ export default function RobotsPage() {
 
                   {/* Status bar */}
                   <div className={`flex items-center justify-between px-3 py-2 bg-white/[0.02] border-t ${active ? 'border-sky-400/30' : 'border-white/[0.05]'}`}>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${statusColors[robot.status]}`}>
-                      {robot.status}
-                    </span>
+                    {robot.status === 'In Development' && (
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${statusColors[robot.status]}`}>
+                        {robot.status}
+                      </span>
+                    )}
                     <span className={`flex items-center gap-1 text-[10px] font-semibold ${active ? 'text-sky-400' : 'text-white/40'} transition-colors`}>
                       {active ? t('robots.selected') : t('robots.select')}
                       <ArrowRight className="w-3 h-3" />
@@ -206,9 +208,11 @@ export default function RobotsPage() {
                     {isAUV ? <Waves className="w-3.5 h-3.5" /> : <Anchor className="w-3.5 h-3.5" />}
                     {helm.category}
                   </span>
-                  <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${statusColors[helm.status]}`}>
-                    {helm.status}
-                  </span>
+                  {helm.status === 'In Development' && (
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${statusColors[helm.status]}`}>
+                      {helm.status}
+                    </span>
+                  )}
                   <span className="text-xs text-white/30 font-mono">{helm.year}</span>
                 </div>
 

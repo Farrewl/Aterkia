@@ -117,12 +117,20 @@ export default function LoginPage() {
                 </div>
 
                 {recaptchaEnabled && (
-                  <div className="flex justify-center">
-                    <RecaptchaWidget
-                      siteKey={siteKey}
-                      onToken={setRecaptchaToken}
-                      onError={handleRecaptchaError}
-                    />
+                  <div className="flex justify-center h-10 items-center">
+                    {!recaptchaToken && !recaptchaFailed && (
+                      <div className="flex items-center gap-2 text-sky-300/70 text-xs animate-pulse">
+                        <div className="w-2 h-2 rounded-full bg-sky-400 animate-bounce" />
+                        Verifying security...
+                      </div>
+                    )}
+                    <div className="hidden">
+                      <RecaptchaWidget
+                        siteKey={siteKey}
+                        onToken={setRecaptchaToken}
+                        onError={handleRecaptchaError}
+                      />
+                    </div>
                   </div>
                 )}
 

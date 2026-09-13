@@ -27,7 +27,7 @@ export const activitiesData = [
     title: 'Deployment',
     description: 'Live deployment of the ASV and AUV in operational waters — pushing autonomous control, real-time telemetry, and mission reliability beyond the lab bench.',
     images: [
-      '/images/team/aterkia-team-group.webp',
+      '/images/team/aterkia-team-group.png',
       '/images/news/images.png',
       '/images/robots/robot-asv-1.png',
     ],
@@ -37,8 +37,8 @@ export const activitiesData = [
     title: 'Robot Trial',
     description: 'Field-testing the ASV and AUV in real waters — calibrating sensors, tuning PID, and pushing the boat until something breaks (so it does not break at the contest).',
     images: [
-      '/images/team/aterkia-team-group.webp',
       '/images/news/foto1-768x496.webp',
+      '/images/team/aterkia-team-group.png',
       '/images/robots/robot-asv-1.png',
     ],
   },

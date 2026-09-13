@@ -1,7 +1,6 @@
 // About data — vision, mission, achievements
 export const aboutData = {
   title: "About Aterkia",
-  subtitle: "Student Maritime Robotics Team — Universitas Diponegoro",
   intro: "Aterkia is an Undip student research team developing autonomous watercraft — surface vehicles (ASV) and underwater robots (AUV). The team consists of cross-discipline engineering students working together in design, programming, and field testing.",
 
   slogan: {

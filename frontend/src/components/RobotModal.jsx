@@ -33,9 +33,11 @@ export default function RobotModal({ robot, onClose }) {
               <h3 className="font-display font-bold text-lg text-white">{robot.name}</h3>
               <div className="flex items-center gap-2">
                 <p className="text-xs text-white/30 font-mono">{robot.year}</p>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${statusColors[robot.status]}`}>
-                  {robot.status}
-                </span>
+                {robot.status === 'In Development' && (
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${statusColors[robot.status]}`}>
+                    {robot.status}
+                  </span>
+                )}
               </div>
             </div>
           </div>

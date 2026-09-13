@@ -113,9 +113,10 @@ export default function HomePage() {
         </div>
 
         <div className="relative z-10 text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-[0.2em] uppercase text-white/90">
+          <h2 className="text-2xl sm:text-3xl font-black tracking-[0.2em] uppercase bg-clip-text text-transparent bg-gradient-to-r from-sky-400 via-white to-sky-400 bg-[length:200%_auto] animate-shimmer">
             OUR SPONSORS
           </h2>
+          <div className="w-16 h-0.5 mx-auto mt-2 bg-gradient-to-r from-transparent via-sky-400 to-transparent opacity-50" />
         </div>
         
         <div className="relative z-10 overflow-hidden">

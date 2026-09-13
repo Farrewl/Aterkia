@@ -15,7 +15,7 @@ export default function Navbar() {
   const [indicator, setIndicator] = useState({ left: 0, width: 0, visible: false });
   const location = useLocation();
   // Pages with light backgrounds need dark navbar chrome; everything else is dark ocean themed
-  const isLightPage = location.pathname.startsWith('/team');
+  const isLightPage = false;
   const showBackground = isScrolled || isHovered || isLightPage;
 
   useEffect(() => {

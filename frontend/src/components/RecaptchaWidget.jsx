@@ -26,13 +26,16 @@ export default function RecaptchaWidget({ siteKey, onToken, onError, className =
       if (widgetIdRef.current != null) return;
       clearTimeout(failTimeout);
       try {
+        // Mode invisible
         widgetIdRef.current = window.grecaptcha.render(containerRef.current, {
           sitekey: siteKey,
-          theme: 'dark',
+          size: 'invisible', 
           callback: (token) => { onTokenRef.current?.(token); },
           'expired-callback': () => { onTokenRef.current?.(''); },
-          'error-callback': () => { onErrorRef.current?.(new Error('reCAPTCHA challenge failed. Please try again.')); },
+          'error-callback': () => { onErrorRef.current?.(new Error('reCAPTCHA failed.')); },
         });
+        // Auto-execute invisible captcha if v3
+        window.grecaptcha.execute(widgetIdRef.current);
       } catch (err) {
         console.error('reCAPTCHA render error:', err);
       }

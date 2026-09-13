@@ -33,12 +33,6 @@ export default function AboutPage() {
               </h1>
             </div>
 
-            <div className="overflow-hidden mb-4">
-              <p className="text-sky-300/80 text-lg sm:text-xl font-medium animate-fade-up" style={{ animationDelay: '150ms' }}>
-                {aboutData.subtitle}
-              </p>
-            </div>
-
             <div className="overflow-hidden">
               <p className="text-white/40 text-base sm:text-lg leading-relaxed font-light max-w-2xl animate-fade-up" style={{ animationDelay: '300ms' }}>
                 {aboutData.intro}
