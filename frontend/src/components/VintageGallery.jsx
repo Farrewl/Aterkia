@@ -4,84 +4,130 @@ import { Compass, Anchor } from 'lucide-react';
 import ImageWithFallback from './ImageWithFallback';
 import SocialLinks from './SocialLinks';
 
-const TEAM_MEMBERS = [
-  {
-    id: 1,
+// --- Data Structure ---
+
+const LEADERSHIP = {
+  founder: {
+    id: 'founder',
     name: 'Muhammad Bintang Tri Surya',
     role: 'Chief Captain / Founder',
     frameType: 'oval',
     imageSrc: '/images/team/president/muhammad-bintang-tri-surya.webp',
-    buttonText: 'VIEW LOGBOOK',
-    socials: {
-      github: 'https://github.com',
-      instagram: 'https://instagram.com',
-      linkedin: 'https://linkedin.com',
-      portfolio: 'https://aterkia.com'
-    }
   },
-  {
-    id: 2,
-    name: 'Sekretaris Tim',
+  secretary: {
+    id: 'secretary',
+    name: 'Secretary Name',
     role: 'Master Scribe / Secretary',
     frameType: 'rectangular',
-    imageSrc: '/images/team/president/muhammad-bintang-tri-surya.webp',
-    buttonText: 'INSPECT CHARTS',
-    socials: {
-      github: 'https://github.com',
-      instagram: 'https://instagram.com',
-      linkedin: 'https://linkedin.com'
-    }
+    imageSrc: '/images/team/nontechnical/secretary.jpg',
   },
-  {
-    id: 3,
-    name: 'Feby',
+  treasurer: {
+    id: 'treasurer',
+    name: 'Feby Finance',
     role: 'Grand Treasurer / Finance',
     frameType: 'oval',
-    imageSrc: '/images/team/president/muhammad-bintang-tri-surya.webp',
-    buttonText: 'VIEW LOGBOOK',
-    socials: {
-      instagram: 'https://instagram.com',
-      linkedin: 'https://linkedin.com'
-    }
-  },
+    imageSrc: '/images/team/auv/feby-finance-clean.webp',
+  }
+};
+
+const COMMANDERS = [
   {
-    id: 4,
-    name: 'Ketua Official',
-    role: 'Operations & Media Commander',
+    id: 'official-lead',
+    name: 'Official Lead',
+    role: 'Operations Commander',
     frameType: 'rectangular',
-    imageSrc: '/images/team/president/muhammad-bintang-tri-surya.webp',
-    buttonText: 'INSPECT CHARTS',
-    socials: {
-      github: 'https://github.com',
-      linkedin: 'https://linkedin.com'
-    }
+    imageSrc: '/images/team/nontechnical/official-coordinator.jpg',
+    division: 'OFFICIAL',
+    subdivisions: [
+      { name: 'Media', count: 3 },
+      { name: 'Sponsor', count: 3 }
+    ]
   },
   {
-    id: 5,
-    name: 'Ketua ASV',
-    role: 'ASV Commander / Mechanical Lead',
+    id: 'asv-lead',
+    name: 'ASV Lead',
+    role: 'ASV Commander',
     frameType: 'oval',
-    imageSrc: '/images/team/president/muhammad-bintang-tri-surya.webp',
-    buttonText: 'VIEW LOGBOOK',
-    socials: {
-      github: 'https://github.com',
-      instagram: 'https://instagram.com'
-    }
+    imageSrc: '/images/team/asv/ketua.jpg',
+    division: 'ASV',
+    subdivisions: [
+      { name: 'Mechanical', count: 7 },
+      { name: 'Elkapro', count: 13 }
+    ]
   },
   {
-    id: 6,
-    name: 'Ketua AUV',
-    role: 'AUV Commander / Electronics Lead',
+    id: 'auv-lead',
+    name: 'AUV Lead',
+    role: 'AUV Commander',
     frameType: 'rectangular',
-    imageSrc: '/images/team/president/muhammad-bintang-tri-surya.webp',
-    buttonText: 'INSPECT CHARTS',
-    socials: {
-      github: 'https://github.com',
-      linkedin: 'https://linkedin.com',
-      portfolio: 'https://aterkia.com'
-    }
-  },
+    imageSrc: '/images/team/auv/feby-finance-clean.webp', // Using same for placeholder
+    division: 'AUV',
+    subdivisions: [
+      { name: 'Mechanical', count: 6 },
+      { name: 'Elkapro', count: 9 }
+    ]
+  }
 ];
+
+// --- Components ---
+
+const PortraitFrame = ({ member, size = 'md', isCaptain = false }) => {
+  const isOval = member.frameType === 'oval';
+  
+  // Dimensions
+  const containerClasses = {
+    lg: 'w-72 sm:w-80 h-[420px] sm:h-[480px]',
+    md: 'w-64 sm:w-72 h-80 sm:h-96',
+    sm: 'w-40 sm:w-48 h-56 sm:h-64'
+  }[size];
+
+  return (
+    <div className={`relative ${containerClasses} flex items-center justify-center p-2 mb-4 transition-transform duration-500 group-hover:-translate-y-2`}>
+      {/* Outer Frame Effect */}
+      {isOval ? (
+        <div className="absolute inset-0 border-[10px] border-[#8B5A2B] rounded-[50%] shadow-[inset_0_0_20px_rgba(0,0,0,0.9),0_10px_25px_rgba(0,0,0,0.7)] z-20 pointer-events-none ring-1 ring-[#D4AF37]/30" />
+      ) : (
+        <div className="absolute inset-0 border-[10px] border-[#4A2F13] shadow-[inset_0_0_20px_rgba(0,0,0,0.9),0_10px_25px_rgba(0,0,0,0.7)] z-20 pointer-events-none ring-1 ring-[#D4AF37]/30">
+          <span className="absolute -top-1 -left-1 text-[#D4AF37] text-[10px]">◆</span>
+          <span className="absolute -top-1 -right-1 text-[#D4AF37] text-[10px]">◆</span>
+          <span className="absolute -bottom-1 -left-1 text-[#D4AF37] text-[10px]">◆</span>
+          <span className="absolute -bottom-1 -right-1 text-[#D4AF37] text-[10px]">◆</span>
+        </div>
+      )}
+
+      {/* Inner Photo Stage */}
+      <div className={`relative w-full h-full overflow-hidden bg-[#0B131D] ${isOval ? 'rounded-[50%]' : 'rounded-sm'}`}>
+        <ImageWithFallback
+          src={member.imageSrc || '/assets/profile.png'}
+          alt={member.name}
+          name={member.name}
+          className="w-full h-full object-cover grayscale-[15%] sepia-[20%] contrast-110 brightness-95 group-hover:scale-105 group-hover:brightness-105 transition-all duration-700"
+          containerClassName="w-full h-full"
+        />
+        <div className="absolute inset-0 bg-radial-vignette opacity-40 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, transparent 40%, rgba(11,19,29,0.85) 100%)' }} />
+      </div>
+    </div>
+  );
+};
+
+const MemberCard = ({ member, size = 'sm' }) => (
+  <motion.article
+    initial={{ opacity: 0, scale: 0.9 }}
+    whileInView={{ opacity: 1, scale: 1 }}
+    viewport={{ once: true }}
+    className="flex flex-col items-center group"
+  >
+    <PortraitFrame member={member} size={size} />
+    <div className="text-center max-w-[180px]">
+      <h3 className={`${size === 'sm' ? 'text-sm' : 'text-lg'} font-display font-bold text-white leading-tight truncate w-full`}>
+        {member.name}
+      </h3>
+      <p className={`${size === 'sm' ? 'text-[10px]' : 'text-xs'} font-medium italic gradient-text uppercase tracking-wider`}>
+        {member.role}
+      </p>
+    </div>
+  </motion.article>
+);
 
 export default function VintageGallery() {
   return (
@@ -92,19 +138,7 @@ export default function VintageGallery() {
         <Compass size="100%" strokeWidth={0.4} className="animate-spin" style={{ animationDuration: '180s' }} />
       </div>
 
-      {/* Decorative Antique Elements */}
-      <div className="absolute top-8 left-8 z-20 opacity-70 hover:opacity-100 transition-opacity">
-        <div className="w-12 h-20 border-l border-t border-sky-400/40 pl-2 pt-2">
-          <Anchor size={36} className="text-sky-400" />
-        </div>
-      </div>
-      <div className="absolute bottom-8 right-8 z-20 opacity-70 hover:opacity-100 transition-opacity">
-        <div className="w-12 h-20 border-r border-b border-sky-400/40 pr-2 pb-2 flex items-end justify-end">
-          <Compass size={36} className="text-sky-400 rotate-[-12deg]" />
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-[1400px] mx-auto relative z-10">
         <header className="text-center mb-28">
           <span className="text-xs sm:text-sm font-display font-bold tracking-[0.3em] uppercase gradient-text block mb-3">
             Captain's Quarters & Fleet Command
@@ -118,66 +152,67 @@ export default function VintageGallery() {
           </p>
         </header>
 
-        {/* Staggered Portrait Wall */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
-          {TEAM_MEMBERS.map((member, index) => {
-            // Captain/Founder (index 0) is centered and elevated
-            const isCaptain = index === 0;
-            const isStaggered = !isCaptain && index % 2 !== 0;
+        {/* 1. Leadership Triangle */}
+        <div className="flex flex-col items-center mb-32">
+          <div className="relative">
+            {/* Founder - Center Top */}
+            <div className="flex justify-center mb-[-40px] relative z-10">
+              <MemberCard member={LEADERSHIP.founder} size="lg" />
+            </div>
+            
+            {/* Sec & Treas - Bottom Left & Right */}
+            <div className="flex gap-12 sm:gap-32 mt-[-20px]">
+              <div className="translate-y-10 -rotate-3 hover:rotate-0 transition-transform duration-500">
+                <MemberCard member={LEADERSHIP.treasurer} size="md" />
+              </div>
+              <div className="translate-y-10 rotate-3 hover:rotate-0 transition-transform duration-500">
+                <MemberCard member={LEADERSHIP.secretary} size="md" />
+              </div>
+            </div>
+          </div>
+        </div>
 
-            return (
-              <motion.article
-                key={member.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: index * 0.1 }}
-                className={`flex flex-col items-center group ${isCaptain ? 'md:col-span-2 lg:col-span-3 mb-16' : ''} ${isStaggered ? 'lg:translate-y-12' : ''}`}
-              >
-                {/* Vintage Frame Container */}
-                <div className={`relative ${isCaptain ? 'w-72 sm:w-80 h-[420px] sm:h-[480px]' : 'w-64 sm:w-72 h-80 sm:h-96'} flex items-center justify-center p-3 mb-6 transition-transform duration-500 group-hover:-translate-y-2`}>
-                  {/* Outer Frame Effect */}
-                  {member.frameType === 'oval' ? (
-                    <div className="absolute inset-0 border-[14px] border-[#8B5A2B] rounded-[50%] shadow-[inset_0_0_25px_rgba(0,0,0,0.9),0_15px_35px_rgba(0,0,0,0.7)] z-20 pointer-events-none ring-2 ring-[#D4AF37]/50" />
-                  ) : (
-                    <div className="absolute inset-0 border-[14px] border-[#4A2F13] shadow-[inset_0_0_25px_rgba(0,0,0,0.9),0_15px_35px_rgba(0,0,0,0.7)] z-20 pointer-events-none ring-2 ring-[#D4AF37]/50">
-                      {/* Brass Corner Accents */}
-                      <span className="absolute -top-1 -left-1 text-[#D4AF37] text-xs">◆</span>
-                      <span className="absolute -top-1 -right-1 text-[#D4AF37] text-xs">◆</span>
-                      <span className="absolute -bottom-1 -left-1 text-[#D4AF37] text-xs">◆</span>
-                      <span className="absolute -bottom-1 -right-1 text-[#D4AF37] text-xs">◆</span>
+        {/* 2. Commanders & Their Crews */}
+        <div className="space-y-40">
+          {COMMANDERS.map((commander) => (
+            <div key={commander.id} className="space-y-16">
+              {/* Commander Header */}
+              <div className="flex flex-col items-center">
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-16" />
+                <MemberCard member={commander} size="md" />
+              </div>
+
+              {/* Crew Grids */}
+              <div className="flex flex-col gap-12">
+                {commander.subdivisions.map((sub) => (
+                  <div key={sub.name} className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-sky-400/20" />
+                      <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-sky-400/60">
+                        {commander.division} {sub.name} <span className="opacity-40">/ {sub.count} Units</span>
+                      </h4>
+                      <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-sky-400/20" />
                     </div>
-                  )}
-
-                  {/* Inner Photo Stage with Candlelight Vignette */}
-                  <div className={`relative w-full h-full overflow-hidden bg-[#0B131D] ${member.frameType === 'oval' ? 'rounded-[50%]' : 'rounded-sm'}`}>
-                    <ImageWithFallback
-                      src={member.imageSrc}
-                      alt={member.name}
-                      name={member.name}
-                      className="w-full h-full object-cover grayscale-[20%] sepia-[30%] contrast-110 brightness-95 group-hover:scale-105 group-hover:brightness-105 transition-all duration-700"
-                      containerClassName="w-full h-full"
-                    />
-                    {/* Dark Vignette Overlay */}
-                    <div className="absolute inset-0 bg-radial-vignette opacity-40 pointer-events-none group-hover:opacity-20 transition-opacity duration-500" style={{ backgroundImage: 'radial-gradient(circle, transparent 40%, rgba(11,19,29,0.85) 100%)' }} />
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-6 justify-items-center">
+                      {Array.from({ length: sub.count }).map((_, i) => (
+                        <MemberCard 
+                          key={i} 
+                          member={{
+                            name: 'Crew Member',
+                            role: sub.name,
+                            frameType: (i + (sub.name === 'Elkapro' ? 1 : 0)) % 2 === 0 ? 'oval' : 'rectangular',
+                            imageSrc: null
+                          }} 
+                          size="sm" 
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-
-                {/* Identity & Details */}
-                <div className="text-center space-y-1 max-w-xs">
-                  <h3 className="text-xl sm:text-2xl font-display font-bold text-white leading-snug">
-                    {member.name}
-                  </h3>
-                  <p className="text-sm font-medium italic gradient-text">
-                    {member.role}
-                  </p>
-                  
-                  {/* Social Links */}
-                  <SocialLinks socials={member.socials} />
-                </div>
-              </motion.article>
-            );
-          })}
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
