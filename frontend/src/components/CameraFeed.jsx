@@ -3,6 +3,7 @@ import {
   Video, Wifi, WifiOff, ScanLine, Maximize2, Minimize2, Loader2, AlertTriangle, Power, ChevronDown
 } from 'lucide-react';
 import { useCameraStream } from '../hooks';
+import { useTranslation } from '../i18n';
 
 const LABEL_COLORS = {
   green_ball: { stroke: '#22c55e', bg: 'rgba(34,197,94,0.25)', text: '#86efac' },
@@ -12,14 +13,15 @@ const LABEL_COLORS = {
 const DEFAULT_COLOR = { stroke: '#22d3ee', bg: 'rgba(34,211,238,0.25)', text: '#a5f3fc' };
 
 const STATUS_META = {
-  live:       { label: 'Dihubungkan',            dot: 'bg-emerald-500 animate-pulse', wrap: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25' },
-  connecting: { label: 'Menyambungkan…',         dot: 'bg-amber-400 animate-pulse',   wrap: 'bg-amber-500/15 text-amber-400 border-amber-500/25' },
-  starting:   { label: 'Menyambungkan…',         dot: 'bg-amber-400 animate-pulse',   wrap: 'bg-amber-500/15 text-amber-400 border-amber-500/25' },
-  idle:       { label: 'Terputus',               dot: 'bg-slate-500',                 wrap: 'bg-slate-500/15 text-slate-400 border-slate-500/25' },
-  offline:    { label: 'Gagal menyambungkan',    dot: 'bg-red-500',                   wrap: 'bg-red-500/15 text-red-400 border-red-500/25' },
+  live:       { labelKey: 'camera.statusLive',       dot: 'bg-emerald-500 animate-pulse', wrap: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25' },
+  connecting: { labelKey: 'camera.statusConnecting', dot: 'bg-amber-400 animate-pulse',   wrap: 'bg-amber-500/15 text-amber-400 border-amber-500/25' },
+  starting:   { labelKey: 'camera.statusConnecting', dot: 'bg-amber-400 animate-pulse',   wrap: 'bg-amber-500/15 text-amber-400 border-amber-500/25' },
+  idle:       { labelKey: 'camera.statusIdle',       dot: 'bg-slate-500',                 wrap: 'bg-slate-500/15 text-slate-400 border-slate-500/25' },
+  offline:    { labelKey: 'camera.statusOffline',    dot: 'bg-red-500',                   wrap: 'bg-red-500/15 text-red-400 border-red-500/25' },
 };
 
 export default function CameraFeed({ className = '' }) {
+  const { t } = useTranslation();
   const {
     status, error, detections, latestInfo, streamRef, frameVersion,
     cameraEnabled, robot, robots, toggleCamera, selectRobot,
@@ -62,7 +64,7 @@ export default function CameraFeed({ className = '' }) {
     return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
   }, []);
 
-  // Draw frame + detection overlay ke canvas utama
+  // Draw frame + detection overlay to main canvas
   useEffect(() => {
     const canvas = overlayRef.current;
     if (!canvas || wrapSize.w === 0) return;
@@ -92,18 +94,18 @@ export default function CameraFeed({ className = '' }) {
 
     if (status !== 'live' || !img || !img.complete || !img.naturalWidth) {
       if (status === 'idle') {
-        drawPlaceholder('Camera is off', `Klik ON untuk menyambungkan ke ${robot}`);
+        drawPlaceholder('Camera is off', `${t('camera.clickOn')} ${robot}`);
       } else if (status === 'connecting' || status === 'starting') {
-        drawPlaceholder('Menyambungkan…', `Menghubungi server kamera (${robot})`);
+        drawPlaceholder(t('camera.statusConnecting'), `${t('camera.connectingTo')} (${robot})`);
       } else if (status === 'offline') {
-        drawPlaceholder('Gagal menyambungkan', error || 'Server kamera tidak terjangkau');
+        drawPlaceholder(t('camera.statusOffline'), error || t('camera.cameraOffline'));
       } else {
-        drawPlaceholder('waiting for stream...', '');
+        drawPlaceholder(t('camera.placeholderWaiting'), '');
       }
       return;
     }
 
-    // Gambar frame dengan object-contain (letterbox)
+    // Draw frame with object-contain (letterbox)
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
     const scale = Math.min(W / iw, H / ih);
@@ -158,7 +160,7 @@ export default function CameraFeed({ className = '' }) {
         labelY + 15
       );
     });
-  }, [frameVersion, detections, wrapSize, streamRef, status, robot, error]);
+  }, [frameVersion, detections, wrapSize, streamRef, status, robot, error, t]);
 
   const sm = STATUS_META[status] || STATUS_META.connecting;
   const isBusy = status === 'connecting' || status === 'starting';
@@ -173,16 +175,16 @@ export default function CameraFeed({ className = '' }) {
           </div>
           <div>
             <h2 className="font-display font-bold text-sm flex items-center gap-2">
-              Vision Feed
+              {t('camera.visionFeed')}
               <span className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold ${sm.wrap}`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${sm.dot}`} />
-                {sm.label}
+                {t(sm.labelKey)}
               </span>
             </h2>
             <p className="text-[10px] text-white/35 font-mono">
               {status === 'live' && latestInfo
-                ? `Aterolas CAM · ${latestInfo.w}×${latestInfo.h} · ${detections.length} deteksi`
-                : 'Buoy Detection Camera'}
+                ? `Aterolas CAM · ${latestInfo.w}×${latestInfo.h} · ${detections.length} ${t('camera.detectionCount')}`
+                : t('camera.buoyDetection')}
             </p>
           </div>
         </div>
@@ -195,7 +197,7 @@ export default function CameraFeed({ className = '' }) {
               onChange={(e) => selectRobot(e.target.value)}
               disabled={status === 'live'}
               className="appearance-none pl-3 pr-8 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white text-xs font-mono transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none"
-              aria-label="Pilih robot"
+              aria-label={t('camera.selectRobot')}
             >
               {robots.map((r) => (
                 <option key={r} value={r} className="bg-slate-900 text-slate-100">{r}</option>
@@ -215,7 +217,7 @@ export default function CameraFeed({ className = '' }) {
                   ? 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'
                   : 'bg-white/5 border-white/10 text-white/40'
             }`}
-            aria-label={cameraEnabled ? 'Matikan kamera' : 'Nyalakan kamera'}
+            aria-label={cameraEnabled ? t('camera.turnOffCamera') : t('camera.turnOnCamera')}
           >
             <Power className={`w-3.5 h-3.5 ${cameraEnabled ? 'text-emerald-400' : 'text-white/40'}`} />
             {cameraEnabled ? 'ON' : 'OFF'}
@@ -248,7 +250,7 @@ export default function CameraFeed({ className = '' }) {
           <span>YOLOv10 · buoy.pt</span>
           <span className="text-white/20">·</span>
           {latestInfo?.model_ready === false ? (
-            <span className="text-amber-400/80">detection OFF</span>
+            <span className="text-amber-400/80">{t('camera.detectionOff')}</span>
           ) : (
             <>
               <span>green_ball</span>
@@ -262,12 +264,12 @@ export default function CameraFeed({ className = '' }) {
           {status === 'offline' && (
             <span className="flex items-center gap-1 text-red-400/80">
               <AlertTriangle className="w-3.5 h-3.5" />
-              {error || 'Server kamera tidak terjangkau'}
+              {error || t('camera.cameraOffline')}
             </span>
           )}
           <span className="flex items-center gap-1">
             <Wifi className={`w-3 h-3 ${status === 'live' ? 'text-emerald-400' : status === 'connecting' || status === 'starting' ? 'text-amber-400' : 'text-white/25'}`} />
-            {status === 'live' ? 'TERHUBUNG' : status === 'offline' ? 'PUTUS' : '—'}
+            {status === 'live' ? t('camera.connected') : status === 'offline' ? t('camera.disconnected') : '—'}
           </span>
           <span>WS · {latestInfo?.fps ? `${latestInfo.fps} fps` : '—'}</span>
         </div>

@@ -1,11 +1,13 @@
 import React from 'react';
 import { aboutData } from '../data/aboutData';
+import { useTranslation } from '../i18n';
 
 export default function AboutRoadmap() {
+  const { t } = useTranslation();
   return (
     <section className="py-24 px-4 bg-[#060D17] text-white">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-black font-display mb-16">Future Roadmap</h2>
+        <h2 className="text-4xl font-black font-display mb-16">{t('about.futureRoadmap')}</h2>
 
         <div className="space-y-6 max-w-3xl">
           {(aboutData.roadmap || []).map((item, i) => (

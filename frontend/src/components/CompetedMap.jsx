@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { aboutData } from '../data/aboutData';
+import { useTranslation } from '../i18n';
 
 function MapFallback({ comp }) {
+  const { t } = useTranslation();
   if (!comp || !comp.coords) {
     return (
       <div className="w-full h-[350px] flex flex-col items-center justify-center bg-[#0a192f] rounded-2xl border border-white/5">
-        <p className="text-sm text-white/40 font-mono">No location data</p>
+        <p className="text-sm text-white/40 font-mono">{t('about.noLocationData')}</p>
       </div>
     );
   }
@@ -69,16 +71,17 @@ function LazyMap({ comp }) {
 }
 
 export default function CompetedMap() {
+  const { t } = useTranslation();
   const [activeComp, setActiveComp] = useState(() => aboutData.competitions?.[0] || null);
 
   return (
     <section className="py-24 px-4 bg-[#060D17] text-white border-t border-white/10">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-black font-display mb-12">Where We've Competed</h2>
+        <h2 className="text-4xl font-black font-display mb-12">{t('about.whereWeCompeted')}</h2>
         
         <div className="grid lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-5 space-y-4">
-            <p className="text-gray-400 text-sm font-mono mb-6">GLOBAL EXPEDITIONS & ACHIEVEMENTS</p>
+            <p className="text-gray-400 text-sm font-mono mb-6">{t('about.globalExpeditions')}</p>
             {(aboutData.competitions || []).map((comp, i) => (
               <div 
                 key={i} 
@@ -110,7 +113,7 @@ export default function CompetedMap() {
             <div className="mt-4 text-center">
               <span className="text-xs font-mono text-sky-400 uppercase tracking-widest">{activeComp.location}</span>
               <h4 className="text-xl font-bold mt-1 text-white">{activeComp.name} ({activeComp.year})</h4>
-              <p className="text-sm text-gray-400 mt-0.5">Outcome: <span className="text-white font-bold">{activeComp.result}</span></p>
+              <p className="text-sm text-gray-400 mt-0.5">{t('about.outcome')} <span className="text-white font-bold">{activeComp.result}</span></p>
             </div>
           </div>
         </div>

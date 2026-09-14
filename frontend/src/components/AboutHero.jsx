@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { aboutData } from '../data/aboutData';
+import { useTranslation } from '../i18n';
 
 export default function AboutHero() {
+  const { t } = useTranslation();
   return (
     <section className="relative min-h-screen flex flex-col justify-center py-20 px-4 bg-[#060D17]">
       {/* Background grid */}
@@ -10,7 +12,7 @@ export default function AboutHero() {
       
       <div className="max-w-7xl mx-auto w-full z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <h1 className="text-white text-5xl md:text-8xl font-black font-display tracking-tight">WE ARE</h1>
+          <h1 className="text-white text-5xl md:text-8xl font-black font-display tracking-tight">{t('about.weAre')}</h1>
           <h1 className="text-sky-400 text-6xl md:text-9xl font-black font-display tracking-tight">{aboutData.teamName}</h1>
         </motion.div>
 

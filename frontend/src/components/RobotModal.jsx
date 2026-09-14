@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Ship, Waves, Award, Check, Box } from 'lucide-react';
 import ImageWithFallback from './ImageWithFallback';
 import GLBViewer from './GLBViewer';
+import { useTranslation } from '../i18n';
 
 const statusColors = {
   Active: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
@@ -15,6 +16,7 @@ const categoryAccent = {
 };
 
 export default function RobotModal({ robot, onClose }) {
+  const { t } = useTranslation();
   if (!robot) return null;
   const isAUV = robot.category.includes('AUV');
   const accent = categoryAccent[robot.category] || categoryAccent.ASV;
@@ -41,14 +43,14 @@ export default function RobotModal({ robot, onClose }) {
               </div>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl border border-white/[0.08] text-white/40 hover:text-white hover:bg-white/[0.06] transition-colors" aria-label="Close">
+          <button onClick={onClose} className="p-2 rounded-xl border border-white/[0.08] text-white/40 hover:text-white hover:bg-white/[0.06] transition-colors" aria-label={t('robots.close')}>
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
         <div className="p-6 sm:p-8 max-h-[75vh] overflow-y-auto space-y-5">
-          {/* Media: 3D model bila tersedia, fallback ke gambar */}
+          {/* Media: 3D model if available, fallback to image */}
           <div className="rounded-xl overflow-hidden border border-white/[0.06] w-full bg-[#111827]">
             {robot.model3D ? (
               <div className="w-full aspect-[4/3]">
@@ -64,7 +66,7 @@ export default function RobotModal({ robot, onClose }) {
 
           {/* Story — extra info utama */}
           <div>
-            <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider mb-2">The Story</h4>
+            <h4 className="text-xs font-bold text-white/30 uppercase tracking-wider mb-2">{t('robots.theStory')}</h4>
             <p className="text-white/50 text-sm leading-relaxed">{robot.description}</p>
           </div>
 
@@ -85,7 +87,7 @@ export default function RobotModal({ robot, onClose }) {
           {robot.achievements && robot.achievements.length > 0 && (
             <div className="pt-2">
               <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <Award className="w-4 h-4" /> Achievements
+                <Award className="w-4 h-4" /> {t('robots.achievements')}
               </h4>
               <ul className="space-y-1.5">
                 {robot.achievements.map((a, i) => (

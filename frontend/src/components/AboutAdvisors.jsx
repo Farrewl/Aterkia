@@ -1,14 +1,16 @@
 import React from 'react';
 import { aboutData } from '../data/aboutData';
+import { useTranslation } from '../i18n';
 
 export default function AboutAdvisors() {
+  const { t } = useTranslation();
   const advisors = aboutData.teamStructure?.advisors || [];
 
   return (
     <section className="py-24 px-4 bg-[#081424] text-white border-t border-white/10">
       <div className="max-w-7xl mx-auto text-center">
-        <span className="text-xs font-mono tracking-[0.3em] uppercase text-sky-400 block mb-3">Mentorship & Guidance</span>
-        <h2 className="text-4xl font-black font-display mb-16">Faculty Advisors</h2>
+        <span className="text-xs font-mono tracking-[0.3em] uppercase text-sky-400 block mb-3">{t('about.mentorshipLabel')}</span>
+        <h2 className="text-4xl font-black font-display mb-16">{t('about.advisorsTitle')}</h2>
 
         <div className="flex flex-wrap justify-center gap-8">
           {advisors.map((adv, i) => (
