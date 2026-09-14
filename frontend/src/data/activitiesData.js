@@ -44,7 +44,7 @@ export const activitiesData = [
   },
   {
     id: 'study',
-    title: 'Studi Banding',
+    title: 'Benchmarking Study',
     description: 'Cross-team visits and knowledge exchange with other robotics teams and institutions. Learning what works, what fails, and how to ship a better robot next season.',
     images: [
       '/images/news/Pelepasan-Kontingen-KKI-Undip-2025-1536x862.webp',
@@ -54,7 +54,7 @@ export const activitiesData = [
   },
   {
     id: 'competition',
-    title: 'Kompetisi',
+    title: 'Competition',
     description: 'KKCTBN, RoboBoat, SAUVC. National and international contests where the work actually meets the water — and the clock.',
     images: [
       '/images/news/Pelepasan-Kontingen-KKI-Undip-2025-1536x862.webp',

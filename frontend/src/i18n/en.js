@@ -12,7 +12,7 @@ const en = {
   hero: {
     title: 'Aterkia',
     subtitle: 'RoboBoat',
-    description: 'An autonomous maritime robotics team from Universitas Diponegoro. Designing, building, and testing ocean robots for international competition.',
+    description: 'An autonomous maritime robotics team from Universitas Diponegoro. Designing, building, and testing ocean robots for national & international competition.',
     viewRobots: 'View Our Robots',
     aboutAterkia: 'About Aterkia',
     tabs: {
