@@ -27,7 +27,7 @@ export const activitiesData = [
     title: 'Deployment',
     description: 'Live deployment of the ASV and AUV in operational waters — pushing autonomous control, real-time telemetry, and mission reliability beyond the lab bench.',
     images: [
-      '/images/team/aterkia-team-group.webp',
+      '/images/team/aterkia-team-group.png',
       '/images/news/images.png',
       '/images/robots/robot-asv-1.png',
     ],
@@ -37,14 +37,14 @@ export const activitiesData = [
     title: 'Robot Trial',
     description: 'Field-testing the ASV and AUV in real waters — calibrating sensors, tuning PID, and pushing the boat until something breaks (so it does not break at the contest).',
     images: [
-      '/images/team/aterkia-team-group.webp',
       '/images/news/foto1-768x496.webp',
+      '/images/team/aterkia-team-group.png',
       '/images/robots/robot-asv-1.png',
     ],
   },
   {
     id: 'study',
-    title: 'Studi Banding',
+    title: 'Benchmarking Study',
     description: 'Cross-team visits and knowledge exchange with other robotics teams and institutions. Learning what works, what fails, and how to ship a better robot next season.',
     images: [
       '/images/news/Pelepasan-Kontingen-KKI-Undip-2025-1536x862.webp',
@@ -54,7 +54,7 @@ export const activitiesData = [
   },
   {
     id: 'competition',
-    title: 'Kompetisi',
+    title: 'Competition',
     description: 'KKCTBN, RoboBoat, SAUVC. National and international contests where the work actually meets the water — and the clock.',
     images: [
       '/images/news/Pelepasan-Kontingen-KKI-Undip-2025-1536x862.webp',

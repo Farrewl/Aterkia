@@ -19,6 +19,7 @@ import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/auth/ProfilePage';
 import AdminPage from './pages/auth/AdminPage';
 import MonitoringPage from './pages/MonitoringPage';
+import RecruitmentPage from './pages/RecruitmentPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
@@ -54,6 +55,7 @@ export default function App() {
                     </ProtectedRoute>
                   } />
                   <Route path="/monitoring" element={<MonitoringPage />} />
+                  <Route path="/recruitment" element={<RecruitmentPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </main>

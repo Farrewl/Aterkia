@@ -1,48 +1,64 @@
 import React from 'react';
-import { missionData } from '../data/missionData';
+import { Target, Flag } from 'lucide-react';
 import { useTranslation } from '../i18n';
+
+const ROADMAP_ITEMS = [
+  {
+    year: '2026',
+    title: 'Autonomous Navigation & Sonar Integration',
+    desc: 'Enhance SLAM algorithms, integrate multi-beam sonar for ASV, and achieve full pool qualification for RoboBoat.',
+    status: 'In Progress'
+  },
+  {
+    year: '2027',
+    title: 'Deep-Sea Autonomous Maneuvering',
+    desc: 'Deploy custom subsea thruster arrays and real-time computer vision object tracking for international AUV challenges.',
+    status: 'Upcoming'
+  }
+];
 
 export default function RoadmapSection() {
   const { t } = useTranslation();
+
   return (
-    <section className="relative py-16 sm:py-20 bg-[#060d1a] overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[30%] right-[10%] w-72 h-72 bg-sky-500/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-end justify-between mb-10">
-          <div className="max-w-xl">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-display text-white tracking-tight">
-              {t('roadmap.title')}{' '}
-              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">{t('roadmap.titleGradient')}</span>
-            </h2>
-          </div>
+    <section className="relative py-20 bg-[#060d1a] border-t border-sky-500/10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div className="text-center mb-16">
+          <span className="text-xs font-bold uppercase tracking-widest text-sky-400">Future Milestones</span>
+          <h2 className="text-3xl sm:text-5xl font-black font-display text-white mt-2">
+            Strategic <span className="gradient-text">Roadmap</span>
+          </h2>
+          <p className="text-sky-200/60 text-sm sm:text-base mt-3">
+            Focus areas and key goals planned for 2026 and 2027.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {missionData.map((m, idx) => (
-            <div
-              key={m.year + m.title}
-              className={`group relative ${idx % 2 === 0 ? 'reveal-left' : 'reveal-right'} bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-7 hover:bg-white/[0.06] hover:border-sky-500/25 transition-all duration-500 hover:-translate-y-1`}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-sm font-black font-display text-sky-400 group-hover:text-sky-300 transition-colors">
-                  {m.year}
-                </span>
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-sky-500/15 border border-sky-400/20 text-sky-300">
-                  {m.status}
-                </span>
+        {/* Minimal Flow Line (Non-card layout) */}
+        <div className="space-y-12 relative before:absolute before:inset-0 before:left-8 md:before:left-1/2 before:w-0.5 before:bg-gradient-to-b before:from-sky-400/40 before:via-sky-400/20 before:to-transparent">
+          {ROADMAP_ITEMS.map((item, idx) => {
+            const isEven = idx % 2 === 0;
+            return (
+              <div key={idx} className={`relative flex flex-col md:flex-row items-start ${isEven ? 'md:flex-row-reverse' : ''} gap-8 group`}>
+                
+                {/* Center Node */}
+                <div className="absolute left-8 md:left-1/2 -translate-x-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-[#0a1628] border-2 border-sky-400 shadow-lg shadow-sky-400/20 z-10">
+                  <span className="w-2.5 h-2.5 rounded-full bg-sky-400" />
+                </div>
+
+                {/* Content Side */}
+                <div className={`pl-16 md:pl-0 w-full md:w-1/2 ${isEven ? 'md:pr-12 md:text-right' : 'md:pl-12 md:text-left'}`}>
+                  <span className="inline-block px-3 py-1 bg-sky-500/10 border border-sky-500/20 rounded-full text-xs font-bold text-sky-400 mb-2">
+                    {item.year} • {item.status}
+                  </span>
+                  <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
+                  <p className="text-sm text-sky-200/70 leading-relaxed">{item.desc}</p>
+                </div>
               </div>
-              <h3 className="font-display font-bold text-xl text-white mb-2 group-hover:text-sky-300 transition-colors">
-                {m.title}
-              </h3>
-              <p className="text-white/45 text-sm leading-relaxed font-light">
-                {m.description}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
+
       </div>
     </section>
   );

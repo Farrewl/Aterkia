@@ -9,8 +9,6 @@ import { useTranslation } from '../i18n';
 import { Anchor, Waves, ArrowRight, Award, Box, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const statusColors = {
-  Active: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
-  Legacy: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
   'In Development': 'text-sky-400 bg-sky-400/10 border-sky-400/20',
 };
 
@@ -85,27 +83,17 @@ export default function RobotsPage() {
       </section>
 
       {/* ── Fleet Dock — pilihan vessel ── */}
-      <section className="relative pb-4 overflow-hidden">
+      <section className="relative pb-4 overflow-hidden pt-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div ref={reveal} className="reveal flex items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.08] text-white/60 text-sm font-semibold">
               <Waves className="w-4 h-4 text-sky-400" />
               <span>{robotsData.length} {t('robots.vessels')}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => dockScroll(-1)} aria-label="Scroll dock left"
-                className="p-2 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white/50 hover:text-white hover:bg-white/[0.08] transition-colors">
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button onClick={() => dockScroll(1)} aria-label="Scroll dock right"
-                className="p-2 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white/50 hover:text-white hover:bg-white/[0.08] transition-colors">
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
           </div>
 
           {/* Horizontal dock */}
-          <div ref={dockRef} className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory">
+          <div ref={dockRef} className="flex gap-5 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory">
             {robotsData.map((robot) => {
               const rAccent = categoryAccent[robot.category] || categoryAccent.ASV;
               const active = helm.id === robot.id;
@@ -153,9 +141,11 @@ export default function RobotsPage() {
 
                   {/* Status bar */}
                   <div className={`flex items-center justify-between px-3 py-2 bg-white/[0.02] border-t ${active ? 'border-sky-400/30' : 'border-white/[0.05]'}`}>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${statusColors[robot.status]}`}>
-                      {robot.status}
-                    </span>
+                    {robot.status === 'In Development' && (
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${statusColors[robot.status]}`}>
+                        {robot.status}
+                      </span>
+                    )}
                     <span className={`flex items-center gap-1 text-[10px] font-semibold ${active ? 'text-sky-400' : 'text-white/40'} transition-colors`}>
                       {active ? t('robots.selected') : t('robots.select')}
                       <ArrowRight className="w-3 h-3" />
@@ -208,9 +198,11 @@ export default function RobotsPage() {
                     {isAUV ? <Waves className="w-3.5 h-3.5" /> : <Anchor className="w-3.5 h-3.5" />}
                     {helm.category}
                   </span>
-                  <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${statusColors[helm.status]}`}>
-                    {helm.status}
-                  </span>
+                  {helm.status === 'In Development' && (
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${statusColors[helm.status]}`}>
+                      {helm.status}
+                    </span>
+                  )}
                   <span className="text-xs text-white/30 font-mono">{helm.year}</span>
                 </div>
 

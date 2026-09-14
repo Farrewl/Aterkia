@@ -16,10 +16,9 @@ const DIVISION_OPTIONS = [
   'AUV',
   'Mechanical',
   'Electrical',
-  'Software',
-  'Leadership',
-  'Secretary & Treasurer',
-  'Official',
+  'Program',
+  'Secretary',
+  'Treasurer',
 ];
 
 export default function AdminPage() {

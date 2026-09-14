@@ -29,6 +29,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
         display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+        serif: ['Playfair Display', 'Cinzel', 'Georgia', 'serif'],
       },
       animation: {
         'marquee': 'marquee 30s linear infinite',
@@ -57,6 +58,7 @@ export default {
         'sail': 'sail 7s ease-in-out infinite',
         'cruise': 'cruise 9s ease-in-out infinite',
         'cockpit-glow': 'cockpitGlow 4s ease-in-out infinite',
+        'shimmer': 'shimmer 3s linear infinite',
       },
       keyframes: {
         marquee: {
@@ -108,6 +110,11 @@ export default {
         pulseGlow: {
           '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
           '50%': { opacity: '0.8', transform: 'scale(1.05)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
         },
         wave1: {
           '0%, 100%': { transform: 'translateX(0px)' },

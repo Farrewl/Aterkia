@@ -72,25 +72,25 @@ export default function HomePage() {
           <video autoPlay loop muted playsInline preload="auto" className="w-full h-full object-cover opacity-40" onLoadedData={() => window.dispatchEvent(new Event('hero-video-ready'))}>
             <source src={`/videos/Copy of Aterkia\u2019s Video.mp4`} type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-t from-white/30 via-white/15 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-black/50 to-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-black/60" />
         </motion.div>
 
         <motion.div
           className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
           style={{ y: heroTextY }}
         >
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-2xl text-left">
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-display text-balance drop-shadow-lg leading-tight">
               <span className="text-white block">{t('hero.title')}</span>
               <span className="bg-gradient-to-r from-white via-blue-400 to-white bg-clip-text text-transparent drop-shadow-lg block mt-2">{t('hero.subtitle')}</span>
             </h1>
 
-            <p className="text-white text-lg sm:text-xl md:text-xl mt-6 max-w-xl mx-auto font-semibold leading-relaxed drop-shadow-md">
+            <p className="text-white/90 text-lg sm:text-xl mt-6 max-w-xl font-medium leading-relaxed drop-shadow-md">
               {t('hero.description')}
             </p>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 mt-10">
+            <div className="flex flex-row items-center gap-4 mt-10">
               <a href="#robots" className="btn-primary text-sm px-8 py-3.5">
                 {t('hero.viewRobots')}
                 <ArrowRight className="w-4 h-4" />
@@ -104,32 +104,22 @@ export default function HomePage() {
       </section>
 
       {/* 2. WAVE DIVIDER + SPONSORS */}
-      <div className="relative bg-olympic-900">
-        {/* Top wave — one fully-filled shape, overlaps hero bottom so no raw seam shows */}
-        <div className="relative w-full -mt-10 z-10">
-          <svg viewBox="0 0 1440 140" preserveAspectRatio="none" className="w-full block" style={{ height: '150px', marginBottom: '-1px' }}>
-            <defs>
-              <linearGradient id="sponsorWaveGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#0a1a2e" />
-                <stop offset="35%" stopColor="#7d99b8" stopOpacity="0.18" />
-                <stop offset="100%" stopColor="#0a1628" />
-              </linearGradient>
-            </defs>
-            <path d="M0,0 L1440,0 L1440,40 C1080,90 720,-10 360,55 C240,75 120,30 0,50 L0,140 Z" fill="url(#sponsorWaveGrad)" />
+      <div className="relative bg-olympic-900 -mt-1 pt-12 pb-12">
+        {/* Top Wave */}
+        <div className="absolute top-0 left-0 w-full overflow-hidden leading-none -translate-y-full">
+          <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="w-full h-16 block">
+            <path d="M0,80 L1440,80 L1440,20 C1080,60 720,-20 360,40 C180,60 60,70 0,60 Z" fill="#060d1a" />
           </svg>
-          <div
-            className="absolute inset-x-0 -top-8 h-40 pointer-events-none"
-            style={{
-              background: 'radial-gradient(ellipse 50% 80% at 50% 0%, rgba(220,232,255,0.32) 0%, rgba(168,192,224,0.10) 40%, transparent 75%)',
-            }}
-          />
         </div>
-        <div className="relative z-20 text-center pt-1 pb-1">
-          <span className="text-xs sm:text-sm font-bold tracking-widest uppercase gradient-text">
-            {t('sponsors.title')}
-          </span>
+
+        <div className="relative z-10 text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-black tracking-[0.2em] uppercase bg-clip-text text-transparent bg-gradient-to-r from-sky-400 via-white to-sky-400 bg-[length:200%_auto] animate-shimmer">
+            OUR SPONSORS
+          </h2>
+          <div className="w-16 h-0.5 mx-auto mt-2 bg-gradient-to-r from-transparent via-sky-400 to-transparent opacity-50" />
         </div>
-        <div className="relative z-10 overflow-hidden py-4">
+        
+        <div className="relative z-10 overflow-hidden">
           <div className="flex w-max animate-marquee">
             {[...marqueeSponsors, ...marqueeSponsors].map((sponsor, idx) => (
               <a
@@ -138,60 +128,24 @@ export default function HomePage() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={sponsor.name}
-                className="shrink-0 mx-5 sm:mx-7 opacity-70 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                className="shrink-0 mx-8 sm:mx-12 opacity-60 hover:opacity-100 transition-opacity duration-300"
               >
                 <ImageWithFallback
                   src={sponsor.logo}
                   alt={sponsor.name}
                   name={sponsor.name}
                   type="sponsor"
-                  className="w-14 h-14 sm:w-20 sm:h-20 object-contain"
+                  className="w-16 h-16 sm:w-24 sm:h-24 object-contain"
                 />
               </a>
             ))}
           </div>
         </div>
-        {/* Stats strip — proof of track record for sponsors */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { icon: Trophy, value: `${aboutData.achievements.length}+`, label: t('stats.awards'), color: 'text-amber-500' },
-              { icon: Flag, value: '5+', label: t('stats.competitions'), color: 'text-olympic-500' },
-              { icon: Users, value: '30+', label: t('stats.members'), color: 'text-sky-600' },
-              { icon: Anchor, value: '2023', label: t('stats.since'), color: 'text-blue-700' },
-            ].map((stat, i) => {
-              const Icon = stat.icon;
-              return (
-                <div key={i} className="flex flex-col items-center text-center rounded-2xl bg-slate-50 border border-slate-100 py-5 px-3">
-                  <Icon className={`w-6 h-6 mb-2 ${stat.color}`} />
-                  <span className="text-2xl sm:text-3xl font-black font-display text-olympic-900 leading-none">{stat.value}</span>
-                  <span className="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1.5">{stat.label}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Sponsor CTA */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-4 text-center">
-          <p className="text-sm text-slate-500 font-light mb-4">
-            {t('sponsors.interested')}
-          </p>
-          <Link
-            to="/contact?category=Sponsorship"
-            className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-olympic-500 hover:bg-olympic-600 text-white text-sm font-bold shadow-lg shadow-olympic-500/25 hover:shadow-xl hover:shadow-olympic-500/30 transition-all duration-300 hover:-translate-y-0.5"
-          >
-            <Handshake className="w-4.5 h-4.5" />
-            {t('sponsors.becomeSponsor')}
-          </Link>
-        </div>
-
-        {/* Bottom wave — sponsors into robots deep ocean */}
-        <div className="relative">
-          <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full block" style={{ height: '120px' }}>
-            <path d="M0,8 C120,0 240,20 360,8 C480,0 600,16 720,6 C840,16 960,2 1080,10 C1200,2 1320,14 1440,6 L1440,60 C1320,80 1200,20 1080,50 C960,80 840,10 720,40 C600,70 480,15 360,45 C240,75 120,25 0,55 Z" fill="#0a1628" />
-            <path d="M0,55 C120,25 240,75 360,45 C480,15 600,70 720,40 C840,10 960,80 1080,50 C1200,20 1320,80 1440,60 L1440,100 L0,100 Z" fill="#0c1e38" />
-            <path d="M0,80 C180,50 360,110 540,75 C720,40 900,100 1080,70 C1260,40 1380,85 1440,65 L1440,120 L0,120 Z" fill="#060d1a" />
+        {/* Bottom Wave */}
+        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none translate-y-full">
+          <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="w-full h-16 block">
+            <path d="M0,0 L1440,0 L1440,60 C1080,20 720,100 360,40 C180,20 60,10 0,20 Z" fill="#0a1628" />
           </svg>
         </div>
       </div>
